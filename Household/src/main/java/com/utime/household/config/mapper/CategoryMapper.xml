@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!--//네임스페이스에는 mapper 가 있는 풀 패키지명과 매퍼명을 등록 한다. -->
+<mapper namespace="com.utime.household.config.mapper.CategoryMapper">
+
+	<!-- 카테고리 생성 -->
+	<insert id="createCategory">
+		CREATE TABLE HH_CATEGORY (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, CT TEXT(1) NOT NULL CHECK(CT IN ('I', 'S', 'E')) <!-- ECategoryType -->
+			, NAME TEXT(32) NOT NULL 
+		)
+	</insert>
+	
+	<resultMap id="CategoryVoMap" type="com.utime.household.config.vo.CategoryVO">
+		<id column="NO" property="no" />
+		<id column="CT" property="cType" typeHandler="com.utime.household.config.handler.ECategoryTypeTypeHandler" />
+		<id column="NAME" property="name" />
+	</resultMap>
+
+	<!-- 카드 은행 목록 조회 -->
+	<select id="getCategoryList" parameterType="map" resultMap="CategoryVoMap">
+		SELECT
+			NO
+			, CT
+			, NAME
+		FROM HH_CATEGORY
+		WHERE 1=1
+		<if test="cType != null ">
+			AND CT = #{cType, typeHandler=com.utime.household.config.handler.ECategoryTypeTypeHandler}
+		</if>
+		ORDER BY CT, NAME
+	</select>
+	
+	<!-- 추가하기 전 동일 정보 체크 -->
+	<select id="sameCheckCategory" resultType="boolean" parameterType="com.utime.household.config.vo.CategoryVO">
+		SELECT 
+			CASE COUNT(1) 
+	   			WHEN 1 THEN 1
+				ELSE 0
+	   		END AS RES 
+	   	FROM HH_CATEGORY
+	   	WHERE 1=1
+	   		AND NAME = #{name}
+	</select>
+	
+	<!-- 추가 -->
+	<insert id="insertCategory" parameterType="com.utime.household.config.vo.CategoryVO">
+		INSERT INTO HH_CATEGORY (
+			CT
+			, NAME
+		) VALUES (
+			#{cType, typeHandler=com.utime.household.config.handler.ECategoryTypeTypeHandler}
+			, #{name}
+		)
+	</insert>
+	
+	<!-- 수정 -->
+	<update id="updateCategory" parameterType="com.utime.household.config.vo.CategoryVO">
+		UPDATE HH_CATEGORY SET
+			CT = #{cType, typeHandler=com.utime.household.config.handler.ECategoryTypeTypeHandler}
+			, NAME = #{name}
+		WHERE NO = #{no}
+	</update>
+	
+	<!-- EInputCategory 일치하는 정보 조회 -->
+	<select id="getCategory" parameterType="map" resultMap="CategoryVoMap">
+		SELECT
+			NO
+			, CT
+			, NAME
+		FROM HH_CATEGORY
+		WHERE NAME = #{name}
+	</select>
+</mapper>

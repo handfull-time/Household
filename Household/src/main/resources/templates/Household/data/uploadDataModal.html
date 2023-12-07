@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="editModal">
+	
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            	
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">내역 수정</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <form id="editForm">
+	                <div class="modal-body">
+						<div class="card">
+							<div class="card-header py-2">
+			            		<p class="lead text-gray"><span id="editDlgOriginStore"></span></p> <!--  원 거래 처 -->
+			            		<p class="lead text-gray"><span id="editDealDate"></span></p> <!--  원 거래 일자 -->
+							</div>
+							
+							
+							
+							<div class="row">
+								<div class="card-body">
+									<div class="form-group">
+										<label for="EditInputAmount">금액</label>
+										<input type="text" id="EditInputAmount" class="form-control border-0 text-right" >
+									</div>
+								</div>
+
+								<div class="card-body">
+									<div class="form-group">
+										<label for="EditRadioEnabledY" id="lbEditRadioEnabledY" >
+											<input type="radio" name="EditRadioEnabled" id="EditRadioEnabledY" value="true" /> 
+											포함
+										</label>
+									    <label for="EditRadioEnabledN" id="lbEditRadioEnabledN" >
+									    	<input type="radio" name="EditRadioEnabled" id="EditRadioEnabledN" value="false" />
+									    	비포함
+									    </label>
+									</div>
+								</div>
+
+								<div class="card-body">
+									<div class="form-group">
+										<label for="selectCategory">입출금 항목<font color="red">*</font></label>
+										<select name="category.no" class="form-control" id="selectCategory" >
+											<option th:each="item : ${listCategory}" th:value="${item.no}" th:text="${item.name}"></option>
+										</select>
+									</div>
+								</div>
+								<div class="card-body">
+									<div class="form-group">
+										<label for="selectCategoryType">종류<font color="red">*</font></label>
+										<select name="cType" class="form-control" id="selectCategoryType">
+											<option th:each="item : ${cTypes}" th:value="${item}"
+												th:text="${item.dscr}"></option>
+										</select>
+									</div>
+								</div>
+								
+								<div class="card-body">
+									<div class="form-group">
+										<label for="selectCategoryType">종류<font color="red">*</font></label>
+										<select name="cType" class="form-control" id="selectCategoryType">
+											<option th:each="item : ${cTypes}" th:value="${item}"
+												th:text="${item.dscr}"></option>
+										</select>
+									</div>
+								</div>
+											
+								<div class="card-body">
+									<div class="form-group">
+										<label for="selectCategory">입출금 항목<font color="red">*</font></label>
+										<select name="category.no" class="form-control" id="selectCategory">
+											<option th:each="item : ${listCategory}" th:value="${item.no}" th:text="${item.name}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+	                </div>
+                </form>
+                <div class="modal-footer">
+                	<button class="btn btn-secondary" type="button" >적용</button>
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

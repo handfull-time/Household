@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/LayoutCommon}">
+
+<th:block layout:fragment="title">[[${bankCard.dscr}]] 자료 결과</th:block>
+
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+
+	<style type="text/css">
+	
+	</style>
+
+</th:block>
+
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+
+	<script type="text/javascript" th:inline="javascript">
+
+	let isEditLayerShow = false;
+	let isEditLyaerInput = false;
+	
+	let input = null;
+	let layerEditRadio = null;
+	//let editRadioLayer = null;
+
+    $(function () {
+		console.info('걍...');
+		
+		$('#DataTableResult').DataTable({
+			"paging": false,
+			"footerCallback": function(row, data, start, end, display) {
+
+		        let totalAmount = 0;
+		        for( let item of data ){
+		        	totalAmount += parseInt( item[1].replace(/[^0-9]/g, '') );
+		        }
+
+		        // 결과를 푸터에 표시
+		        const api = this.api();
+		        $(api.column(1).footer()).html(totalAmount.toLocaleString());
+		    }
+		});
+		
+	    // DataTable 초기화
+	    const table = $('#DataTableResult').DataTable();
+
+	    // 헤더의 체크박스에 이벤트 리스너 추가
+	    $('#checkAll').on('click', function() {
+	        const rows = table.rows({ 'search': 'applied' }).nodes();
+	        $('input[type="checkbox"]', rows).prop('checked', this.checked);
+	    });
+
+	    // 데이터 행의 체크박스에 이벤트 리스너 추가
+	    $('#DataTableResult tbody').on('change', 'input[type="checkbox"].rowCheckbox', function() {
+	        // 헤더 체크박스 상태 업데이트
+	        if (!this.checked) {
+	            const el = $('#checkAll').get(0);
+	            // 행이 하나라도 선택 해제되면 헤더 체크박스도 선택 해제
+	            if (el && el.checked && ('indeterminate' in el)) {
+	                el.indeterminate = true;
+	            }
+	        }
+	    });
+
+		
+	 	// '적용' 버튼 클릭 이벤트
+		document.querySelector('.modal-footer .btn-secondary').addEventListener('click', () => {
+		    if (currentRow) {
+		        // 선택된 행의 데이터를 업데이트합니다.
+		        // currentRow.cells[0].textContent = selectBankCard.options[selectBankCard.selectedIndex].text;
+		        // currentRow.cells[1].textContent = selectCategoryType.options[selectCategoryType.selectedIndex].text;
+				console.info( '적용 버튼 클릭 이벤트' );
+				currentRow = null;
+		        // 모달을 숨깁니다.
+		        $('#editModal').modal('hide');
+		    }
+		});
+	})
+	
+	let currentRow = null;
+	function showModalLayer(cell){
+		currentRow = cell;
+		console.info( '모달 슈' );
+		
+		const formElement = document.getElementById('editForm');
+		const inputElement = formElement.elements['ipText'];
+		
+		$('#editModal').modal('show');
+	}
+	
+	// 모달의 '취소' 버튼이나 외부 영역 클릭 이벤트
+	$('#editModal').on('hidden.bs.modal', function () {
+	    // 필요한 경우 추가적인 정리 작업을 수행합니다.
+		console.info( '외부 영역 클릭 이벤트' );
+	});
+	
+	</script>
+
+</th:block>
+
+<div layout:fragment="content">
+
+	<div class="card shadow mb-4">
+		<div class="card-body">
+			<div class="table-responsive">
+			
+				<table class="table table-bordered" id="DataTableResult" >
+					<thead>
+			            <tr>
+			            	<th class="text-center" ><input type="checkbox" id="checkAll" checked="checked"></th>
+			                <th>거래 일자</th>
+			                <th>거래 금액</th>
+			                <th>내역 포함 여부</th>
+			                <th>입금/출금 종류</th>
+			                <th>입금/출금 항목</th>
+			                <th>입금/출금 구분</th>
+			                <th>사용처</th>
+			                <th>비고</th>
+			            </tr>
+			        </thead>
+			        <tbody>
+			            <tr th:each="data : ${list}" th:attr="no=${data.no}">
+			            	<td class="text-center" ><input type="checkbox" class="rowCheckbox" checked="checked"></td>
+			                <td class="text-center" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd hh:mm')}"></td><!-- 거래 일자 -->
+			                <td class="text-right" th:text="${#numbers.formatDecimal(data.amount, 2, 'COMMA', 0, 'POINT')}"></td><!-- 거래 금액 -->
+			                <td class="text-center" th:attr="enabled=${data.enabled}" th:text="${data.enabled? '포함':'비포함'}"></td><!-- 내역 포함 여부 -->
+			                <th:block th:if="${data.store.categoryNo eq -1}">
+			                <td ></td><!-- 입금/출금 종류 -->
+			                <td th:attr="category.no='-1'"></td><!-- 입금/출금 항목 -->
+			                <td ></td><!-- 입금/출금 구분 -->
+							</th:block>
+			                <th:block th:if="${data.store.categoryNo ne -1}">
+			                <td th:text="${data.category.cType.dscr}"></td><!-- 입금/출금 종류 -->
+			                <td th:attr="category.no=${data.category.no}" th:text="${data.category.name}"></td><!-- 입금/출금 항목 -->
+			                <td th:text="${data.store.name}"></td><!-- 입금/출금 구분 -->
+							</th:block>
+			                <td onclick="showModalLayer(this)" th:attr="store.no=${data.store.no}" style="cursor: pointer" th:text="${data.store.store}"></td><!-- 사용처 -->
+			                <td th:text="${data.dscr}"></td><!-- 비고 -->
+			            </tr>
+			        </tbody>	
+			        <tfoot>
+				        <tr>
+			                <td>Total</td>
+			                <td colspan="7" class="text-right" ></td>
+				        </tr>
+				    </tfoot>
+				</table>
+			</div> <!-- table-responsive -->
+		</div> <!-- card body -->
+	</div>
+	
+	<th:block th:replace="data/uploadDataModal :: editModal"/>
+	
+</div>
+
+
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/LayoutCommon}">
+
+<div layout:fragment="content">
+
+	<div class="container-fluid mt-4">
+	    <div class="text-center">
+	        <div class="error mx-auto" data-text="Error">
+	        	<p class="lead text-gray-800 mb-5">o(*￣︶￣*)o</p>
+	        </div>
+	        <br/>
+	        <br/>
+	        <br/>
+	        <div class="card shadow mb-4 ">
+		        <div class="card-header py-2">
+		            <p class="lead text-gray-100 mb-1 bg-gradient-danger" th:text="${res.code}">Error Code</p>
+		        </div>
+	        	<div class="card-body mb-4">
+		            <p class="text-gray-500 mb-0 bg-gradient-danger" th:text="${res.message}">Error Message</p>
+		        </div>
+	        	<div class="card-body">
+		            <a th:href="@{/}">&larr; Back to Home</a>
+		        </div>
+		    </div>
+	    </div>
+	</div>
+
+</div>
+
+</html>

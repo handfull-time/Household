@@ -1,0 +1,108 @@
+<script xmlns:th="http://www.thymeleaf.org" >
+/**
+ * Toast 설정
+ * @see https://codeseven.github.io/toastr/demo.html
+ */
+toastr.options = {
+	
+	'closeButton': true
+	, 'debug': false
+	, 'newestOnTop': true
+	, 'progressBar': true
+	, 'positionClass': 'toast-top-center' //'toast-top-full-width' 
+	, 'preventDuplicates': false
+	, 'onclick': null
+	, 'showDuration': '3000'
+	, 'hideDuration': '500'
+	, 'timeOut': '3500'
+	, 'extendedTimeOut': '0'
+	, 'showEasing': 'swing'
+	, 'hideEasing': 'linear'
+	, 'showMethod': 'fadeIn'
+	, 'hideMethod': 'fadeOut'
+};
+
+/**
+ * Toast Confirm
+ * 크... 이 기능을 쓰면 이쁘긴 한데 ... 소스 수정할 것이 너무 많아지네... 음.... 
+ * @param title : 제목 
+ * @param message : 내용
+ * @param yesAction : 예 클릭 이벤트
+ * @param noAction : 아니오 클릭 이벤트
+ */
+function toastConfirm(title, message, yesAction, noAction){
+	let element="<div align='right' style='margin-top:10px;'>";
+	element += "<button type='button' id='confirmYes' class='btn btn-primary'>예</button>";
+	element += "&nbsp;&nbsp;";
+	element += "<button type='button' id='confirmNo' class='btn btn-danger'>아니오</button>";
+	element += "</div>";
+
+	const toast = toastr.info(message + element, title,
+		{
+			closeButton: false,
+			allowHtml: true,
+			maxOpened: 1,
+			timeOut: 5000,
+			progressBar: true,
+			onShown: function () {
+				$("#confirmYes").click(function(){
+					console.log('Yes click');
+					
+					toastr.clear(toast);
+					if( typeof yesAction === 'function' )
+						yesAction();
+			    });
+				$("#confirmNo").click(function(){
+					console.log('No click');
+
+					toastr.clear(toast);
+					if( typeof noAction === 'function' )
+						noAction();
+			    });
+			}
+		});
+}
+
+/**
+ * Input Value 가 필요할 때
+ * @param title : 제목 
+ * @param message : 내용
+ * @param defaultVal : 기본 값
+ * @param okAction : 버튼 클릭 이벤트
+ */
+function toastInput(title, message, defaultVal, okAction){
+	
+	let element="<div>";
+	element += "<input type='text' id='inputToastTxt' class='form-control' style='width:95%;margin-top:10px;' value='"+defaultVal+"'><br/>";
+	element += "<button type='button' id='confirmationRevertOk' class='btn btn-primary' style='float: right;'>확인</button>";
+	element += "</div>";
+	
+	const toast = toastr.info(message + element, title, {
+		closeButton: true,
+		allowHtml: true,
+		timeOut: 0,
+		maxOpened: 1,
+		progressBar: false,
+		hideDuration: 100,
+		onShown: function () {
+			$('#inputToastTxt').focus();
+			
+			$("#confirmationRevertOk").click(function(){
+				console.log('Ok click');
+			
+				const txtVal = $("#inputToastTxt").val().trim();
+				
+				toastr.clear(toast);
+				if( typeof okAction === 'function' && txtVal.length > 0 ){
+					okAction( txtVal );
+				}
+
+		    });
+		},
+		onclick:function( owner ){
+			// 이 이벤트가 있어야 자동 클리어가 되지 않더라...
+		}
+	});
+}
+
+</script>

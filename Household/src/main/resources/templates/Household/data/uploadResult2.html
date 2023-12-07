@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/LayoutCommon}">
+
+<th:block layout:fragment="title">[[${bankCard.dscr}]] 자료 결과</th:block>
+
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+
+	<style type="text/css">
+	.edit-layer {
+	    position: absolute;
+	    background-color: white;
+	    border: none;
+	    padding: 0px;
+	    z-index: 100;
+	    background-color: red;
+	}
+	</style>
+
+</th:block>
+
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+
+	<script type="text/javascript" th:inline="javascript">
+
+	let isEditLayerShow = false;
+	let isEditLyaerInput = false;
+	
+	let input = null;
+	let layerEditRadio = null;
+	//let editRadioLayer = null;
+
+    $(function () {
+		console.info('걍...');
+		
+		$('#DataTableResult').DataTable({
+			"paging": false,
+			"footerCallback": function(row, data, start, end, display) {
+
+		        let totalAmount = 0;
+		        for( let item of data ){
+		        	totalAmount += parseInt( item[1].replace(/[^0-9]/g, '') );
+		        }
+
+		        // 결과를 푸터에 표시
+		        const api = this.api();
+		        $(api.column(1).footer()).html(totalAmount.toLocaleString());
+		    }
+		});
+		
+		input = document.getElementById('EditInput');
+	    input.addEventListener('click', function(event) {
+	        event.stopPropagation();
+	    });
+	    
+	    input.addEventListener('blur', function(event) {
+	        const cell = event.target.parentNode;
+	        console.info( 'input blur', cell );
+	        
+	        const inputValue = this.value;
+	    	console.info('아웃 처리', inputValue);
+	    	
+	       	cell.removeChild(this);
+	       	
+	        cell.textContent = inputValue;
+	    });
+	    
+	    layerEditRadio = document.getElementById('editRadioLayer');
+	    
+	 // '적용' 버튼 클릭 이벤트
+		document.querySelector('.modal-footer .btn-secondary').addEventListener('click', () => {
+		    if (currentRow) {
+		        // 선택된 행의 데이터를 업데이트합니다.
+		        // currentRow.cells[0].textContent = selectBankCard.options[selectBankCard.selectedIndex].text;
+		        // currentRow.cells[1].textContent = selectCategoryType.options[selectCategoryType.selectedIndex].text;
+				console.info( '적용 버튼 클릭 이벤트' );
+				currentRow = null;
+		        // 모달을 숨깁니다.
+		        $('#editModal').modal('hide');
+		    }
+		});
+	})
+	
+	function applyChanges(){
+		//console.info('applyChanges 함수 호출');
+	}
+    
+    function checkOutsideClick(event){
+    	//const editRadioLayer = document.getElementById('editRadioLayer');
+        
+        if (!layerEditRadio.contains(event.target)) {
+            // editRadioLayer 외부에서 클릭이 발생했을 때의 처리
+            const cell = layerEditRadio.closest('td'); // 현재 editRadioLayer가 포함된 셀을 찾음
+            //const radioEnabledY = document.getElementById('EditRadioEnabledY');
+            const radioEnabledY = layerEditRadio.querySelector('#EditRadioEnabledY');
+
+            const inputValue = radioEnabledY.checked ? '포함' : '비포함';
+            cell.textContent = inputValue;
+            cell.setAttribute('enabled', radioEnabledY.checked.toString());
+            layerEditRadio.style.display = 'none';
+            //document.appendChild( editRadioLayer );
+
+            // 이벤트 리스너 제거
+            document.removeEventListener('mousedown', checkOutsideClick);
+        }
+    }
+	
+	function showEditInputCellLayer(cell) {
+		console.info('showEditInputCellLayer 호출');
+		console.info('선택된 cell ', cell.textContent, cell.cellIndex);
+		
+		const cellIndex = cell.cellIndex;
+			
+			// 현재 셀에 input이 없으면 input을 이동시킵니다.
+		    if (!cell.contains(input)) {
+		    	console.info('input 추가.');
+		        input.value = cell.textContent; // 셀의 내용을 input 값으로 설정
+		        cell.textContent = ''; // 셀의 텍스트를 지웁니다.
+		        cell.appendChild(input); // input을 현재 셀에 추가합니다.
+		        input.focus(); // input에 포커스를 맞춥니다.
+		    }
+	}
+	
+	function showEditRadioCellLayer(cell){
+		console.info('showEditRadioCellLayer 호출');
+		console.info('', cell.nodeName);
+		if( 'TD' != cell.nodeName ){
+			console.info('TD가 아닌 것은 아웃!');
+			return;
+		}
+		
+		
+		const childNode = cell.childNodes[0];
+		console.info('childNode의 이름', childNode.nodeName);
+		
+		if( childNode.nodeName == '#text' ){
+			console.info('첫 진입');
+			
+		    const radioEnabledY = layerEditRadio.querySelector('#EditRadioEnabledY');
+		    const radioEnabledN = layerEditRadio.querySelector('#EditRadioEnabledN');
+		    
+		    // 셀의 enabled 속성값 읽기
+		    const isEnabled = cell.getAttribute('enabled') === 'true';
+
+		    // 라디오 버튼 상태 설정
+		    radioEnabledY.checked = isEnabled;
+		    radioEnabledN.checked = !isEnabled;
+
+		    cell.removeChild( childNode );
+			cell.appendChild( layerEditRadio );
+			
+			layerEditRadio.style.display = 'block';
+			layerEditRadio.focus();
+			console.info('layerEditRadio Show!');
+			
+			document.addEventListener('mousedown', checkOutsideClick);
+		}
+	}
+			
+	function showEditLayer(row) {
+		console.info('showEditLayer 호출');
+		
+		const selectCell = row.target.closest('td');
+		console.info('선택된 cell ', selectCell.textContent);
+		return;
+	    
+		const editLayer = document.getElementById('editLayer');
+	    const rect = row.getBoundingClientRect();
+	    
+		editLayer.style.top = rect.top + 'px';
+	    editLayer.style.left = (rect.left - 1) + 'px';
+	    editLayer.style.height = rect.height + 'px';
+	    
+	    
+	    const rowEdit = document.getElementById('RowEdit');
+	    /* for( let i=0 ; i<row.cells.length ; i++ ){
+	    	const orgCell = row.cells[i];
+	    	const orgCellRect = orgCell.getBoundingClientRect();
+
+	    	const editCell = rowEdit.cells[i];
+			editCell.style.minWidth = orgCellRect.width + 'px';
+	    } */
+	    
+	    {
+	    	// 0 거래 일자.
+	    	const editCell = rowEdit.cells[0];
+	    	const orgCell = row.cells[0];
+	    	
+	    	editCell.textContent = orgCell.textContent;
+	    	editCell.style.minWidth = orgCell.getBoundingClientRect().width + 'px';
+	    }
+	    
+	    {
+	    	// 1 거래 금액
+	    	const editAmount = $('#EditAmount');
+	    	const orgCell = row.cells[1];
+	    	
+	    	editAmount.val( orgCell.textContent );
+	    	editAmount.css("width", (orgCell.getBoundingClientRect().width - 10 )+ 'px');
+	    	editAmount.css("height", (orgCell.getBoundingClientRect().height - 10 )+ 'px');
+	    	
+	    	rowEdit.cells[1].style.minWidth = orgCell.getBoundingClientRect().width + 'px';
+	    }
+	    
+	    {
+	    	// 2 내역 포함 여부
+	    	
+	    	const editAmount = $('#EditAmount');
+	    	const orgCell = row.cells[2];
+	    	const orgValue = orgCell.getAttribute('enabled');
+	    	
+	    	// 선택된 값얻어 오기
+			//var selChecked = $("#selCheck").is(":checked");
+	    	// $('input[name="NAME값"]:checked').val();
+	    	
+	    	$('input:radio[name="EditEnabled"]:input[value="'+orgValue+'"]').prop('checked',true);
+	    	rowEdit.cells[2].style.minWidth = orgCell.getBoundingClientRect().width + 'px';
+	    }
+	    
+	    {
+	    	// 3 입금/출금 종류 
+	    	// 4 입금/출금 항목 
+	    	// 5 입금/출금 구분 
+	    	// 6 사용처 
+	    	
+	    	const orgCellType = row.cells[3];
+	    	const orgCellCategory = row.cells[4];
+	    	const orgCellName = row.cells[5];
+	    	const orgCellStore = row.cells[6];
+	    	
+	    	// <td th:attr="ct=${data.store.category.cType}" th:text="${data.store.category.cType eq null? '미지정':data.store.category.cType.dscr}"></td><!-- 입금/출금 종류 -->
+			//                <td th:attr="category.no=${data.store.category.no}" th:text="${data.store.category.name}"></td><!-- 입금/출금 항목 -->
+			//                <td th:text="${data.store.name}"></td><!-- 입금/출금 구분 -->
+			//				</th:block>
+			//               <td th:attr="store.no=${data.store.no}" th:text="${data.store.store}">
+	    	
+			const editButton = document.getElementById('EditButton');
+			const categoryType = parseInt( orgCellCategory.getAttribute('category.no') );
+			let stringValue;
+			if( categoryType < 0 ){
+				editButton.textContent = '추가';
+				stringValue = orgCellStore.textContent;
+
+				editButton.addEventListener('click', function() {
+				    alert('버튼이 클릭되었습니다!' + stringValue);
+				});
+				
+			}else{
+				editButton.textContent = '수정';
+				stringValue = '[' + orgCellType.textContent + ']' + orgCellCategory.textContent + ' = ' + orgCellName.textContent + ':' + orgCellStore.textContent;
+
+				editButton.addEventListener('click', function() {
+				    alert('버튼이 클릭되었습니다!' + stringValue);
+				});
+			}
+			$('#EditStore').text( stringValue );
+	    	
+			let editWidth = 0;
+			editWidth += orgCellType.getBoundingClientRect().width;
+			editWidth += orgCellCategory.getBoundingClientRect().width;
+			editWidth += orgCellName.getBoundingClientRect().width;
+			editWidth += orgCellStore.getBoundingClientRect().width;
+			
+			const editCell = rowEdit.cells[3];
+			
+			editCell.style.minWidth = editWidth + 'px';
+	    }
+	    
+	    
+	    {
+	    	/* const editAmount = $('#EditStore');
+	    	const orgCell = row.cells[6];
+	    	
+	    	const editButton = $('#EditButton')[0];
+
+	    	editAmount.val( orgCell.textContent );
+	    	editAmount.css("width", (orgCell.getBoundingClientRect().width - editButton.getBoundingClientRect().width )+ 'px');
+	    	editAmount.css("height", (orgCell.getBoundingClientRect().height - 10 )+ 'px');
+	    	 */
+	    	
+	    }
+	    
+	    {
+	    	// 7 비고
+	    	const editAmount = $('#EditDscr');
+	    	const orgCell = row.cells[7];
+	    	
+	    	editAmount.val( orgCell.textContent );
+	    	editAmount.css("width", (orgCell.getBoundingClientRect().width - 10 )+ 'px');
+	    	editAmount.css("height", (orgCell.getBoundingClientRect().height - 10 )+ 'px');
+
+	    	const editCell = rowEdit.cells[4];
+			
+			editCell.style.minWidth = orgCell.getBoundingClientRect().width + 'px';
+	    }
+	    
+	    
+
+	    editLayer.style.display = 'block';
+
+	    // 필요한 경우 행 데이터를 사용하여 레이어의 입력 필드 채우기
+	    // 예: document.getElementById('transactionType').value = row.cells[3].textContent;
+		isEditLayerShow = false;
+	}
+	
+	let currentRow = null;
+	function showModalLayer(cell){
+		currentRow = cell;
+		console.info( '모달 슈' );
+		$('#editModal').modal('show');
+	}
+	
+	
+
+	// 모달의 '취소' 버튼이나 외부 영역 클릭 이벤트
+	$('#editModal').on('hidden.bs.modal', function () {
+	    // 필요한 경우 추가적인 정리 작업을 수행합니다.
+		console.info( '외부 영역 클릭 이벤트' );
+	});
+	
+	</script>
+
+</th:block>
+
+<div layout:fragment="content">
+
+	<div class="card shadow mb-4">
+		<div class="card-body">
+			<div class="table-responsive">
+			
+				<table class="table table-bordered" id="DataTableResult" >
+					<thead>
+			            <tr>
+			                <th>거래 일자</th>
+			                <th>거래 금액</th>
+			                <th>내역 포함 여부</th>
+			                <th>입금/출금 종류</th>
+			                <th>입금/출금 항목</th>
+			                <th>입금/출금 구분</th>
+			                <th>사용처</th>
+			                <th>비고</th>
+			            </tr>
+			        </thead>
+			        <tbody>
+			            <tr th:each="data : ${list}" th:attr="no=${data.no}">
+			                <td class="text-center" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd hh:mm')}"></td><!-- 거래 일자 -->
+			                <td class="text-right" th:text="${#numbers.formatDecimal(data.amount, 2, 'COMMA', 0, 'POINT')}"></td><!-- 거래 금액 -->
+			                <td class="text-center" th:attr="enabled=${data.enabled}" th:text="${data.enabled? '포함':'비포함'}"></td><!-- 내역 포함 여부 -->
+			                <th:block th:if="${data.store.categoryNo eq -1}">
+			                <td ></td><!-- 입금/출금 종류 -->
+			                <td th:attr="category.no='-1'"></td><!-- 입금/출금 항목 -->
+			                <td ></td><!-- 입금/출금 구분 -->
+							</th:block>
+			                <th:block th:if="${data.store.categoryNo ne -1}">
+			                <td th:text="${data.category.cType.dscr}"></td><!-- 입금/출금 종류 -->
+			                <td th:attr="category.no=${data.category.no}" th:text="${data.category.name}"></td><!-- 입금/출금 항목 -->
+			                <td th:text="${data.store.name}"></td><!-- 입금/출금 구분 -->
+							</th:block>
+			                <td onclick="showModalLayer(this)" th:attr="store.no=${data.store.no}" th:text="${data.store.store}"></td><!-- 사용처 -->
+			                <td th:text="${data.dscr}"></td><!-- 비고 -->
+			            </tr>
+			        </tbody>
+			        <tfoot>
+				        <tr>
+			                <td>Total</td>
+			                <td colspan="7" class="text-right" ></td>
+				        </tr>
+				    </tfoot>
+				</table>
+			</div> <!-- table-responsive -->
+		</div> <!-- card body -->
+	</div>
+	
+	<div id="editLayer" class="edit-layer" style="display:none;">
+	    <form id="editForm">
+	        <table class="table table-bordered" id="DataTableEdit" >
+	        <tbody>
+	            <tr id="RowEdit">
+	                <td class="text-center" ></td><!-- 거래 일자 -->
+	                <td >
+	                	<!-- 거래 금액 -->
+	                	<input type="text" id="EditAmount" class="form-control border-0 text-right" style="padding: 0rem">
+	                </td>
+	                <td class="text-center" >
+	                	<!-- 내역 포함 여부 -->
+	                	<input type="radio" name="EditEnabled" id="EditEnabledY" value="true" /> <label for="EditEnabledY">포함</label>
+	                	<input type="radio" name="EditEnabled" id="EditEnabledN" value="false" /> <label for="EditEnabledN">비포함</label>
+	                </td>
+	                <td >
+	                	<!-- 입금/출금 종류 --><!-- 입금/출금 항목 -->
+	                	<select name="category.no" class="form-control" id="selectCategory">
+							<option 
+								th:each="item : ${listCategory}" 
+								th:value="${item.no}" 
+								th:text="${item.name}"></option>
+						</select>
+	                </td>
+	                <td>
+	                	<!-- 입금/출금 구분 -->
+	                </td>
+	                <td>
+	                	<!-- 사용처 -->
+	                </td>
+	                <td ><input type="text" id="EditDscr" class="form-control border-0 small" style="padding: 0rem"></td><!-- 비고 -->
+	            </tr>
+	        </tbody>
+	        </table>
+	    </form>
+	</div>
+	
+	<div id="editInputLayer" class="edit-layer" style="display:none;">
+		<input type="text" id="EditInput" class="form-control border-0 text-right" style="padding: 0rem; height:1.5rem;">
+	</div>
+	
+	<div id="editRadioLayer" class="edit-layer align-items-center" tabindex="-1"  style="display:none;">
+		<label for="EditRadioEnabledY" id="lbEditRadioEnabledY" ><input type="radio" name="EditRadioEnabled" id="EditRadioEnabledY" value="true" /> 포함</label>
+	    <label for="EditRadioEnabledN" id="lbEditRadioEnabledN" ><input type="radio" name="EditRadioEnabled" id="EditRadioEnabledN" value="false" /> 비포함</label>
+	</div>
+	
+	
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">내역 수정</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+					<div class="card">
+						<div class="card-header py-2">
+		            		<p class="lead text-gray"><span id="editDlgOriginStore"></span></p> <!--  원 거래 처 -->
+						</div>
+						<div class="row">
+							<div class="card-body">
+								<div class="form-group">
+									<label for="selectBankCard">은행/카드 종류<font color="red">*</font></label>
+									<select name="bc" class="form-control" id="selectBankCard">
+										<option 
+											th:each="item : ${BankCard}" 
+											th:value="${item}"
+											th:text="${item.dscr}"></option>
+									</select>
+								</div>
+							</div>
+							
+							<div class="card-body">
+								<div class="form-group">
+									<label for="selectCategoryType">종류<font color="red">*</font></label>
+									<select name="cType" class="form-control" id="selectCategoryType">
+										<option th:each="item : ${cTypes}" th:value="${item}"
+											th:text="${item.dscr}"></option>
+									</select>
+								</div>
+							</div>
+										
+							<div class="card-body">
+								<div class="form-group">
+									<label for="selectCategory">입출금 항목<font color="red">*</font></label>
+									<select name="category.no" class="form-control" id="selectCategory">
+										<option th:each="item : ${listCategory}" th:value="${item.no}" th:text="${item.name}"></option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+                </div>
+                <div class="modal-footer">
+                	<button class="btn btn-secondary" type="button" >적용</button>
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+	
+</div>
+
+
+</html>

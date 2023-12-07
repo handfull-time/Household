@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/LayoutCommon}">
+
+<th:block layout:fragment="title">자료 올리기</th:block>
+
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+</th:block>
+
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+
+	<script type="text/javascript" th:inline="javascript">
+
+	$(function () {
+		const submitform = document.querySelector("#FormFileUpload");
+		submitform.addEventListener("submit", uploadFile);
+	});
+	
+	function uploadFile(event){
+		//toastr["success"]("내용~", "Title이다.");
+		
+/* 		const uploadFile = $('#exampleInputFile')[0].files;
+		console.info( uploadFile.length );
+		if( uploadFile.length < 1 ){
+			alert('파일을 선택하세요.');
+			return;
+		}
+ */
+
+ 		//여기서 자동 submit을 막아줍니다.
+ 		event.preventDefault(); 
+		toastConfirm( 'Upload', '파일 업로드 하시겠습니까?', function(){
+			event.target.submit();
+		} );
+	}
+	
+	function _uploadFileAction(){
+		
+		const formData = new FormData($('#FormFileUpload')[0]);
+		
+		/*const file = uploadFiles[0].files[0];
+
+		const formData = new FormData();
+		formData.append('uploadFile', file); */
+		
+	    $.ajax({
+	    	type: "POST",
+	    	data: formData,
+	    	dataType : "json",
+	    	processData: false,
+	    	contentType: false,
+	    	enctype : 'multipart/form-data',
+	    	url: "/Upload.json",
+	    	success: function(resJson) {
+	    		console.log(JSON.stringify(resJson));
+	    		if( resJson.code == '0' ){
+	    			alert('저장 성공');
+	    		}else{
+	    			alert(resJson.code + ' - ' + resJson.message);
+	    		}	
+	    	},
+	    	error: function(request, status, error) {
+	            console.log("code: " + request.status)
+	            console.log("message: " + request.responseText)
+	            console.log("error: " + error);
+	    	}
+	    });
+	}
+
+	</script>
+
+</th:block>
+
+<div layout:fragment="content">
+
+	<div class="card shadow mb-4">
+        <div class="card-body">
+            <form id="FormFileUpload" th:action="@{/UploadResult.html}" method="post" enctype="multipart/form-data">
+	            <div class="form-group">
+		            <label for="exampleSelect">은행/카드 선택</label>
+		            <select name="bankCard" class="form-control" id="exampleSelect">
+		            	<option th:each="item : ${bankCard}" 
+						th:value="${item}" 
+						th:text="${item.dscr}" ></option>
+		            </select>
+		        </div>
+                <div class="form-group">
+                    <input type="file" class="btn btn-info" name="uploadFile" id="exampleInputFile" accept=".xlsx, .xls" aria-describedby="fileHelp" required >
+                    <small id="fileHelp" class="form-text text-muted">카드 사용 또는 은행 입출금 내역 엑셀 파일을 올려주세요.</small>
+                </div>
+            	<button type="submit" class="btn btn-primary" >파일 전달</button>
+            </form>
+            <!-- <button class="btn btn-primary" onclick="uploadFile()">Upload</button> -->
+        </div>
+    </div>
+</div>
+
+</html>

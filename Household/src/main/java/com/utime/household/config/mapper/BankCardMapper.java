@@ -55,4 +55,12 @@ public interface BankCardMapper {
 	 * @return
 	 */
 	int updateBankCard(BankCardVO vo);
+	
+	/**
+	 * 삭제
+	 * @param vo
+	 * @return
+	 * @throws Exception
+	 */
+	int deleteBankCard(BankCardVO vo);
 }

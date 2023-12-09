@@ -10,4 +10,6 @@ public interface BankCardService {
 	List<BankCardVO> getBankCardList();
 	
 	ReturnBasic saveBankCard(BankCardVO vo);
+	
+	ReturnBasic deleteBankCard(BankCardVO vo);
 }

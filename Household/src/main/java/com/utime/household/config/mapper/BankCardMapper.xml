@@ -78,4 +78,10 @@
 		WHERE ENUM_NAME = #{inputBC}
 	</select>
 	
+	<!-- 삭제 -->
+	<update id="deleteBankCard" parameterType="com.utime.household.config.vo.BankCardVO">
+		DELETE FROM HH_BANK_CARD
+		WHERE NO = #{no}
+	</update>
+	
 </mapper>

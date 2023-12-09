@@ -2,8 +2,11 @@ package com.utime.household.config.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.config.service.BankCardService;
@@ -26,21 +29,34 @@ public class BankCardController {
 	}
 	
 	@RequestMapping(value="Home.html", method = RequestMethod.GET)
-	public String bankCardMain(ModelMap model) {
+	public String bankCardMain(ModelMap model, @ModelAttribute(value = "res") ReturnBasic res) {
 		
 		model.addAttribute("BankCard", EBankCard.values() );
 		model.addAttribute("InputBC", EInputBankCard.values() );
 		model.addAttribute("list",  service.getBankCardList() );
 		
+		if( res != null )
+			model.addAttribute("res", res );
+		
 		return "config/bankcard/bankcard";
 	}
 	
-	@RequestMapping(value="Home.html", method = RequestMethod.POST, params = {"no", "name", "bc", "inputBC"})
-	public String bankCardMain(ModelMap model, BankCardVO vo) {
+	@RequestMapping(value="Save.html", method = RequestMethod.POST, params = {"no", "name", "bc", "inputBC"})
+	public String bankCardSave(RedirectAttributes redirectAttributes, BankCardVO vo) {
 		
-		ReturnBasic res = service.saveBankCard(vo);
-		model.addAttribute("res", res);
+		final ReturnBasic res = service.saveBankCard(vo);
+		
+		redirectAttributes.addFlashAttribute("res", res);
 
-		return this.bankCardMain(model);
+		return "redirect:/Config/BankCard/Home.html";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="Remove.json", method = RequestMethod.POST, params = {"no"})
+	public ReturnBasic bankCardRemove(BankCardVO vo) {
+		
+		final ReturnBasic res = service.deleteBankCard(vo);
+
+		return res;
 	}
 }

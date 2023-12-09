@@ -7,6 +7,5 @@ import com.utime.household.root.vo.HouseholdDataListResVO;
 
 public interface HouseholdService {
 
-	HouseholdDataListResVO upload(EInputBankCard bankCard, MultipartFile file);
 
 }

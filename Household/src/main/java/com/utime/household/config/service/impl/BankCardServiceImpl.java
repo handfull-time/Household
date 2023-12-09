@@ -33,4 +33,16 @@ class BankCardServiceImpl implements BankCardService {
 		
 		return result;
 	}
+	
+	@Override
+	public ReturnBasic deleteBankCard(BankCardVO vo) {
+		final ReturnBasic result = new ReturnBasic();
+		try {
+			this.dao.deleteBankCard(vo);
+		} catch (Exception e) {
+			result.setCodeMessage("EPS0S1", e.getMessage());
+		}
+		
+		return result;
+	}
 }

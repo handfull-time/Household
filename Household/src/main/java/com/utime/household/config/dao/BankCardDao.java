@@ -27,5 +27,13 @@ public interface BankCardDao {
 	 * @return
 	 */
 	BankCardVO getBankCard( EInputBankCard inputBC );
+	
+	/**
+	 * 삭제
+	 * @param vo
+	 * @return
+	 * @throws Exception
+	 */
+	int deleteBankCard(BankCardVO vo)throws Exception;
 }
 

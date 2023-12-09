@@ -67,4 +67,10 @@ class BankCardDaoImpl implements BankCardDao{
 		
 		return mapper.getBankCard( inputBC );
 	}
+	
+	@Override
+	public int deleteBankCard(BankCardVO vo) throws Exception {
+		
+		return mapper.deleteBankCard(vo);
+	}
 }

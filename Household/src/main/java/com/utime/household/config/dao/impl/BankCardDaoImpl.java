@@ -9,7 +9,6 @@ import com.utime.household.common.mapper.CommonMapper;
 import com.utime.household.config.dao.BankCardDao;
 import com.utime.household.config.mapper.BankCardMapper;
 import com.utime.household.config.vo.BankCardVO;
-import com.utime.household.root.vo.EInputBankCard;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -63,9 +62,9 @@ class BankCardDaoImpl implements BankCardDao{
 	}
 	
 	@Override
-	public BankCardVO getBankCard(EInputBankCard inputBC) {
+	public BankCardVO getBankCard(long no) {
 		
-		return mapper.getBankCard( inputBC );
+		return mapper.getBankCard( no );
 	}
 	
 	@Override

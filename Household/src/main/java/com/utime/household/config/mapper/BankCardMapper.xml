@@ -67,7 +67,7 @@
 		WHERE NO = #{no}
 	</update>
 	
-	<!-- EInputBankCard 일치하는 정보 조회 -->
+	<!-- 정보 조회 -->
 	<select id="getBankCard" parameterType="map" resultMap="BankCardVoMap">
 		SELECT
 			NO
@@ -75,7 +75,7 @@
 			, NAME
 			, ENUM_NAME
 		FROM HH_BANK_CARD
-		WHERE ENUM_NAME = #{inputBC}
+		WHERE NO = #{no}
 	</select>
 	
 	<!-- 삭제 -->

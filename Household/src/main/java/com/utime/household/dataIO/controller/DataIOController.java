@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.utime.household.config.service.BankCardService;
 import com.utime.household.config.service.StoreService;
 import com.utime.household.dataIO.service.DataIOService;
-import com.utime.household.root.vo.EInputBankCard;
 import com.utime.household.root.vo.HouseholdDataListResVO;
 
 import lombok.RequiredArgsConstructor;
@@ -38,16 +37,16 @@ public class DataIOController {
 //	}
 	
 	@RequestMapping(value = {"UploadResult.html"}, method = RequestMethod.POST)
-	public String rootUploadFile(ModelMap model, @RequestParam("bankCard") EInputBankCard bankCard, @RequestParam("uploadFile") MultipartFile file) {
+	public String rootUploadFile(ModelMap model, @RequestParam("bankCard") long bankCardNo, @RequestParam("uploadFile") MultipartFile file) {
 		
-		final HouseholdDataListResVO res = service.upload(bankCard, file );
+		final HouseholdDataListResVO res = service.upload(bankCardNo, file );
 		if( res.isError() ) {
 			model.addAttribute("res", res);
 			return "common/error";
 		}
 		
 		model.addAttribute("list", res.getList());
-		model.addAttribute("bankCard", bankCard);
+		model.addAttribute("bankCard", res.getBcVo());
 		model.addAttribute("listCategory", stService.getCategoryList());
 		
 		return "data/uploadResult";

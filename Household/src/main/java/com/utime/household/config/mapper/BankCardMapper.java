@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.utime.household.config.vo.BankCardVO;
-import com.utime.household.root.vo.EInputBankCard;
 
 /**
  * 카드 은행 Mapper
@@ -29,11 +28,11 @@ public interface BankCardMapper {
 	
 	
 	/**
-	 * EInputBankCard 일치하는 정보 조회
+	 * 정보 조회
 	 * @param inputBC
 	 * @return
 	 */
-	BankCardVO getBankCard( @Param("inputBC") EInputBankCard inputBC );
+	BankCardVO getBankCard( @Param("no") long no );
 	
 	/**
 	 * 추가하기 전 동일 정보 체크

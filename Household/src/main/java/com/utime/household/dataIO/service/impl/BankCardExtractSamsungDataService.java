@@ -18,13 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.common.util.PoiUtil;
-import com.utime.household.config.dao.BankCardDao;
 import com.utime.household.config.dao.CategoryDao;
 import com.utime.household.config.dao.StoreDao;
 import com.utime.household.config.vo.BankCardVO;
 import com.utime.household.config.vo.CategoryVO;
 import com.utime.household.config.vo.StoreVO;
-import com.utime.household.root.vo.EInputBankCard;
 import com.utime.household.root.vo.HouseholdDataListResVO;
 import com.utime.household.root.vo.HouseholdDataVO;
 import com.utime.household.root.vo.InputBankCardDefine;
@@ -37,20 +35,13 @@ import lombok.extern.slf4j.Slf4j;
 @Service(InputBankCardDefine.NameSamsung)
 class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 
-	private final BankCardDao bcDao;
 	private final StoreDao storeDao;
 	private final CategoryDao ctDao;
 	
 	@Override
-	public HouseholdDataListResVO extractData(MultipartFile file) throws Exception {
+	public HouseholdDataListResVO extractData(BankCardVO bcVo, MultipartFile file) throws Exception {
 		
 		final HouseholdDataListResVO result = new HouseholdDataListResVO();
-		
-		final BankCardVO bcVo = bcDao.getBankCard( EInputBankCard.Samsung );
-		if( bcVo == null ) {
-			result.setCodeMessage("EBCESDS0A1", "삼성카드 등록이 필요합니다.");
-			return result;
-		}
 		
 	    final String extension = FilenameUtils.getExtension( file.getOriginalFilename() );
 

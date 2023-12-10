@@ -2,7 +2,6 @@ package com.utime.household.dataIO.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.utime.household.root.vo.EInputBankCard;
 import com.utime.household.root.vo.HouseholdDataListResVO;
 
 /**
@@ -10,5 +9,11 @@ import com.utime.household.root.vo.HouseholdDataListResVO;
  */
 public interface DataIOService {
 	
-	HouseholdDataListResVO upload(EInputBankCard bankCard, MultipartFile file);
+	/**
+	 * 데이터 분석
+	 * @param bankCardNo
+	 * @param file
+	 * @return
+	 */
+	HouseholdDataListResVO upload(long bankCardNo, MultipartFile file);
 }

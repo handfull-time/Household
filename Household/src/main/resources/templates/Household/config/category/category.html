@@ -7,6 +7,11 @@
 
 <!-- index.html 고유 CSS 추가 -->
 <th:block layout:fragment="css">
+	<style>
+	.custom-width-input {
+	    width: auto; /* 또는 필요한 너비로 조절 */
+	}
+	</style>
 </th:block>
 
 <!-- index.html 고유 스크립트 추가 -->
@@ -22,6 +27,7 @@
  		$('#DataTableCategory').DataTable({
 	        "processing": false,
 	        "paging": true,
+	        "pageLength": 50,
 		});
 		
  		if( insertRes != null && insertRes.code != "0"){
@@ -107,6 +113,31 @@
 	    	
 		});
 	}
+	
+	function onChangeCType(selectElement) {
+		// 선택된 cType 값 가져오기
+	    const selectedCType = selectElement.value; 
+	    const table = document.getElementById('DataTableCategory');
+	    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+	    if( selectedCType === 'null' ){
+	    	// 전체 보기
+		    for (let row of rows ) {
+		        row.style.display = 'block';
+		    }
+		    return;
+	    }
+	    
+	    for (let row of rows ) {
+	    	const ctypeAttribute = row.cells[0].getAttribute('ctype');
+	    	
+	    	if (ctypeAttribute === selectedCType) {
+	            row.style.display = 'block';
+	        }else{
+	        	row.style.display = 'none';
+	        }
+	    }
+	}
 	</script>
 
 </th:block>
@@ -120,7 +151,8 @@
 				<div class="card-body">
 					<div class="form-group">
 						<label for="selectCategoryType">종류<font color="red">*</font></label>
-						<select name="cType" class="form-control" id="selectCategoryType">
+						<select name="cType" class="form-control custom-width-input" id="selectCategoryType" onchange="onChangeCType(this)">
+							<option value="null">전체</option>
 							<option th:each="item : ${cTypes}" th:value="${item}"
 								th:text="${item.dscr}"></option>
 						</select>
@@ -130,7 +162,7 @@
 				<div class="card-body">
 					<div class="form-group">
 	                    <label for="txtName">이름<font color="red">*</font></label>
-	                    <input type="text" class="form-control" id="txtName" name="name" placeholder="이름 입력" required>
+	                    <input type="text" class="form-control custom-width-input" id="txtName" name="name" placeholder="이름 입력" required>
 					</div>
 				</div>
 

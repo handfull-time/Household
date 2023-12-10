@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.utime.household.config.service.BankCardService;
 import com.utime.household.config.service.StoreService;
 import com.utime.household.dataIO.service.DataIOService;
-import com.utime.household.root.vo.HouseholdDataListResVO;
+import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 
 import lombok.RequiredArgsConstructor;
 

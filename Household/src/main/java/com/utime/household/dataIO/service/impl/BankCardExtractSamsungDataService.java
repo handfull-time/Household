@@ -23,9 +23,9 @@ import com.utime.household.config.dao.StoreDao;
 import com.utime.household.config.vo.BankCardVO;
 import com.utime.household.config.vo.CategoryVO;
 import com.utime.household.config.vo.StoreVO;
-import com.utime.household.root.vo.HouseholdDataListResVO;
-import com.utime.household.root.vo.HouseholdDataVO;
-import com.utime.household.root.vo.InputBankCardDefine;
+import com.utime.household.dataIO.vo.HouseholdDataListResVO;
+import com.utime.household.dataIO.vo.HouseholdDataVO;
+import com.utime.household.dataIO.vo.InputBankCardDefine;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +94,7 @@ class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 	    			
     				final HouseholdDataVO addItem = new HouseholdDataVO();
     				addItem.setBcVo(bcVo);
+    				addItem.setNo( row.getRowNum() );
     				
 	    			try {
 	    				addItem.setDealDate( sdf.parse(dealDate) );

@@ -12,7 +12,7 @@ import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.config.service.BankCardService;
 import com.utime.household.config.vo.BankCardVO;
 import com.utime.household.config.vo.EBankCard;
-import com.utime.household.root.vo.EInputBankCard;
+import com.utime.household.dataIO.vo.EInputBankCard;
 
 import lombok.RequiredArgsConstructor;
 

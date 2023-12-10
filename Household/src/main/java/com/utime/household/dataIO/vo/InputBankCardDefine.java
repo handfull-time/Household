@@ -1,4 +1,4 @@
-package com.utime.household.root.vo;
+package com.utime.household.dataIO.vo;
 
 /**
  * 입력 가능 은행 Bean 이름

@@ -105,18 +105,23 @@ function toastInput(title, message, defaultVal, okAction){
 	});
 }
 
-function toastAlert( title, message ){
-	const toast = toastr.info(message, title, {
-		closeButton: true,
-		allowHtml: false,
-		timeOut: 0,
-		maxOpened: 1,
-		progressBar: false,
-		hideDuration: 100,
-		onclick:function( owner ){
-			// 이 이벤트가 있어야 자동 클리어가 되지 않더라...
-		}
-	});
+function toastAlert( title, message , type = "info") {
 	
+    const toastrOptions = {
+           closeButton: true,
+           allowHtml: false,
+           timeOut: 0,
+           maxOpened: 1,
+           progressBar: false,
+           hideDuration: 100
+       };
+
+    switch (type) {
+        case "info": toastr.info(message, title, toastrOptions); break;
+        case "error": toastr.error(message, title, toastrOptions); break;
+        case "warning": toastr.warning(message, title, toastrOptions); break;
+        case "success": toastr.success(message, title, toastrOptions); break;
+        default: toastr.info(message, title, toastrOptions); break;
+    }
 }
 </script>

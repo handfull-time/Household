@@ -1,6 +1,6 @@
 package com.utime.household.config.vo;
 
-import com.utime.household.root.vo.EInputBankCard;
+import com.utime.household.dataIO.vo.EInputBankCard;
 
 import lombok.Getter;
 import lombok.Setter;

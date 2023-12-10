@@ -1,4 +1,4 @@
-package com.utime.household.root.vo;
+package com.utime.household.dataIO.vo;
 
 public enum EInOut {
 	In("입금"),

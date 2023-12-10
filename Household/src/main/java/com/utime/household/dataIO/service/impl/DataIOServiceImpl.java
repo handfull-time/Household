@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.utime.household.config.dao.BankCardDao;
 import com.utime.household.config.vo.BankCardVO;
 import com.utime.household.dataIO.service.DataIOService;
-import com.utime.household.root.vo.HouseholdDataListResVO;
+import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

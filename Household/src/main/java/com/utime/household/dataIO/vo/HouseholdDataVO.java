@@ -1,4 +1,4 @@
-package com.utime.household.root.vo;
+package com.utime.household.dataIO.vo;
 
 import java.util.Date;
 

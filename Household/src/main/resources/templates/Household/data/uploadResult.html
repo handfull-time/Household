@@ -67,7 +67,7 @@
 
 		
 	 	// '적용' 버튼 클릭 이벤트
-		document.querySelector('.modal-footer .btn-secondary').addEventListener('click', () => {
+		document.querySelector('.modal-footer .btn-success').addEventListener('click', () => {
 		    if (currentRow) {
 		        // 선택된 행의 데이터를 업데이트합니다.
 		        // currentRow.cells[0].textContent = selectBankCard.options[selectBankCard.selectedIndex].text;
@@ -80,13 +80,85 @@
 		});
 	})
 	
+	
+	function getRowData( row ){
+		const cells = row.cells;
+		
+	     
+	    const data = {
+	    	no: -1,
+	    	isChecked:false,
+   	        regDate: "",
+   	        dealDate: "",
+   	        amount: 0,
+   	        enabled: true,
+   	        io: 'In',
+   	        bcVo: { no: 0 },
+   	        store: { no: 0, store: "" },
+   	        category: { no: 0 },
+   	        dscr: ""
+	    };
+
+	    data.no = row.getAttribute('no'); 
+	     
+   	    // 첫 번째 셀 (체크박스)
+   	    const checkbox = cells[0].querySelector('input[type="checkbox"]');
+   	    data.isChecked = checkbox.checked;
+ 
+   	    data.dealDate = cells[1].textContent;
+ 
+   	    const amountText = cells[2].textContent.replace(/[^0-9.-]+/g, ''); // 숫자 및 소수점, 음수 부호만 추출
+   	    data.amount = parseFloat(amountText);
+
+   	    data.enabled = cells[3].getAttribute('enabled') === 'true'; //   textContent.trim() === '포함';
+
+   	    // 입금/출금 종류
+   	    data.category.no = parseInt(cells[5].getAttribute('category.no'), 10);
+
+   	    // 입금/출금 항목
+   	    data.category.name = cells[5].textContent;
+
+   	    // 입금/출금 구분
+   	    data.store.store = cells[6].textContent;
+
+   	    // 사용처
+   	    data.store.no = parseInt(cells[7].getAttribute('store.no'), 10);
+   	    data.store.store = cells[7].textContent;
+
+   	    // 비고
+   	    data.dscr = cells[8].textContent;
+   	    
+		console.info(data);
+		
+		return data;			
+	}
+	
 	let currentRow = null;
 	function showModalLayer(cell){
-		currentRow = cell;
-		console.info( '모달 슈' );
+		const row = cell.closest('tr');
+		currentRow = row;
 		
-		const formElement = document.getElementById('editForm');
-		const inputElement = formElement.elements['ipText'];
+		const data = getRowData( row );
+		
+		const editModal = document.getElementById('editForm');
+		
+		const editDealDate = editModal.querySelector('#editDealDate');
+		editDealDate.textContent = data.dealDate;
+
+		const editDlgOriginStore = editModal.querySelector('#editDlgOriginStore');
+		editDlgOriginStore.textContent = data.store.store;
+		
+		const editInputAmount = editModal.elements['editInputAmount'];
+		editInputAmount.value = data.amount;
+
+		if( data.enabled ){
+			const radioEnabledY = editModal.querySelector('#EditRadioEnabledY'); // '포함' 라디오 버튼
+			radioEnabledY.checked = true;
+		}else{
+			const radioEnabledN = editModal.querySelector('#EditRadioEnabledN'); // '비포함' 라디오 버튼
+			radioEnabledN.checked = true;
+		}
+		
 		
 		$('#editModal').modal('show');
 	}

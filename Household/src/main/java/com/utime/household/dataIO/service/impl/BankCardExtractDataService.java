@@ -3,7 +3,7 @@ package com.utime.household.dataIO.service.impl;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.utime.household.config.vo.BankCardVO;
-import com.utime.household.root.vo.HouseholdDataListResVO;
+import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 
 public interface BankCardExtractDataService {
 

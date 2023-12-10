@@ -80,18 +80,17 @@
 		}
 		
 		function onDelete(button) {
-		    const row = button.closest('tr'); // 현재 행 찾기
+			// 현재 행 찾기
+		    const row = button.closest('tr');
 		    
 		    const data = getRowData( row );
 		    
 		    toastConfirm('Remove', data.name
 					+ ' 삭제하시겠습니까?', function() {
 		    	
-		    	const address = [[@{/Config/BankCard/Remove.json}]];
-		    	
 		    	$.ajax({
 		            type: 'POST',
-		            url: address,
+		            url: /*[[@{/Config/BankCard/Remove.json}]]*/ null,
 		            data: { no: data.no },
 		            dataType: 'json',
 		            success: function(json) {
@@ -184,7 +183,7 @@
 							<td class="text-center" th:attr="inputbc=${data.inputBC}" th:text="${data.inputBC.dscr}"></td>
 							<td class="text-center" th:text="${data.name}"></td>
 							<td class="text-center">
-							    <button type="button" class="btn btn-danger" onclick="onDelete(this)">삭제</button>
+							    <button type="button" class="btn btn-danger btn-sm" onclick="onDelete(this)">삭제</button>
 							</td>
 						</tr>
 					</tbody>

@@ -75,5 +75,9 @@
 		WHERE STORE = #{name}
 	</select>
 	
-	
+	<!-- 삭제 -->
+	<update id="deleteStore" parameterType="com.utime.household.config.vo.StoreVO">
+		DELETE FROM HH_USAGE_STORE
+		WHERE USAGE_STORE_NO = #{no}
+	</update>
 </mapper>

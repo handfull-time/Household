@@ -2,8 +2,11 @@ package com.utime.household.config.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.config.service.StoreService;
@@ -27,20 +30,33 @@ public class StoreController {
 	}
 	
 	@RequestMapping(value="Home.html", method = RequestMethod.GET)
-	public String categoryMain(ModelMap model) {
+	public String storeMain(ModelMap model, @ModelAttribute(value = "res") ReturnBasic res) {
 		
 		model.addAttribute("listStore",  service.getStoreList() );
 		model.addAttribute("listCategory",  service.getCategoryList() );
 		
+		if( res != null )
+			model.addAttribute("res", res );
+		
 		return "config/store/store";
 	}
 	
-	@RequestMapping(value="Home.html", method = RequestMethod.POST, params = {"no", "name"})
-	public String categoryMain(ModelMap model, StoreVO vo) {
+	@RequestMapping(value="Save.html", method = RequestMethod.POST, params = {"no", "name"})
+	public String storeMain(RedirectAttributes redirectAttributes, StoreVO vo) {
 		
-		ReturnBasic res = service.saveStore(vo);
-		model.addAttribute("res", res);
+		final ReturnBasic res = service.saveStore(vo);
+		
+		redirectAttributes.addFlashAttribute("res", res);
 
-		return this.categoryMain(model);
+		return "redirect:/Config/Store/Home.html";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="Remove.json", method = RequestMethod.POST, params = {"no"})
+	public ReturnBasic storeRemove(StoreVO vo) {
+		
+		final ReturnBasic res = service.deleteStore(vo);
+
+		return res;
 	}
 }

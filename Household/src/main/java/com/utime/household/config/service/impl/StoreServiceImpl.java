@@ -52,4 +52,17 @@ class StoreServiceImpl implements StoreService {
 		
 		return result;
 	}
+	
+	@Override
+	public ReturnBasic deleteStore(StoreVO vo) {
+		final ReturnBasic result = new ReturnBasic();
+		try {
+			this.dao.deleteStore(vo);
+		} catch (Exception e) {
+			result.setCodeMessage("ESS0Y1", e.getMessage());
+		}
+		
+		return result;
+	}
+
 }

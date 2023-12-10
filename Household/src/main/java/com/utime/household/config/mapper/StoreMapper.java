@@ -53,4 +53,11 @@ public interface StoreMapper {
 	 * @return
 	 */
 	int updateStore( StoreVO vo );
+	
+	/**
+	 * 삭제
+	 * @param vo
+	 * @return
+	 */
+	int deleteStore( StoreVO vo );
 }

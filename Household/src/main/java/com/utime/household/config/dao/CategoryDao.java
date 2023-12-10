@@ -32,5 +32,12 @@ public interface CategoryDao {
 	 */
 	CategoryVO getCategory( String name );
 	
+	/**
+	 * 삭제
+	 * @param vo
+	 * @return
+	 */
+	int deleteCategory( CategoryVO vo )throws Exception;
+	
 }
 

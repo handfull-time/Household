@@ -11,8 +11,18 @@ public interface StoreService {
 	List<StoreVO> getStoreList();
 	
 	List<CategoryVO> getCategoryList();
-	
+
+	/**
+	 * 저장
+	 * @param vo
+	 * @return
+	 */
 	ReturnBasic saveStore(StoreVO vo);
 
-	
+	/**
+	 * 삭제
+	 * @param vo
+	 * @return
+	 */
+	ReturnBasic deleteStore(StoreVO vo);
 }

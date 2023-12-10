@@ -50,9 +50,8 @@
 		$("#selectCategoryType option:eq(0)").prop("selected", true);
 	}
 	
-	function onClickList(row){
-		
-	    const cells = row.cells;
+	function getRowData( row ){
+		const cells = row.cells;
 
 	    const data = {
 	        no: row.getAttribute('no'),
@@ -60,11 +59,53 @@
 	        name: cells[1].textContent,
 	    };
 	    
-	    console.info(data);
+		console.info(data);
+		
+		return data;			
+	}
+	
+	function onClickList(row){
+		
+		const data = getRowData( row );
 
 		$("#inputNo").val(data.no);
 		$("#txtName").val(data.name);
 	    $("#selectCategoryType").val( data.cType ).prop("selected", true);
+	}
+	
+	function onDelete(button) {
+		// 현재 행 찾기
+	    const row = button.closest('tr');
+	    
+	    const data = getRowData( row );
+	    
+	    toastConfirm('Remove', data.name
+				+ ' 삭제하시겠습니까?', function() {
+	    	
+	    	$.ajax({
+	            type: 'POST',
+	            url: /*[[@{/Config/Category/Remove.json}]]*/ null,
+	            data: { no: data.no },
+	            dataType: 'json',
+	            success: function(json) {
+	                if (json.code === '0') {
+	                	toastAlert('성공', '삭제에 성공했습니다.');
+	                	row.remove();
+	                	onClear();
+	                } else {
+	                	toastAlert('실패', '삭제에 실패했습니다. ' + json.code + ':' + json.message);
+	                }
+	            },
+	            error: function(request, status, error) {
+	            	console.log("code: " + request.status)
+		            console.log("message: " + request.responseText)
+		            console.log("error: " + error);
+	            	
+	            	toastAlert('Error', '삭제 요청 중 오류가 발생했습니다.');
+	            }
+	        });
+	    	
+		});
 	}
 	</script>
 
@@ -72,7 +113,7 @@
 
 <div layout:fragment="content">
     <div class="card shadow mb-4">
-           <form id="FormCategory" method="POST" th:action="@{/Config/Category/Home.html}" target="_self">
+           <form id="FormCategory" method="POST" th:action="@{/Config/Category/Save.html}" target="_self">
             <input type="hidden" name="no" id="inputNo" value="-1">
 			<div class="row  border-bottom-success shadow">
 			
@@ -109,12 +150,16 @@
 						<tr>
 							<th>종류</th>
 							<th>이름</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr th:each="data : ${list}" th:attr="no=${data.no}" onclick="onClickList(this)">
 							<td class="text-center" th:attr="ctype=${data.cType}" th:text="${data.cType.dscr}"></td>
 							<td class="text-center" th:text="${data.name}"></td>
+							<td class="text-center">
+							    <button type="button" class="btn btn-danger btn-sm" onclick="onDelete(this)">삭제</button>
+							</td>
 						</tr>
 					</tbody>
 				</table>

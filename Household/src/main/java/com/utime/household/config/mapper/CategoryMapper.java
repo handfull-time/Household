@@ -54,4 +54,11 @@ public interface CategoryMapper {
 	 * @return
 	 */
 	int updateCategory( CategoryVO vo );
+	
+	/**
+	 * 삭제
+	 * @param vo
+	 * @return
+	 */
+	int deleteCategory( CategoryVO vo );
 }

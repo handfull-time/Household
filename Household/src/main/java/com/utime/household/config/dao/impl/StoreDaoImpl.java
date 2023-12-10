@@ -109,4 +109,10 @@ class StoreDaoImpl implements StoreDao{
 		result = new StoreVO();
 		return result;
 	}
+	
+	@Override
+	@Transactional( rollbackFor = Exception.class )
+	public int deleteStore(StoreVO vo) throws Exception {
+		return mapper.deleteStore(vo);
+	}
 }

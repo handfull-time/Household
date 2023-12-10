@@ -67,4 +67,10 @@ class CategoryDaoImpl implements CategoryDao{
 		
 		return mapper.getCategory( name );
 	}
+	
+	@Override
+	@Transactional( rollbackFor = Exception.class )
+	public int deleteCategory(CategoryVO vo) throws Exception {
+		return mapper.deleteCategory(vo);
+	}
 }

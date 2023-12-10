@@ -72,4 +72,10 @@
 		FROM HH_CATEGORY
 		WHERE NAME = #{name}
 	</select>
+	
+	<!-- 삭제 -->
+	<update id="deleteCategory" parameterType="com.utime.household.config.vo.CategoryVO">
+		DELETE HH_CATEGORY 
+		WHERE NO = #{no}
+	</update>
 </mapper>

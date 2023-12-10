@@ -22,4 +22,11 @@ public interface CategoryService {
 	 * @return
 	 */
 	ReturnBasic saveCategory(CategoryVO vo);
+	
+	/**
+	 * 입출금 항목 삭제
+	 * @param vo
+	 * @return
+	 */
+	ReturnBasic deleteCategory(CategoryVO vo);
 }

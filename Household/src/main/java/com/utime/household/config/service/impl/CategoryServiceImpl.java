@@ -113,4 +113,15 @@ class CategoryServiceImpl implements CategoryService {
 		
 		return result;
 	}
+	
+	@Override
+	public ReturnBasic deleteCategory(CategoryVO vo) {
+		final ReturnBasic result = new ReturnBasic();
+		try {
+			this.dao.deleteCategory(vo);
+		} catch (Exception e) {
+			result.setCodeMessage("ECS0P1", e.getMessage());
+		}
+		return result;
+	}
 }

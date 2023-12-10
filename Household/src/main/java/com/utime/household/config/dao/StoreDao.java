@@ -28,5 +28,13 @@ public interface StoreDao {
 	 */
 	StoreVO getStore( String name );
 	
+	/**
+	 * 삭제
+	 * @param vo
+	 * @return
+	 * @throws Exception
+	 */
+	int deleteStore(StoreVO vo)throws Exception;
+	
 }
 

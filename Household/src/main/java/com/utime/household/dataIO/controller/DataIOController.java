@@ -2,8 +2,9 @@ package com.utime.household.dataIO.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +24,7 @@ public class DataIOController {
 	private final StoreService stService;
 	private final BankCardService bcService;
 	
-	@RequestMapping(value = {"Upload.html"})
+	@GetMapping(value = {"Upload.html"})
 	public String rootUploadShow(ModelMap model) {
 		model.addAttribute("bankCard", bcService.getBankCardList());//EInputBankCard.values()
 		return "data/upload";
@@ -36,7 +37,7 @@ public class DataIOController {
 //		return result;
 //	}
 	
-	@RequestMapping(value = {"UploadResult.html"}, method = RequestMethod.POST)
+	@PostMapping(value = {"UploadResult.html"})
 	public String rootUploadFile(ModelMap model, @RequestParam("bankCard") long bankCardNo, @RequestParam("uploadFile") MultipartFile file) {
 		
 		final HouseholdDataListResVO res = service.upload(bankCardNo, file );
@@ -48,6 +49,7 @@ public class DataIOController {
 		model.addAttribute("list", res.getList());
 		model.addAttribute("bankCard", res.getBcVo());
 		model.addAttribute("listCategory", stService.getCategoryList());
+		model.addAttribute("listStore", stService.getStoreList());
 		
 		return "data/uploadResult";
 	}

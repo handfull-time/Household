@@ -1,6 +1,93 @@
 <!DOCTYPE html>
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="editModal">
 	
+	<style>
+		.hidden {
+		    display: none;
+		}
+	</style>
+	
+	<script type="text/javascript" th:inline="javascript">
+	// Store 데이터
+	const storeData = /*[[${listStore}]]*/ null;
+	
+	function categoryChange( selectEle ){
+		
+		const selectValue = selectEle.value;
+		
+		if( selectValue ){
+			const categoryNo = parseInt(selectValue); 
+			
+			storeSelect.innerHTML = '';
+			
+			storeData.forEach(function (store) {
+	            if (store.categoryNo === categoryNo) {
+	                const option = document.createElement('option');
+	                option.value = store.no; // Store의 no 값을 value로 설정
+	                option.textContent = store.name; // Store의 이름을 옵션 텍스트로 설정
+	                storeSelect.appendChild(option);
+	            }
+	        });
+		} else {
+			populateStoreSelect();
+		}
+	}
+	
+	
+	// 초기 상태에서 모든 Store 데이터를 Store select에 추가하는 함수
+	function populateStoreSelect() {
+	    storeSelect.innerHTML = ''; // 초기화
+	
+	    storeData.forEach(function (store) {
+	        var option = document.createElement('option');
+	        option.value = store.no; // Store의 no 값을 value로 설정
+	        option.textContent = store.name; // Store의 이름을 옵션 텍스트로 설정
+	        storeSelect.appendChild(option);
+	    });
+	}
+
+	function colorChange( inputEle ){
+		const inputValue = inputEle.value;
+		if( inputValue.length < 1 )
+			return false;
+			
+		console.info( 'inputValue', inputValue );
+		
+		const editDlgOriginStore = document.getElementById('editDlgOriginStore');
+		const text = editDlgOriginStore.textContent.toLowerCase(); // 텍스트 내용을 소문자로 변환
+		console.info( 'origin text', text);
+		
+		//const separators = /[ ,_/]/; // 여러 구분자를 포함한 정규 표현식
+    	//const words = text.split(separators); // 정규 표현식을 사용하여 문자열 분할
+
+    	//const uniqueWords = Array.from(new Set(words)); // 중복 제거
+    	//const uniqueWords = Array.from(new Set(text.split(''))); // 각 글자를 중복되지 않게 배열에 담음
+		//console.info( 'uniqueWords', uniqueWords );
+		
+		//uniqueWords.forEach((word) => {
+			
+			//console.info( 'word', word, word.includes(inputValue) , inputValue.includes(word));
+			
+			//if (word.includes(inputValue)) {
+				// 입력 값이 단어에 포함되면 해당 단어의 색상을 빨간색으로 변경
+				//text = text.replace(word, `<span style="color: red;">${word}</span>`);
+				
+				//text = text.replace(new RegExp(`\\b${word}\\b`, 'g'), `<span style="color: red;">${word}</span>`);
+				//console.info( 'text', text);
+			//}
+		//});
+		
+		console.info( 'inputValue', inputValue, 'text', text, text.includes(inputValue) , inputValue.includes(text));
+		
+		if(text.includes(inputValue)){
+			const convertText = text.replace(inputValue, `<span style="color: red;">${inputValue}</span>`);
+			console.info('convertText', convertText);
+			editDlgOriginStore.innerHTML = convertText;
+		}
+		
+	}
+	</script>
+	
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -43,20 +130,33 @@
 					                            </td>
 					                        </tr>
 					                        <tr>
-					                            <th class="text-left" scope="row">입출금 항목<font color="red">*</font></th>
+					                            <th class="text-left" scope="row">입출금 항목</th>
 					                            <td class="text-right">
-					                                <select name="category.no" class="form-control" id="selectCategory">
+					                                <select name="category.no" class="form-control" id="categorySelect" onchange="categoryChange(this)">
+														<option value="">전체</option>
 					                                    <option th:each="item : ${listCategory}" th:value="${item.no}" th:text="${item.name}"></option>
 					                                </select>
 					                            </td>
 					                        </tr>
 					                        <tr>
-					                            <th class="text-left" scope="row">종류<font color="red">*</font></th>
+					                            <th class="text-left" scope="row">사용처</th>
 					                            <td class="text-right">
-					                                <select name="cType" class="form-control" id="selectCategoryType">
-					                                    <option th:each="item : ${cTypes}" th:value="${item}" th:text="${item.dscr}"></option>
+					                                <select name="cType" class="form-control" id="storeSelect">
 					                                </select>
 					                            </td>
+					                        </tr>
+					                        <tr id="editRegKeyword">
+					                            <th class="text-left" scope="row">키워드</th>
+											    <td class="text-right">
+											        <div class="input-group mb-2" style="width: 90%;">
+											            <input type="text" name="regKeyStore" class="form-control " onkeyup="colorChange(this)">
+											            <div class="input-group-append">
+											                <button class="btn btn-success" onclick="registerKeyword()">
+											                    <span class="text">키워드 등록</span>
+											                </button>
+											            </div>
+											        </div>
+											    </td>
 					                        </tr>
 					                    </tbody>
 					                </table>

@@ -62,6 +62,7 @@ public class HouseholdApplication {
 		try {
 			final FileReader fr = new FileReader(f, Charset.forName("UTF-8"));
 			infor = gson.fromJson(fr, RunInfor.class);
+			System.out.println(infor.toString());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			return;

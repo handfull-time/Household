@@ -2,9 +2,10 @@ package com.utime.household.config.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -23,12 +24,12 @@ public class BankCardController {
 	
 	private final BankCardService service;
 	
-	@RequestMapping(value = {"", "/"})
+	@GetMapping(value = {"", "/"})
 	public String goMain() {
 		return "redirect:/Config/BankCard/Home.html";
 	}
 	
-	@RequestMapping(value="Home.html", method = RequestMethod.GET)
+	@GetMapping(value="Home.html")
 	public String bankCardMain(ModelMap model, @ModelAttribute(value = "res") ReturnBasic res) {
 		
 		model.addAttribute("BankCard", EBankCard.values() );
@@ -41,7 +42,7 @@ public class BankCardController {
 		return "config/bankcard/bankcard";
 	}
 	
-	@RequestMapping(value="Save.html", method = RequestMethod.POST, params = {"no", "name", "bc", "inputBC"})
+	@PostMapping(value="Save.html", params = {"no", "name", "bc", "inputBC"})
 	public String bankCardSave(RedirectAttributes redirectAttributes, BankCardVO vo) {
 		
 		final ReturnBasic res = service.saveBankCard(vo);
@@ -52,7 +53,7 @@ public class BankCardController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="Remove.json", method = RequestMethod.POST, params = {"no"})
+	@PostMapping(value="Remove.json", params = {"no"})
 	public ReturnBasic bankCardRemove(BankCardVO vo) {
 		
 		final ReturnBasic res = service.deleteBankCard(vo);

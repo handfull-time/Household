@@ -22,13 +22,16 @@
 	/*<![CDATA[*/
 		const insertRes = /*[[${res}]]*/ null;
 	/*]]>*/
+	
+	let dataTable;
  	$(function () {
  		
- 		$('#DataTableCategory').DataTable({
+ 		dataTable = $('#DataTableCategory').DataTable({
 	        "processing": false,
 	        "paging": true,
 	        "pageLength": 50,
-		});
+    	});
+//	        "searchCols": [{ "search": "" }, { "search": "" } ]
 		
  		if( insertRes != null && insertRes.code != "0"){
  			toastr["error"]("오류", insertRes.code + ' - ' + insertRes.message);
@@ -115,28 +118,20 @@
 	}
 	
 	function onChangeCType(selectElement) {
-		// 선택된 cType 값 가져오기
-	    const selectedCType = selectElement.value; 
-	    const table = document.getElementById('DataTableCategory');
-	    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-
-	    if( selectedCType === 'null' ){
-	    	// 전체 보기
-		    for (let row of rows ) {
-		        row.style.display = 'block';
-		    }
-		    return;
-	    }
 	    
-	    for (let row of rows ) {
-	    	const ctypeAttribute = row.cells[0].getAttribute('ctype');
-	    	
-	    	if (ctypeAttribute === selectedCType) {
-	            row.style.display = 'block';
-	        }else{
-	        	row.style.display = 'none';
-	        }
-	    }
+	    // 선택된 옵션
+	    const selectedCType = selectElement.value;
+	    let selectedText;
+	    if( selectedCType === 'null'){
+			selectedText = '';
+		}else{
+			const selectedOption = selectElement.options[selectElement.selectedIndex]; 
+	    	selectedText = selectedOption.textContent;
+		}
+	    
+	    console.info('selectedText', selectedText );
+	    
+	    dataTable.column(0).search( selectedText ).draw(); 
 	}
 	</script>
 

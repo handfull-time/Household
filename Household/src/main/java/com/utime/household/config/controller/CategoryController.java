@@ -2,9 +2,10 @@ package com.utime.household.config.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -22,12 +23,12 @@ public class CategoryController {
 	
 	private final CategoryService service;
 	
-	@RequestMapping(value = {"", "/"})
+	@GetMapping(value = {"", "/"})
 	public String goMain() {
 		return "redirect:/Config/Category/Home.html";
 	}
 	
-	@RequestMapping(value="Home.html", method = RequestMethod.GET)
+	@GetMapping(value="Home.html")
 	public String categoryMain(ModelMap model, @ModelAttribute(value = "res") ReturnBasic res) {
 		
 		model.addAttribute("list",  service.getCategoryList() );
@@ -39,7 +40,7 @@ public class CategoryController {
 		return "config/category/category";
 	}
 	
-	@RequestMapping(value="Save.html", method = RequestMethod.POST, params = {"no", "name"})
+	@PostMapping(value="Save.html", params = {"no", "name"})
 	public String categorySave(RedirectAttributes redirectAttributes, CategoryVO vo) {
 		
 		final ReturnBasic res = service.saveCategory(vo);
@@ -50,7 +51,7 @@ public class CategoryController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="Remove.json", method = RequestMethod.POST, params = {"no"})
+	@PostMapping(value="Remove.json", params = {"no"})
 	public ReturnBasic categoryRemove(CategoryVO vo) {
 		
 		final ReturnBasic res = service.deleteCategory(vo);

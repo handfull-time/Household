@@ -19,13 +19,8 @@
 
 	<script type="text/javascript" th:inline="javascript">
 
-	let isEditLayerShow = false;
-	let isEditLyaerInput = false;
+	let currentRow = null;
 	
-	let input = null;
-	let layerEditRadio = null;
-	//let editRadioLayer = null;
-
     $(function () {
 		console.info('걍...');
 		
@@ -68,11 +63,11 @@
 		
 	 	// '적용' 버튼 클릭 이벤트
 		document.querySelector('.modal-footer .btn-success').addEventListener('click', () => {
+			console.info( '적용 버튼 클릭 이벤트' );
 		    if (currentRow) {
 		        // 선택된 행의 데이터를 업데이트합니다.
 		        // currentRow.cells[0].textContent = selectBankCard.options[selectBankCard.selectedIndex].text;
 		        // currentRow.cells[1].textContent = selectCategoryType.options[selectCategoryType.selectedIndex].text;
-				console.info( '적용 버튼 클릭 이벤트' );
 				currentRow = null;
 		        // 모달을 숨깁니다.
 		        $('#editModal').modal('hide');
@@ -133,7 +128,6 @@
 		return data;			
 	}
 	
-	let currentRow = null;
 	function showModalLayer(cell){
 		const row = cell.closest('tr');
 		currentRow = row;
@@ -159,6 +153,22 @@
 			radioEnabledN.checked = true;
 		}
 		
+		const categorySelect = editModal.elements['categorySelect'];
+		const editRegKeyword = editModal.querySelector('#editRegKeyword');
+
+		if( data.category.no > -1 ){
+			categorySelect.value = data.category.no;
+			
+			categoryChange( categorySelect );
+			
+			const storeSelect = editModal.elements['storeSelect'];
+			storeSelect.value = data.store.no;
+			editRegKeyword.classList.add('hidden');
+		}else{
+			categorySelect.value = '';
+			editRegKeyword.classList.remove('hidden');
+			populateStoreSelect();
+		}
 		
 		$('#editModal').modal('show');
 	}

@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.utime.household.config.service.BankCardService;
 import com.utime.household.config.service.StoreService;
+import com.utime.household.config.vo.ECategoryType;
 import com.utime.household.dataIO.service.DataIOService;
 import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 
@@ -48,6 +49,7 @@ public class DataIOController {
 		
 		model.addAttribute("list", res.getList());
 		model.addAttribute("bankCard", res.getBcVo());
+		model.addAttribute("listCategoryType", ECategoryType.values() );
 		model.addAttribute("listCategory", stService.getCategoryList());
 		model.addAttribute("listStore", stService.getStoreList());
 		

@@ -105,23 +105,26 @@ function toastInput(title, message, defaultVal, okAction){
 	});
 }
 
+const toastrAlertOptions = {
+    closeButton: true,
+    allowHtml: false,
+    timeOut: 2000,
+    maxOpened: 1,
+    progressBar: false,
+    hideDuration: 400,
+    hideMethod: 'slideUp',
+    showDuration: 400,
+    showMethod: 'slideDown'
+};
+
 function toastAlert( title, message , type = "info") {
 	
-    const toastrOptions = {
-           closeButton: true,
-           allowHtml: false,
-           timeOut: 0,
-           maxOpened: 1,
-           progressBar: false,
-           hideDuration: 100
-       };
-
     switch (type) {
-        case "info": toastr.info(message, title, toastrOptions); break;
-        case "error": toastr.error(message, title, toastrOptions); break;
-        case "warning": toastr.warning(message, title, toastrOptions); break;
-        case "success": toastr.success(message, title, toastrOptions); break;
-        default: toastr.info(message, title, toastrOptions); break;
+        case "info": toastr.info(message, title, toastrAlertOptions); break;
+        case "error": toastr.error(message, title, toastrAlertOptions); break;
+        case "warning": toastr.warning(message, title, toastrAlertOptions); break;
+        case "success": toastr.success(message, title, toastrAlertOptions); break;
+        default: toastr.info(message, title, toastrAlertOptions); break;
     }
 }
 </script>

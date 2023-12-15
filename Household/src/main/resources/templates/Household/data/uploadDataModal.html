@@ -1,23 +1,58 @@
 <!DOCTYPE html>
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="editModal">
 	
-	<style>
+	<style type="text/css">
 		.hidden {
 		    display: none;
+		}
+		.modal-header {
+		    cursor: move;
 		}
 	</style>
 	
 	<script type="text/javascript" th:inline="javascript">
+	
+	$(document).ready(function () {
+        $("#editModal").draggable({
+            handle: ".modal-header"
+        });
+    });
+	
 	// Store 데이터
 	const storeData = /*[[${listStore}]]*/ null;
+	const categoryList = /*[[${listCategory}]]*/ null;
 	
-	function categoryChange( selectEle ){
+	function categoryTypeChange(selectCateType){
+		const selectValue = selectCateType.value;
 		
-		const selectValue = selectEle.value;
+		const categorySelect = document.getElementById('categorySelect');
+		categorySelect.innerHTML = '';
+		
+        const option = document.createElement('option');
+        option.value = ''; 
+        option.textContent = '전체';
+        categorySelect.appendChild(option);
+        
+		categoryList.forEach(function (category) {
+            if (category.ctype === selectValue) {
+                const option = document.createElement('option');
+                option.value = category.no; 
+                option.textContent = category.name;
+                categorySelect.appendChild(option);
+            }
+        });
+		
+		categoryChange( categorySelect );
+	}
+	
+	function categoryChange( selectCate ){
+		
+		const selectValue = selectCate.value;
 		
 		if( selectValue ){
 			const categoryNo = parseInt(selectValue); 
 			
+			const storeSelect = document.getElementById('storeSelect');
 			storeSelect.innerHTML = '';
 			
 			storeData.forEach(function (store) {
@@ -33,9 +68,9 @@
 		}
 	}
 	
-	
 	// 초기 상태에서 모든 Store 데이터를 Store select에 추가하는 함수
 	function populateStoreSelect() {
+		const storeSelect = document.getElementById('storeSelect');
 	    storeSelect.innerHTML = ''; // 초기화
 	
 	    storeData.forEach(function (store) {
@@ -47,15 +82,50 @@
 	}
 
 	function colorChange( inputEle ){
+		
+		const editDlgOriginStore = document.getElementById('editDlgOriginStore');
+
 		const inputValue = inputEle.value;
-		if( inputValue.length < 1 )
+		if( inputValue.length < 1 ){
+			editDlgOriginStore.innerHTML = editDlgOriginStore.getAttribute('org_data');
 			return false;
+		}
+		
+		const btnRegKeyStore = document.getElementById('btnRegKeyStore');
+		
+		let sameData = null;
+		for (let data of storeData ) {
+	        if (data.name === inputValue) {
+	        	sameData = data;
+	        	break;
+	        }
+	    }
+		
+		if( sameData !== null ){
+			console.info( 'same data', sameData);
+			
+			const categorySelect = document.getElementById('categorySelect');
+			const selectedOptions = categorySelect.options;
+			const categoryNo = sameData.categoryNo;
+			let categoryName = null;
+			for( let option of selectedOptions ){
+				if (option.value == categoryNo) {
+					categoryName = option.text;
+					break;
+				}
+			}
+        	toastAlert( '경고' , '['+categoryName+'] ' + inputValue + ' 같은 값이 있습니다.', 'warning');
+        	btnRegKeyStore.setAttribute('disabled', 'disabled');
+            return false;
+		}
+		
+		
+		btnRegKeyStore.removeAttribute('disabled');
 			
 		console.info( 'inputValue', inputValue );
 		
-		const editDlgOriginStore = document.getElementById('editDlgOriginStore');
 		const text = editDlgOriginStore.textContent.toLowerCase(); // 텍스트 내용을 소문자로 변환
-		console.info( 'origin text', text);
+		//console.info( 'origin text', text);
 		
 		//const separators = /[ ,_/]/; // 여러 구분자를 포함한 정규 표현식
     	//const words = text.split(separators); // 정규 표현식을 사용하여 문자열 분할
@@ -77,13 +147,58 @@
 			//}
 		//});
 		
-		console.info( 'inputValue', inputValue, 'text', text, text.includes(inputValue) , inputValue.includes(text));
+		//console.info( 'inputValue', inputValue, 'text', text, text.includes(inputValue) , inputValue.includes(text));
 		
 		if(text.includes(inputValue)){
 			const convertText = text.replace(inputValue, `<span style="color: red;">${inputValue}</span>`);
-			console.info('convertText', convertText);
+			//console.info('convertText', convertText);
 			editDlgOriginStore.innerHTML = convertText;
 		}
+		
+	}
+	
+	function registerKeyword(){
+		const regKeyStore = document.getElementById('regKeyStore');
+		const regKeyStoreValue = regKeyStore.value;
+		console.info( 'regKeyStoreValue', regKeyStoreValue);
+		
+		if( regKeyStoreValue.length < 1 ){
+			return false;
+		}
+		
+		const categorySelect = document.getElementById('categorySelect');
+		const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+		console.info( 'selectedOption', selectedOption);
+		if( selectedOption.value.length < 1 ){
+			toastAlert( '경고' , '입출금 항목 ['+selectedOption.text+']는 추가 할 수 없습니다.', 'warning');
+			return false;
+		}
+
+		toastConfirm( '추가', '['+selectedOption.text+'] '+ regKeyStoreValue +' 구분 키워드 추가 하시겠습니까?', function(){
+
+			let minNo = 0;
+			for (let data of storeData ) {
+		        if (data.no > minNo ) {
+		        	minNo = data.no;
+		        }
+		    }
+			
+			minNo -= 1;
+			
+			const addItem = new Object();
+			addItem.no = minNo;
+			addItem.name = regKeyStoreValue;
+			addItem.categoryNo = parseInt( selectedOption.value );
+			
+			storeData.push( addItem );
+			
+			console.info( 'storeData add', addItem);
+			
+			categoryChange( categorySelect );
+			regKeyStore.value = '';
+			const editRegKeyword = document.getElementById('editRegKeyword');
+			editRegKeyword.classList.add('hidden');
+		} );
 		
 	}
 	</script>
@@ -103,7 +218,7 @@
 					    <div class="card">
 					        <div class="card-header py-2">
 					            <p class="lead text-gray"><span id="editDealDate"></span></p> <!-- 원 거래일자 -->
-					            <p class="lead text-gray"><span id="editDlgOriginStore"></span></p> <!-- 원 거래처 -->
+					            <p class="lead text-gray"><span id="editDlgOriginStore" ></span></p> <!-- 원 거래처 -->
 					        </div>
 					
 					        <div class="card-body">
@@ -130,6 +245,14 @@
 					                            </td>
 					                        </tr>
 					                        <tr>
+					                            <th class="text-left" scope="row">입출금 종류</th>
+					                            <td class="text-right">
+					                                <select class="form-control" id="categoryTypeSelect" onchange="categoryTypeChange(this)">
+					                                    <option th:each="item : ${listCategoryType}" th:value="${item}" th:text="${item.dscr}"></option>
+					                                </select>
+					                            </td>
+					                        </tr>
+					                        <tr>
 					                            <th class="text-left" scope="row">입출금 항목</th>
 					                            <td class="text-right">
 					                                <select name="category.no" class="form-control" id="categorySelect" onchange="categoryChange(this)">
@@ -139,24 +262,30 @@
 					                            </td>
 					                        </tr>
 					                        <tr>
-					                            <th class="text-left" scope="row">사용처</th>
+					                            <th class="text-left" scope="row">구분 키워드</th>
 					                            <td class="text-right">
 					                                <select name="cType" class="form-control" id="storeSelect">
 					                                </select>
 					                            </td>
 					                        </tr>
 					                        <tr id="editRegKeyword">
-					                            <th class="text-left" scope="row">키워드</th>
+					                            <th class="text-left" scope="row">추가 키워드</th>
 											    <td class="text-right">
-											        <div class="input-group mb-2" style="width: 90%;">
-											            <input type="text" name="regKeyStore" class="form-control " onkeyup="colorChange(this)">
+											        <div class="input-group mb-2" style="width: 100%;">
+											            <input type="text" id="regKeyStore" class="form-control " onkeyup="colorChange(this)">
 											            <div class="input-group-append">
-											                <button class="btn btn-success" onclick="registerKeyword()">
+											                <button type="button" class="btn btn-success" id="btnRegKeyStore" onclick="registerKeyword()">
 											                    <span class="text">키워드 등록</span>
 											                </button>
 											            </div>
 											        </div>
 											    </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">비고</th>
+					                            <td class="text-right">
+					                                <input type="text" id="editInputDscr" class="form-control border-0 text-left">
+					                            </td>
 					                        </tr>
 					                    </tbody>
 					                </table>
@@ -166,9 +295,7 @@
 					</div>
                 </form>
                 <div class="modal-footer">
-                	<button class="btn btn-success btn-icon-split" type="button" ></button>
-                	
-                	<a class="btn btn-success btn-icon-split" >
+                	<a class="btn btn-success btn-icon-split" onclick="modalSuccessClick()">
                         <span class="icon text-white-50">
                             <i class="fas fa-check-circle"></i>
                         </span>

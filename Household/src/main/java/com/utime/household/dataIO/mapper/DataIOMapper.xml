@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!--//네임스페이스에는 mapper 가 있는 풀 패키지명과 매퍼명을 등록 한다. -->
+<mapper namespace="com.utime.household.dataIO.mapper.DataIOMapper">
+
+	<!-- 추가 -->
+	<insert id="insertHouseholdData" parameterType="com.utime.household.dataIO.vo.HouseholdDataVO">
+		INSERT INTO HH_RECORD (
+			DEAL_DATE <!-- 거래 일자 -->
+			, AMOUNT <!-- 금액 -->
+			, ENABLED<!--  포함 여부 T:포함, F:미포함 -->
+			, IN_OUT <!-- 입/출금 I 입금, O 출금 -->
+			, BANK_CARD_NO <!-- 입금 출금 구분 -->
+			, CATEGORY_NO <!-- 사용처 타입 -->
+			, STORE_NO
+			<if test="store.store != null and store.store != '' ">
+			, CONTENT
+			</if>
+			<if test="dscr != null and dscr != '' ">
+			, DESCRIPTION
+			</if>
+		) VALUES (
+			#{dealDate}
+			, #{amount}
+			, #{enabled, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
+			, #{io}
+			, #{bcVo.no}
+			, #{category.no}
+			, #{store.no}
+			<if test="store.store != null and store.store != '' ">
+			, #{store.store}
+			</if>
+			<if test="dscr != null and dscr != '' ">
+			, #{dscr}
+			</if>
+		)
+	</insert>
+	
+
+	
+</mapper>

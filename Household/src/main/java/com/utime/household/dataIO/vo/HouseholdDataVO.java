@@ -24,8 +24,6 @@ public class HouseholdDataVO {
 	Date regDate;
 	
 	/** 거래 일자 */
-//    @JsonProperty("dealDate")
-//	@JsonFormat(pattern = "yyyy.MM.dd hh:mm")
 	@DateTimeFormat(pattern = "yyyy.MM.dd hh:mm")
 	Date dealDate;
 	
@@ -41,11 +39,11 @@ public class HouseholdDataVO {
 	/** 은행 카드 번호 */
 	BankCardVO bcVo;
 
-	/** 사용처 */
-	StoreVO store;
-	
 	/** 입출금 항목 */
 	CategoryVO category;
+	
+	/** 사용처 */
+	StoreVO store;
 	
 	/** 비고 */
 	String dscr;

@@ -37,6 +37,7 @@
 		} );
 	}
 	
+	// 사용 안 함
 	function _uploadFileAction(){
 		
 		const formData = new FormData($('#FormFileUpload')[0]);
@@ -53,7 +54,7 @@
 	    	processData: false,
 	    	contentType: false,
 	    	enctype : 'multipart/form-data',
-	    	url: "/Upload.json",
+	    	url: /*[[@{/Upload.json}]]*/ null,
 	    	success: function(resJson) {
 	    		console.log(JSON.stringify(resJson));
 	    		if( resJson.code == '0' ){

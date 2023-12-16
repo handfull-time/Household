@@ -6,8 +6,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.utime.household.config.dao.BankCardDao;
 import com.utime.household.config.vo.BankCardVO;
+import com.utime.household.dataIO.dao.DataIODao;
 import com.utime.household.dataIO.service.DataIOService;
 import com.utime.household.dataIO.vo.HouseholdDataListResVO;
+import com.utime.household.dataIO.vo.HouseholdReqDataVO;
+import com.utime.household.dataIO.vo.HouseholdResDataVO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +23,8 @@ class DataIOServiceImpl implements DataIOService{
 	private final ApplicationContext ctx;
 	
 	private final BankCardDao bankCardDao;
+	
+	private final DataIODao ioDao;
 	
 	@Override
 	public HouseholdDataListResVO upload(long bankCardNo, MultipartFile file) {
@@ -52,4 +57,19 @@ class DataIOServiceImpl implements DataIOService{
 	}
 	
 
+	@Override
+	public HouseholdResDataVO addData(HouseholdReqDataVO vo) {
+		final HouseholdResDataVO result = new HouseholdResDataVO();
+		
+		result.setBcVo( bankCardDao.getBankCard(vo.getBcNo()) );
+		
+		try {
+			result.setCount( ioDao.insertHouseholdData( vo.getList() ) );
+		} catch (Exception e) {
+			log.error("", e);
+			result.setCodeMessage("EHS0A2", e.getMessage());
+		}
+		
+		return result;
+	}
 }

@@ -1,5 +1,10 @@
 package com.utime.household.dataIO.controller;
 
+import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,11 +13,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.utime.household.config.service.BankCardService;
 import com.utime.household.config.service.StoreService;
 import com.utime.household.config.vo.ECategoryType;
 import com.utime.household.dataIO.service.DataIOService;
 import com.utime.household.dataIO.vo.HouseholdDataListResVO;
+import com.utime.household.dataIO.vo.HouseholdReqDataVO;
+import com.utime.household.dataIO.vo.HouseholdResDataVO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -55,23 +71,47 @@ public class DataIOController {
 		
 		return "data/uploadResult";
 	}
-	
-	@PostMapping(value = {"SaveData.html"})
-	public String doSaveData(ModelMap model, @RequestParam("bankCard") long bankCardNo, @RequestParam("uploadFile") MultipartFile file) {
+
+	class GsonDateConverter implements JsonSerializer<Date>, JsonDeserializer<Date> {
 		
-		final HouseholdDataListResVO res = service.upload(bankCardNo, file );
+		private static final String FORMAT = "yyyy.MM.dd hh:mm";
+
+		@Override
+		public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+				throws JsonParseException {
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT);
+			try {
+				return json == null ? null : simpleDateFormat.parse(json.getAsString());
+			} catch (ParseException e) {
+				throw new JsonParseException(e);
+			}
+		}
+
+		@Override
+		public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT);
+			return src == null ? null : new JsonPrimitive(simpleDateFormat.format(src));
+		}
+
+	}
+			
+	@PostMapping(value = {"DoSaveData.html"})
+	public String doSaveData(ModelMap model, @RequestParam("jsonData") String json ) {
+		
+		final Gson gson = new GsonBuilder().setPrettyPrinting()
+				.registerTypeAdapter(Date.class, new GsonDateConverter()).create();
+		
+		final HouseholdReqDataVO vo = gson.fromJson(json, HouseholdReqDataVO.class);
+		
+		final HouseholdResDataVO res = service.addData( vo );
+		
 		if( res.isError() ) {
-			model.addAttribute("res", res);
-			return "common/error";
+			return "error";
 		}
 		
-		model.addAttribute("list", res.getList());
-		model.addAttribute("bankCard", res.getBcVo());
-		model.addAttribute("listCategoryType", ECategoryType.values() );
-		model.addAttribute("listCategory", stService.getCategoryList());
-		model.addAttribute("listStore", stService.getStoreList());
+		model.addAttribute("res", res);
 		
-		return "data/uploadResult";
+		return "data/saveResult";
 	}
 
 }

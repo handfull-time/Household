@@ -286,14 +286,62 @@
 
 	    rows.forEach(function(row) {
 	        const data = getRowData( row );
+	        data.regDate = null;
 	    	
 	        if( data.isChecked ){
 	        	sendData.list.push( data );
 	        }
 	    });
 	    
-	    //TODO 페이지 전환 처리 하자.
+
+	    // 서버로 POST 요청을 보냄
+	    //fetch(/*[[@{/IO/DoSaveData.html}]]*/ null, {
+	    /* fetch('/Household/IO/DoSaveData.html', {
+	      method: 'POST',
+	      headers: {
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify(sendData)
+	    })
+	    .then(response => response.text())
+	    .then(html => {
+	        // 서버로부터 받은 HTML을 현재 페이지에 삽입
+	        document.body.innerHTML = html;
+	      })
+	    .catch(error => {
+	        // 네트워크 오류 처리
+	        console.error('Network error:', error);
+	    }); */
 	    
+	    /* $.ajax({
+			type : "POST",
+			url : '/Household/IO/DoSaveData.html',
+			contentType: 'application/json; charset=UTF-8',
+			data : JSON.stringify(sendData),
+			dataType : 'html',
+			success:function (data){
+				document.body.innerHTML = html;
+			},
+			error : function (){
+				alert('error');
+			}
+		}); */
+		
+		// 히든 폼 생성 및 설정
+		const form = document.createElement('form');
+		form.method = 'POST';
+		form.action = '/Household/IO/DoSaveData.html';
+		
+		// JSON 데이터를 히든 폼 필드에 추가
+		const jsonInput = document.createElement('input');
+		jsonInput.type = 'hidden';
+		jsonInput.name = 'jsonData';
+		jsonInput.value = JSON.stringify(sendData);
+		form.appendChild(jsonInput);
+		
+		// 폼을 문서에 추가하고 서버로 제출
+		document.body.appendChild(form);
+		form.submit();
 	}
 	</script>
 

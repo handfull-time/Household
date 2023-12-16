@@ -46,6 +46,24 @@ public class DataIOController {
 			model.addAttribute("res", res);
 			return "common/error";
 		}
+
+		model.addAttribute("list", res.getList());
+		model.addAttribute("bankCard", res.getBcVo());
+		model.addAttribute("listCategoryType", ECategoryType.values() );
+		model.addAttribute("listCategory", stService.getCategoryList());
+		model.addAttribute("listStore", stService.getStoreList());
+		
+		return "data/uploadResult";
+	}
+	
+	@PostMapping(value = {"SaveData.html"})
+	public String doSaveData(ModelMap model, @RequestParam("bankCard") long bankCardNo, @RequestParam("uploadFile") MultipartFile file) {
+		
+		final HouseholdDataListResVO res = service.upload(bankCardNo, file );
+		if( res.isError() ) {
+			model.addAttribute("res", res);
+			return "common/error";
+		}
 		
 		model.addAttribute("list", res.getList());
 		model.addAttribute("bankCard", res.getBcVo());

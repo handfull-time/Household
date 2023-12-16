@@ -9,7 +9,12 @@
 <th:block layout:fragment="css">
 
 	<style type="text/css">
-	
+		#DataTableResult caption {
+	        text-align: right;
+	        right: 0;
+	        top: 0;
+	        padding: 5px;
+	    }
 	</style>
 
 </th:block>
@@ -27,40 +32,36 @@
 		const table = $('#DataTableResult').DataTable({
 			"paging": false,
 			"footerCallback": function(row, data, start, end, display) {
-
-		        /* let totalAmount = 0;
-		        for( let item of data ){
-		        	totalAmount += parseInt( item[2].replace(/[^0-9]/g, '') );
-		        }
-
-		        // 결과를 푸터에 표시
-		        const api = this.api();
-		        $(api.column(2).footer()).html(totalAmount.toLocaleString()); */
 				updateTotalAmount( this, data );
 		    }
 		});
 		
-		// DataTable 초기화
-	    //const table = $('#DataTableResult').DataTable();
+		const tableBody = $('#DataTableResult tbody');
+		const checkAll = $('#checkAll');
+		
+		// 체크박스 초기 상태 결정
+		const allCheckboxes = $('input[type="checkbox"].rowCheckbox', tableBody);
+		const checkedCheckboxes = allCheckboxes.filter(':checked');
+	    checkAll.prop('checked', checkedCheckboxes.length === allCheckboxes.length);
 
-	    // 헤더의 체크박스에 이벤트 리스너 추가
-	    $('#checkAll').on('click', function() {
-	        const rows = table.rows({ 'search': 'applied' }).nodes();
-	        $('input[type="checkbox"]', rows).prop('checked', this.checked);
-	    });
+		// checkAll 체크박스 상태 변경 시
+		checkAll.on('change', function() {
+		    const isChecked = this.checked;
+		    $('input[type="checkbox"].rowCheckbox', tableBody).prop('checked', isChecked);
+		});
 
-	    // 데이터 행의 체크박스에 이벤트 리스너 추가
-	    $('#DataTableResult tbody').on('change', 'input[type="checkbox"].rowCheckbox', function() {
-	        // 헤더 체크박스 상태 업데이트
-	        if (!this.checked) {
-	            const el = $('#checkAll').get(0);
-	            // 행이 하나라도 선택 해제되면 헤더 체크박스도 선택 해제
-	            if (el && el.checked && ('indeterminate' in el)) {
-	                el.indeterminate = true;
-	            }
-	        }
-	    });
-
+		// table body 내의 체크박스 상태 변경 시
+		tableBody.on('change', 'input[type="checkbox"].rowCheckbox', function() {
+		    const allCheckboxes = $('input[type="checkbox"].rowCheckbox', tableBody);
+		    const checkedCheckboxes = allCheckboxes.filter(':checked');
+		    
+		    if (checkedCheckboxes.length === allCheckboxes.length) {
+		        checkAll.prop('checked', true);
+		    } else {
+		        checkAll.prop('checked', false);
+		    }
+		});
+		
 	})
 	
 	function updateTotalAmount(owner, data) {
@@ -88,7 +89,7 @@
 			toastAlert( '경고' , '입출금 항목 ['+selectedOption.text+']는 저장 할 수 없습니다.', 'warning');
 			return false;
 		}
-    	
+		
     	// amount 수정
     	const editInputAmount = editModal.elements['editInputAmount'];
     	const intpuAmount = parseInt(editInputAmount.value, 10);
@@ -126,22 +127,37 @@
     	// 수정된 데이터를 화면에 반영
     	const selectRow = currentRowData.rowData;
     	if (selectRow) {
-    		selectRow.cells[2].textContent = currentRowData.amount;
-    		selectRow.cells[3].setAttribute('enabled', currentRowData.enabled);
-    		selectRow.cells[4].setAttribute('category.type', currentRowData.category.type);
-    		selectRow.cells[4].textContent = currentRowData.category.typeName;
-    		selectRow.cells[5].textContent = currentRowData.category.name;
-    		selectRow.cells[6].textContent = currentRowData.store.store;
-    		selectRow.cells[7].setAttribute('store.no', currentRowData.store.no);
-    		selectRow.cells[8].textContent = currentRowData.dscr;
+    		const cells = selectRow.cells;
+
+    		const checkbox = cells[0].querySelector('input[type="checkbox"]');
+    		checkbox.checked = true;
+
+    		cells[2].textContent = currentRowData.amount;
+    		cells[3].setAttribute('enabled', currentRowData.enabled);
+    		cells[4].setAttribute('category.type', currentRowData.category.type);
+    		cells[4].textContent = currentRowData.category.typeName;
+    		cells[5].textContent = currentRowData.category.name;
+    		cells[6].textContent = currentRowData.store.store;
+    		cells[7].setAttribute('store.no', currentRowData.store.no);
+    		cells[8].textContent = currentRowData.dscr;
     	}
     	
 		currentRowData = null;
 		
 		if( isChangeAmount ){
 			const table = document.getElementById('DataTableResult');
-			const data = $(table).rows().data();
-			updateTotalAmount(table, data);
+		    const tbody = table.querySelector('tbody');
+		    const rows = tbody.querySelectorAll('tr');
+		    let totalAmount = 0;
+
+		    rows.forEach(function(row) {
+		        const amountText = row.cells[2].textContent.replace(/[^\d.-]+/g, '');
+		        const amount = parseInt(amountText, 10);
+		        totalAmount += amount;
+		    });
+
+			const tfootSecondColumn = $('#DataTableResult tfoot td:eq(1)');
+			tfootSecondColumn.text(totalAmount.toLocaleString());
 		}
 	    
         $('#editModal').modal('hide');
@@ -257,12 +273,28 @@
 		$('#editModal').modal('show');
 	}
 	
-	// 모달의 '취소' 버튼이나 외부 영역 클릭 이벤트
-	$('#editModal').on('hidden.bs.modal', function () {
-	    // 필요한 경우 추가적인 정리 작업을 수행합니다.
-		console.info( '외부 영역 클릭 이벤트' );
-	});
-	
+	function doSave(){
+		console.info( '저장' );
+		
+		const sendData = new Object();
+		sendData.bcNo = /*[[${bankCard.no}]]*/ null;
+		sendData.list = [];
+		
+		const table = document.getElementById('DataTableResult');
+	    const tbody = table.querySelector('tbody');
+	    const rows = tbody.querySelectorAll('tr');
+
+	    rows.forEach(function(row) {
+	        const data = getRowData( row );
+	    	
+	        if( data.isChecked ){
+	        	sendData.list.push( data );
+	        }
+	    });
+	    
+	    //TODO 페이지 전환 처리 하자.
+	    
+	}
 	</script>
 
 </th:block>
@@ -272,8 +304,18 @@
 	<div class="card shadow mb-4">
 		<div class="card-body">
 			<div class="table-responsive">
-			
+				<div class="row col-sm-5">
+                    <a class="btn btn-primary btn-icon-split float-left" onclick="doSave()">
+					    <span class="icon text-white-50">
+					        <i class="fas fa-save"></i>
+					    </span>
+					    <span class="text">저장</span>
+					</a>
+	            </div>
 				<table class="table table-bordered" id="DataTableResult" >
+					<caption>
+						[[${bankCard.name}]] 자료 결과
+					</caption>
 					<thead>
 			            <tr>
 			            	<th class="text-center" ><input type="checkbox" id="checkAll" checked="checked"></th>

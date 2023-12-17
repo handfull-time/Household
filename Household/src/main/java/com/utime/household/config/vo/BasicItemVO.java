@@ -10,10 +10,10 @@ import lombok.ToString;
 public class BasicItemVO {
 	
 	/** 고유 번호 */
-	long no;
+	protected long no;
 	
 	/** 이름 */
-	String name;
+	protected String name;
 	
 	public BasicItemVO() {
 		this(-1L, null);

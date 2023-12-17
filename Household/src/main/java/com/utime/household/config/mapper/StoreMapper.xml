@@ -47,7 +47,7 @@
 	</select>
 	
 	<!-- 추가 -->
-	<insert id="insertStore" parameterType="com.utime.household.config.vo.StoreVO">
+	<insert id="insertStore" parameterType="com.utime.household.config.vo.StoreVO" useGeneratedKeys="true" keyProperty="no">
 		INSERT INTO HH_USAGE_STORE (
 			CATEGORY_NO
 			,STORE

@@ -274,25 +274,47 @@
 	}
 	
 	function doSave(){
-		console.info( '저장' );
-		
-		const sendData = new Object();
-		sendData.bcNo = /*[[${bankCard.no}]]*/ null;
-		sendData.list = [];
 		
 		const table = document.getElementById('DataTableResult');
 	    const tbody = table.querySelector('tbody');
 	    const rows = tbody.querySelectorAll('tr');
+	    const sendList = [];
 
+	    
+	    
+	    let missCategoryCount = 0;
 	    rows.forEach(function(row) {
-	        const data = getRowData( row );
+	    	
+	    	const data = getRowData( row );
 	        data.regDate = null;
 	    	
+	        if( data.isChecked && data.categoryNo < 0 ){
+	   	 		missCategoryCount++;
+	   	 	}
+	        
 	        if( data.isChecked ){
-	        	sendData.list.push( data );
+	        	sendList.push( data );
 	        }
+	   	 	
 	    });
+		
+	    if( missCategoryCount > 0 ){
+	    	toastAlert( "경고", "저장할때는 입출금 종류는 필수입니다.", "warning");
+	    	return false;
+	    }
 	    
+		toastConfirm( '저장', '선택한 ' + sendList.size + ' 개 데이터를 저장하시겠습니까?', function(){
+			_doSave( sendList );
+		} );
+	}
+	
+	function _doSave(rows){
+		console.info( '저장' );
+		
+		const sendData = new Object();
+		sendData.bcNo = /*[[${bankCard.no}]]*/ null;
+		sendData.list = sendList;
+		
 
 	    // 서버로 POST 요청을 보냄
 	    //fetch(/*[[@{/IO/DoSaveData.html}]]*/ null, {

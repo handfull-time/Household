@@ -27,4 +27,12 @@ public class StoreVO extends BasicItemVO{
 		super(-1, name);
 		this.categoryNo = cn;
 	}
+	
+	/**
+	 * 이것은 새로 추가할 데이터 인가?
+	 * @return true:그렇다 새로 추가다.
+	 */	
+	public boolean isNew() {
+		return this.categoryNo > -1 && this.no < 0 && this.name != null && ! "".equals(this.name ); 
+	}
 }

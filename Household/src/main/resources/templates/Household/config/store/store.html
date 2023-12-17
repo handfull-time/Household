@@ -40,7 +40,7 @@
  		const isAdd = parseInt( $("#inputNo").val() ) < 0;
 		const name = $("#txtName").val();
 		
- 		toastConfirm( isAdd? 'Add':'Modify', name + (isAdd? ' 추가':' 수정') + '하시겠습니까?', function(){
+ 		toastConfirm( isAdd? '추가':' 수정', name + (isAdd? ' 추가':' 수정') + '하시겠습니까?', function(){
 			event.target.submit();
 		} );
 	}
@@ -150,12 +150,16 @@
 						<tr>
 							<th>구분</th>
 							<th>이름</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr th:each="data : ${listStore}" th:attr="no=${data.no}" onclick="onClickList(this)">
 							<td class="text-center" th:attr="ct_no=${data.categoryNo}" th:text="${data.store}"></td>
 							<td class="text-center" th:text="${data.name}"></td>
+							<td class="text-center">
+							    <button type="button" class="btn btn-danger btn-sm" onclick="onDelete(this)">삭제</button>
+							</td>
 						</tr>
 					</tbody>
 				</table>

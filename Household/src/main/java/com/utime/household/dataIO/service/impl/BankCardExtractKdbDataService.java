@@ -7,6 +7,9 @@ import com.utime.household.config.vo.BankCardVO;
 import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 import com.utime.household.dataIO.vo.InputBankCardDefine;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service(InputBankCardDefine.NameKdb)
 class BankCardExtractKdbDataService implements BankCardExtractDataService{
 

@@ -48,7 +48,7 @@
  		const isAdd = parseInt( $("#inputNo").val() ) < 0;
 		const name = $("#txtName").val();
 		
- 		toastConfirm( isAdd? 'Add':'Modify', name + (isAdd? ' 추가':' 수정') + '하시겠습니까?', function(){
+ 		toastConfirm( isAdd? '추가':' 수정', name + (isAdd? ' 추가':' 수정') + '하시겠습니까?', function(){
 			event.target.submit();
 		} );
 	}

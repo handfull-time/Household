@@ -92,7 +92,7 @@
 		
     	// amount 수정
     	const editInputAmount = editModal.elements['editInputAmount'];
-    	const intpuAmount = parseInt(editInputAmount.value, 10);
+    	const intpuAmount = parseInt(editInputAmount.value.replace(/[^0-9.-]+/g, ''), 10);
     	const isChangeAmount = currentRowData.amount !== intpuAmount;
     	currentRowData.amount = intpuAmount;
 
@@ -190,7 +190,7 @@
    	    data.dealDate = cells[1].textContent;
  
    	    const amountText = cells[2].textContent.replace(/[^0-9.-]+/g, ''); // 숫자 및 소수점, 음수 부호만 추출
-   	    data.amount = parseFloat(amountText);
+   	    data.amount = parseInt(amountText, 10);
 
    	    data.enabled = cells[3].getAttribute('enabled') === 'true'; //   textContent.trim() === '포함';
 
@@ -233,7 +233,7 @@
 		editDlgOriginStore.setAttribute('org_data', data.store.store);
 		
 		const editInputAmount = editModal.elements['editInputAmount'];
-		editInputAmount.value = data.amount;
+		editInputAmount.value = data.amount.toLocaleString();
 
 		if( data.enabled ){
 			const radioEnabledY = editModal.querySelector('#EditRadioEnabledY'); // '포함' 라디오 버튼
@@ -282,14 +282,14 @@
 
 	    
 	    
-	    let missCategoryCount = 0;
+	    let missCategoryData = null;
 	    rows.forEach(function(row) {
 	    	
 	    	const data = getRowData( row );
 	        data.regDate = null;
 	    	
-	        if( data.isChecked && data.categoryNo < 0 ){
-	   	 		missCategoryCount++;
+	        if( data.isChecked && data.category.no < 0 && missCategoryData == null ){
+	        	missCategoryData = data;
 	   	 	}
 	        
 	        if( data.isChecked ){
@@ -298,56 +298,23 @@
 	   	 	
 	    });
 		
-	    if( missCategoryCount > 0 ){
-	    	toastAlert( "경고", "저장할때는 입출금 종류는 필수입니다.", "warning");
+	    if( missCategoryData != null ){
+	    	toastAlert( '경고', '['+missCategoryData.store.store + '] 저장할때는 입출금 종류는 필수입니다.', 'warning');
 	    	return false;
 	    }
 	    
-		toastConfirm( '저장', '선택한 ' + sendList.size + ' 개 데이터를 저장하시겠습니까?', function(){
+		toastConfirm( '저장', '선택한 ' + sendList.length + ' 개 데이터를 저장하시겠습니까?', function(){
 			_doSave( sendList );
 		} );
 	}
 	
-	function _doSave(rows){
+	function _doSave( sendList ){
 		console.info( '저장' );
 		
 		const sendData = new Object();
 		sendData.bcNo = /*[[${bankCard.no}]]*/ null;
 		sendData.list = sendList;
 		
-
-	    // 서버로 POST 요청을 보냄
-	    //fetch(/*[[@{/IO/DoSaveData.html}]]*/ null, {
-	    /* fetch('/Household/IO/DoSaveData.html', {
-	      method: 'POST',
-	      headers: {
-	        'Content-Type': 'application/json'
-	      },
-	      body: JSON.stringify(sendData)
-	    })
-	    .then(response => response.text())
-	    .then(html => {
-	        // 서버로부터 받은 HTML을 현재 페이지에 삽입
-	        document.body.innerHTML = html;
-	      })
-	    .catch(error => {
-	        // 네트워크 오류 처리
-	        console.error('Network error:', error);
-	    }); */
-	    
-	    /* $.ajax({
-			type : "POST",
-			url : '/Household/IO/DoSaveData.html',
-			contentType: 'application/json; charset=UTF-8',
-			data : JSON.stringify(sendData),
-			dataType : 'html',
-			success:function (data){
-				document.body.innerHTML = html;
-			},
-			error : function (){
-				alert('error');
-			}
-		}); */
 		
 		// 히든 폼 생성 및 설정
 		const form = document.createElement('form');

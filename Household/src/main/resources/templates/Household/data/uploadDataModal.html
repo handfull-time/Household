@@ -201,7 +201,25 @@
 		} );
 		
 	}
+	
+	/**
+	 * 숫자 콤마 처리
+	 */
+	function formatAmount(input) {
+      // 입력 값을 가져와 콤마를 제거한 후 숫자로 파싱합니다.
+      const value = input.value.replace(/[^0-9.-]+/g, '');
+      const numberValue = parseInt(value, 10);
+
+      // 숫자로 변환된 값이 유효한 경우, 다시 콤마를 추가하여 표시합니다.
+      if (!isNaN(numberValue)) {
+        input.value = numberValue.toLocaleString();
+      }
+    }
 	</script>
+	
+	<div id="editInputLayer" class="edit-layer" style="display:none;">
+		<input type="text" id="EditInput" class="form-control border-0 text-right" style="padding: 0rem; height:1.5rem;">
+	</div>
 	
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -228,7 +246,7 @@
 					                        <tr>
 					                            <th class="text-left" scope="row">금액</th>
 					                            <td class="text-right">
-					                                <input type="text" id="editInputAmount" class="form-control border-0 text-right">
+					                                <input type="text" id="editInputAmount" class="form-control border-0 text-right" oninput="formatAmount(this)">
 					                            </td>
 					                        </tr>
 					                        <tr>

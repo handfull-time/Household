@@ -350,8 +350,26 @@
             </div>
         </div>
     </div>
+    
+    <!-- 대기용 모달... -->
+	<div class="modal" id="waitingModal" tabindex="-1" role="dialog" aria-labelledby="waitingModalLabel" aria-hidden="true">
+	    <div class="modal-dialog modal-dialog-centered" role="document">
+	        <div class="modal-content">
+	            <div class="modal-body text-center">
+	                <div class="spinner-border" role="status">
+	                    <span class="sr-only">Loading...</span>
+	                </div>
+	                <p>Loading...</p>
+	            </div>
+	        </div>
+	    </div>
+	</div>
 
-
+	<!-- fade용  -->
+	<!-- <div class="modal-backdrop fade" id="waitingBackdrop" style="display:none;"></div> -->
+	
+	<!-- 상세 보기용 모달 layer -->
+	<div id="DetailLayer" style="display:none;"></div>
 </body>
 
 </html>

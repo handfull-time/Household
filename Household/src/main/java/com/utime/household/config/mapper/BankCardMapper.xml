@@ -7,9 +7,10 @@
 	<insert id="createBankCard">
 		CREATE TABLE HH_BANK_CARD (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
-			, BC TEXT(1) CHECK(BC IN ('B', 'C', 'O')) <!-- 카드 은행 구분 B:은행, C:카드, O:기타 -->
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))
+			, BC CHAR(1) CHECK(BC IN ('B', 'C', 'O')) <!-- 카드 은행 구분 B:은행, C:카드, O:기타 -->
 			, NAME TEXT(32) NOT NULL <!-- 이름 -->
-			, ENUM_NAME TEXT(16) DEFAULT NULL <!-- EInputBankCard 값 -->
+			, INPUT_BC TEXT(16) DEFAULT NULL <!-- EInputBankCard 값 -->
 		)
 	</insert>
 	
@@ -17,7 +18,7 @@
 		<id column="NO" property="no" />
 		<id column="BC" property="bc" typeHandler="com.utime.household.config.handler.BankCardTypeHandler" />
 		<id column="NAME" property="name" />
-		<id column="ENUM_NAME" property="inputBC" />
+		<id column="INPUT_BC" property="inputBC"  typeHandler="com.utime.household.config.handler.InputBcTypeHandler" />
 	</resultMap>
 
 	<!-- 카드 은행 목록 조회 -->
@@ -26,8 +27,13 @@
 			NO
 			, BC
 			, NAME
-			, ENUM_NAME
+			, INPUT_BC
 		FROM HH_BANK_CARD
+		WHERE 1=1
+			<if test="bc != null ">
+			AND BC = #{bc, typeHandler=com.utime.household.config.handler.BankCardTypeHandler}
+			</if>
+			AND ENABLED = 'Y'
 		ORDER BY NAME
 	</select>
 	
@@ -42,7 +48,8 @@
 	   	WHERE 1=1
 	   		AND BC = #{bc, typeHandler=com.utime.household.config.handler.BankCardTypeHandler}
 	   		AND NAME = #{name}
-	   		AND ENUM_NAME = #{inputBC}
+	   		AND INPUT_BC = #{inputBC, typeHandler=com.utime.household.config.handler.InputBcTypeHandler}
+	   		AND ENABLED = 'Y'
 	</select>
 	
 	<!-- 추가 -->
@@ -50,11 +57,11 @@
 		INSERT INTO HH_BANK_CARD (
 			BC
 			, NAME
-			, ENUM_NAME
+			, INPUT_BC
 		) VALUES (
 			#{bc, typeHandler=com.utime.household.config.handler.BankCardTypeHandler}
 			, #{name}
-			, #{inputBC}
+			, #{inputBC, typeHandler=com.utime.household.config.handler.InputBcTypeHandler}
 		)
 	</insert>
 	
@@ -63,7 +70,7 @@
 		UPDATE HH_BANK_CARD SET
 			BC = #{bc, typeHandler=com.utime.household.config.handler.BankCardTypeHandler}
 			, NAME = #{name}
-			, ENUM_NAME = #{inputBC}
+			, INPUT_BC = #{inputBC, typeHandler=com.utime.household.config.handler.InputBcTypeHandler}
 		WHERE NO = #{no}
 	</update>
 	
@@ -73,14 +80,15 @@
 			NO
 			, BC
 			, NAME
-			, ENUM_NAME
+			, INPUT_BC
 		FROM HH_BANK_CARD
 		WHERE NO = #{no}
 	</select>
 	
 	<!-- 삭제 -->
-	<update id="deleteBankCard" parameterType="com.utime.household.config.vo.BankCardVO">
-		DELETE FROM HH_BANK_CARD
+	<update id="deleteBankCard" parameterType="map">
+		UPDATE HH_BANK_CARD SET
+			ENABLED = 'N'
 		WHERE NO = #{no}
 	</update>
 	

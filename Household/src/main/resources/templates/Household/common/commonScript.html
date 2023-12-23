@@ -127,4 +127,105 @@ function toastAlert( title, message , type = "info") {
         default: toastr.info(message, title, toastrAlertOptions); break;
     }
 }
+
+function doSearchList(urlAddress, sendData, resultId){
+	$.ajax({
+		type : 'POST',
+		url : urlAddress,
+		data : sendData,
+		dataType : 'html',
+		beforeSend: function(){
+			showWaitingPopupLayer();
+		},
+		success:function(data){ 
+			$('#' + resultId).empty().html(data).show();
+		},
+		error: function(request, status, error) {
+        	console.log('code: ' + request.status);
+            console.log('message: ' + request.responseText);
+            console.log('error: ' + error);
+        	
+        	toastAlert('Error', '오류가 발생했습니다.');
+		},
+		complete: function(){
+			closeWaitingPopupLayer();
+		}
+	});
+}
+
+//대기 중 모달 표시
+function showWaitingPopupLayer() {
+    $('#waitingModal').modal({
+        backdrop: 'static',
+        keyboard: false
+    });
+}
+
+// 대기 중 모달 숨김
+function closeWaitingPopupLayer() {
+    $('#waitingModal').modal('hide');
+}
+
+function onShowModalLayer(urlAddress, sendData, modalId){
+	
+	$.ajax({
+		type : 'POST',
+		url : urlAddress,
+		data : sendData,
+		dataType : 'html',
+		success:function(data){ 
+			$('#DetailLayer').empty().html(data).show();
+			$('#' + modalId).modal('show');
+		},
+		error: function(request, status, error) {
+        	console.log('code: ' + request.status);
+            console.log('message: ' + request.responseText);
+            console.log('error: ' + error);
+        	
+        	toastAlert('Error', '오류가 발생했습니다.');
+		},
+	});
+}
+
+function onHideModalLayer( modalId ){
+	$('#' + modalId).remove();
+	$('.modal-backdrop').remove();
+	$('#DetailLayer').empty().html('').hide();
+}
+
+function onJsonAction(urlAddress, sendData, resultAction){
+	$.ajax({
+        type: 'POST',
+        url: urlAddress,
+        data: sendData,
+        dataType: 'json',
+        success: function(json) {
+        	resultAction( json );
+        },
+        error: function(request, status, error) {
+        	console.log("code: " + request.status);
+            console.log("message: " + request.responseText);
+            console.log("error: " + error);
+        	
+        	toastAlert('Error', '오류가 발생했습니다.');
+        }
+    });
+}
+
+function getFormObject(formId) {
+
+    const form = document.getElementById(formId);
+    
+    const formData = new FormData(form);
+    
+    const formObject = {};
+    formData.forEach((value, key) => {
+        formObject[key] = value;
+    });
+    
+    console.log(formObject);
+    
+    return formObject;
+}
+
 </script>

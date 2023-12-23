@@ -9,6 +9,7 @@ import com.utime.household.common.mapper.CommonMapper;
 import com.utime.household.config.dao.BankCardDao;
 import com.utime.household.config.mapper.BankCardMapper;
 import com.utime.household.config.vo.BankCardVO;
+import com.utime.household.config.vo.EBankCard;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +39,8 @@ class BankCardDaoImpl implements BankCardDao{
 	}
 
 	@Override
-	public List<BankCardVO> getBankCardList() {
-		return mapper.getBankCardList();
+	public List<BankCardVO> getBankCardList(EBankCard bc) {
+		return mapper.getBankCardList(bc);
 	}
 
 	@Override
@@ -68,8 +69,8 @@ class BankCardDaoImpl implements BankCardDao{
 	}
 	
 	@Override
-	public int deleteBankCard(BankCardVO vo) throws Exception {
+	public int deleteBankCard(long no) throws Exception {
 		
-		return mapper.deleteBankCard(vo);
+		return mapper.deleteBankCard(no);
 	}
 }

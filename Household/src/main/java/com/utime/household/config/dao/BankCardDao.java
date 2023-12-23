@@ -3,6 +3,7 @@ package com.utime.household.config.dao;
 import java.util.List;
 
 import com.utime.household.config.vo.BankCardVO;
+import com.utime.household.config.vo.EBankCard;
 
 public interface BankCardDao {
 
@@ -10,7 +11,7 @@ public interface BankCardDao {
 	 * 목록 조회
 	 * @return
 	 */
-	List<BankCardVO> getBankCardList();
+	List<BankCardVO> getBankCardList(EBankCard bc);
 	
 	/**
 	 * 추가
@@ -33,7 +34,7 @@ public interface BankCardDao {
 	 * @return
 	 * @throws Exception
 	 */
-	int deleteBankCard(BankCardVO vo)throws Exception;
+	int deleteBankCard(long no)throws Exception;
 
 }
 

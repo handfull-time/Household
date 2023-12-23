@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<div xmlns:th="http://www.thymeleaf.org">
+	
+	<style type="text/css">
+		.hidden {
+		    display: none;
+		}
+		.modal-header {
+		    cursor: move;
+		}
+	</style>
+	
+	<script type="text/javascript" th:inline="javascript">
+	
+	$(document).ready(function () {
+        $("#editModal").draggable({
+            handle: ".modal-header"
+        });
+        
+        const inputBcList = /*[[${InputBC}]]*/null;
+        console.info( 'inputBcList', inputBcList );
+        
+        const selectBc = document.getElementById('selectBc');
+        selectBc.orgValue = inputBcList;
+
+        const valueToSelect = /*[[${data.bc}]]*/null;
+
+        for (let i = 0; i < selectBc.options.length; i++) {
+            const option = selectBc.options[i];
+            if (option.value === valueToSelect) {
+                option.selected = true;
+                break; // 일치하는 옵션을 찾으면 루프 종료
+            }
+        } 
+        
+        
+        onChangeBankCard( selectBc );
+    });
+	
+	function onChangeBankCard( select ){
+		
+		const selectValue = select.value;
+		const inputBcList = select.orgValue;
+		
+		if( selectValue ){
+			
+			const selectInputBc = document.getElementById('selectInputBc');
+			selectInputBc.innerHTML = '';
+			
+			inputBcList.forEach(function (inputBc) {
+	            if (inputBc.bc === selectValue) {
+	                const option = document.createElement('option');
+	                option.value = inputBc.name;
+	                option.textContent = inputBc.dscr;
+	                selectInputBc.appendChild(option);
+	            }
+	        });
+		} else {
+			populateBankCard(inputBcList);
+		}
+	}
+	
+	// 초기 상태에서 모든 Store 데이터를 Store select에 추가하는 함수
+	function populateBankCard(inputBcList) {
+		const selectInputBc = document.getElementById('selectInputBc');
+		selectInputBc.innerHTML = '';
+		
+		inputBcList.forEach(function (inputBc) {
+			
+            const option = document.createElement('option');
+            option.value = inputBc.name;
+            option.textContent = inputBc.dscr;
+            selectInputBc.appendChild(option);
+        });
+	}
+
+	</script>
+	
+	<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            	
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">내역 수정</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fas fa-times"></i></span>
+                    </button>
+                </div>
+                <form id="editForm">
+                	<input type="hidden" name="no" th:value="${data.no}">
+	                <div class="modal-body">
+					    <div class="card">
+					        <div class="card-body">
+					            <div class="table-responsive">
+					                <table class="table table-borderless">
+					                    <tbody>
+					                        <tr>
+					                            <th class="text-left" scope="row">은행/카드 종류</th>
+					                            <td class="text-right">
+					                                <select name="bc" class="form-control" id="selectBc" onchange="onChangeBankCard(this)">
+														<option 
+															th:each="item : ${BankCard}" 
+															th:value="${item}"
+															th:text="${item.dscr}"
+															th:selected="${item} == ${data.bc}"
+															></option>
+													</select>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">은행/카드 이름</th>
+					                            <td class="text-right">
+					                                <select name="inputBC" class="form-control" id="selectInputBc">
+													</select>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">이름</th>
+					                            <td class="text-left">
+					                                <input type="text" class="form-control border-1" name="name" th:value="${data.name}" required>
+					                            </td>
+					                        </tr>
+					                    </tbody>
+					                </table>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+                </form>
+                <div class="modal-footer">
+                	<a class="btn btn-success btn-icon-split" onclick="modalSuccessClick()">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-check-circle"></i>
+                        </span>
+                        <span class="text">적용</span>
+                    </a>
+
+                	<a class="btn btn-secondary btn-icon-split" data-dismiss="modal">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-times"></i>
+                        </span>
+                        <span class="text">취소</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

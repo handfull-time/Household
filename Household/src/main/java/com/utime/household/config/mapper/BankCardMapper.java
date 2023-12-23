@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.utime.household.config.vo.BankCardVO;
+import com.utime.household.config.vo.EBankCard;
 
 /**
  * 카드 은행 Mapper
@@ -24,7 +25,7 @@ public interface BankCardMapper {
 	 * 카드 은행 목록 조회
 	 * @return
 	 */
-	List<BankCardVO> getBankCardList();
+	List<BankCardVO> getBankCardList(@Param("bc") EBankCard bc);
 	
 	
 	/**
@@ -61,5 +62,5 @@ public interface BankCardMapper {
 	 * @return
 	 * @throws Exception
 	 */
-	int deleteBankCard(BankCardVO vo);
+	int deleteBankCard( @Param("no") long no );
 }

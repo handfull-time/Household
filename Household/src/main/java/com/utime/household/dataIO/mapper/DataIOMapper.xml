@@ -8,7 +8,7 @@
 		INSERT INTO HH_RECORD (
 			DEAL_DATE <!-- 거래 일자 -->
 			, AMOUNT <!-- 금액 -->
-			, ENABLED<!--  포함 여부 T:포함, F:미포함 -->
+			, INCLUDED<!--  포함 여부 T:포함, F:미포함 -->
 			, IN_OUT <!-- 입/출금 I 입금, O 출금 -->
 			, BANK_CARD_NO <!-- 입금 출금 구분 -->
 			, CATEGORY_NO <!-- 사용처 타입 -->
@@ -22,7 +22,7 @@
 		) VALUES (
 			#{dealDate}
 			, #{amount}
-			, #{enabled, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
+			, #{included, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
 			, #{io}
 			, #{bcVo.no}
 			, #{category.no}

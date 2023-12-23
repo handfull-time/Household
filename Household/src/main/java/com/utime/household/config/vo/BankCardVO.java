@@ -1,6 +1,6 @@
 package com.utime.household.config.vo;
 
-import com.utime.household.dataIO.vo.EInputBankCard;
+import com.utime.household.dataIO.vo.InputBankCardItem;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,5 +17,5 @@ public class BankCardVO extends BasicItemVO{
 	EBankCard bc;
 	
 	/** 입출금 매칭 정보 */
-	EInputBankCard inputBC;
+	InputBankCardItem inputBC;
 }

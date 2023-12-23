@@ -31,7 +31,7 @@ public class HouseholdDataVO {
 	int amount;
 	
 	/** 포함 여부 true:포함, false:미포함 */
-	boolean enabled = true;
+	boolean included = true;
 	
 	/** 입출금 여부 */
 	EInOut io;

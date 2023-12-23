@@ -29,7 +29,7 @@
 			const sendObj = { no: no};
 			const resultId = 'DetailLayer';
 			
-			onShowModalLayer( /*[[@{/Config/BankCard/Detail.layer}]]*/null, sendObj, 'editModal' );
+			onShowModalLayer( /*[[@{/Config/BankCard/Detail.layer}]]*/null, sendObj, 'editBankCardModal' );
 		}
 
 		function onDelete(no, name) {
@@ -59,18 +59,21 @@
 			const title = isAdd? '추가':'수정';
 			const message = data.name + ' ' + title + '하시겠습니까?';
 			
-			
 			toastConfirm(title, message, function() {
-				onJsonAction( /*[[@{/Config/BankCard/Save.json}]]*/ null, data, function(json){
-					if (json.code === '0') {
-						onHideModalLayer('editModal');
-						
-	                	toastAlert('성공', name + ' ' + title + ' 성공했습니다.');
-	                	doSearch();
-	                } else {
-	                	toastAlert('실패', name + ' ' + title + ' 실패했습니다. ' + json.code + ':' + json.message);
-	                }
-				});
+				_onSave(title, data);
+			});
+		}
+		
+		function _onSave(title, data){
+			onJsonAction( /*[[@{/Config/BankCard/Save.json}]]*/ null, data, function(json){
+				if (json.code === '0') {
+					onHideModalLayer('editBankCardModal');
+					
+                	toastAlert('성공', data.name + ' ' + title + ' 성공했습니다.');
+                	doSearch();
+                } else {
+                	toastAlert('실패', data.name + ' ' + title + ' 실패했습니다. ' + json.code + ':' + json.message);
+                }
 			});
 		}
 	</script>

@@ -128,6 +128,14 @@ function toastAlert( title, message , type = "info") {
     }
 }
 
+function _ajaxError(request, status, error) {
+	console.log('code: ' + request.status);
+    console.log('message: ' + request.responseText);
+    console.log('error: ' + error);
+	
+	toastAlert('Error', '오류가 발생했습니다.');	
+}
+
 function doSearchList(urlAddress, sendData, resultId){
 	$.ajax({
 		type : 'POST',
@@ -140,13 +148,7 @@ function doSearchList(urlAddress, sendData, resultId){
 		success:function(data){ 
 			$('#' + resultId).empty().html(data).show();
 		},
-		error: function(request, status, error) {
-        	console.log('code: ' + request.status);
-            console.log('message: ' + request.responseText);
-            console.log('error: ' + error);
-        	
-        	toastAlert('Error', '오류가 발생했습니다.');
-		},
+		error: _ajaxError,
 		complete: function(){
 			closeWaitingPopupLayer();
 		}
@@ -177,13 +179,7 @@ function onShowModalLayer(urlAddress, sendData, modalId){
 			$('#DetailLayer').empty().html(data).show();
 			$('#' + modalId).modal('show');
 		},
-		error: function(request, status, error) {
-        	console.log('code: ' + request.status);
-            console.log('message: ' + request.responseText);
-            console.log('error: ' + error);
-        	
-        	toastAlert('Error', '오류가 발생했습니다.');
-		},
+		error: _ajaxError,
 	});
 }
 
@@ -202,13 +198,7 @@ function onJsonAction(urlAddress, sendData, resultAction){
         success: function(json) {
         	resultAction( json );
         },
-        error: function(request, status, error) {
-        	console.log("code: " + request.status);
-            console.log("message: " + request.responseText);
-            console.log("error: " + error);
-        	
-        	toastAlert('Error', '오류가 발생했습니다.');
-        }
+        error: _ajaxError
     });
 }
 

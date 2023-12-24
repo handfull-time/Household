@@ -18,15 +18,20 @@
 		<id column="CT" property="cType" typeHandler="com.utime.household.config.handler.ECategoryTypeTypeHandler" />
 		<id column="NAME" property="name" />
 	</resultMap>
+	
+	<sql id="categoryCoulmns">
+		NO
+		, CT
+		, NAME
+	</sql>
 
 	<!-- 카드 은행 목록 조회 -->
 	<select id="getCategoryList" parameterType="map" resultMap="CategoryVoMap">
 		SELECT
-			NO
-			, CT
-			, NAME
+			<include refid="categoryCoulmns"/>
 		FROM HH_CATEGORY
 		WHERE 1=1
+			AND ENABLED = 'Y'
 		<if test="cType != null ">
 			AND CT = #{cType, typeHandler=com.utime.household.config.handler.ECategoryTypeTypeHandler}
 		</if>
@@ -42,6 +47,7 @@
 	   		END AS RES 
 	   	FROM HH_CATEGORY
 	   	WHERE 1=1
+	   		AND ENABLED = 'Y'
 	   		AND NAME = #{name}
 	</select>
 	
@@ -64,19 +70,30 @@
 		WHERE NO = #{no}
 	</update>
 	
-	<!-- EInputCategory 일치하는 정보 조회 -->
-	<select id="getCategory" parameterType="map" resultMap="CategoryVoMap">
+	<!-- 이름으로 정보 조회 -->
+	<select id="getCategoryFromName" parameterType="map" resultMap="CategoryVoMap">
 		SELECT
-			NO
-			, CT
-			, NAME
+			<include refid="categoryCoulmns"/>
 		FROM HH_CATEGORY
-		WHERE NAME = #{name}
+		WHERE 1=1
+			AND ENABLED = 'Y'
+			AND NAME = #{name}
 	</select>
 	
+	<!-- 번호로 정보 조회 -->
+	<select id="getCategoryFromNo" parameterType="map" resultMap="CategoryVoMap">
+		SELECT
+			<include refid="categoryCoulmns"/>
+		FROM HH_CATEGORY
+		WHERE 1=1
+			AND ENABLED = 'Y'
+			AND NO = #{no}
+	</select>
+
 	<!-- 삭제 -->
-	<update id="deleteCategory" parameterType="com.utime.household.config.vo.CategoryVO">
-		DELETE HH_CATEGORY 
+	<update id="deleteCategory" parameterType="map">
+		UPDATE HH_CATEGORY SET
+			ENABLED = 'N'
 		WHERE NO = #{no}
 	</update>
 </mapper>

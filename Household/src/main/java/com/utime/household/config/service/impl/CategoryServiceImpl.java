@@ -92,6 +92,12 @@ class CategoryServiceImpl implements CategoryService {
 		
 		return result;
 	}
+	
+	@Override
+	public List<CategoryVO> getCategoryList(ECategoryType cType) {
+		
+		return dao.getCategoryList(cType);
+	}
 
 	@Override
 	public ReturnBasic saveCategory(CategoryVO vo) {
@@ -115,13 +121,28 @@ class CategoryServiceImpl implements CategoryService {
 	}
 	
 	@Override
-	public ReturnBasic deleteCategory(CategoryVO vo) {
+	public ReturnBasic deleteCategory(long no) {
 		final ReturnBasic result = new ReturnBasic();
 		try {
-			this.dao.deleteCategory(vo);
+			this.dao.deleteCategory(no);
 		} catch (Exception e) {
 			result.setCodeMessage("ECS0P1", e.getMessage());
 		}
+		return result;
+	}
+	
+	@Override
+	public CategoryVO getCategory(long no) {
+		final CategoryVO result;
+		
+		if( no < 0L ) {
+			result = new CategoryVO();
+			result.setNo( no );
+			result.setCType(ECategoryType.Expense);
+		}else {
+			result = this.dao.getCategory(no);
+		}
+		
 		return result;
 	}
 }

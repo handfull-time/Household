@@ -65,12 +65,18 @@ class CategoryDaoImpl implements CategoryDao{
 	@Override
 	public CategoryVO getCategory(String name) {
 		
-		return mapper.getCategory( name );
+		return mapper.getCategoryFromName( name );
+	}
+	
+	@Override
+	public CategoryVO getCategory(long no) {
+		
+		return mapper.getCategoryFromNo( no );
 	}
 	
 	@Override
 	@Transactional( rollbackFor = Exception.class )
-	public int deleteCategory(CategoryVO vo) throws Exception {
-		return mapper.deleteCategory(vo);
+	public int deleteCategory(long no) throws Exception {
+		return mapper.deleteCategory(no);
 	}
 }

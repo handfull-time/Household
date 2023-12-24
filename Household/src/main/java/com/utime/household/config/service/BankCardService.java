@@ -8,10 +8,23 @@ import com.utime.household.config.vo.EBankCard;
 
 public interface BankCardService {
 
+	/**
+	 * 전체 내역 조회
+	 * @return
+	 */
 	List<BankCardVO> getBankCardList();
 	
+	/**
+	 * 내역 조회
+	 * @return
+	 */
 	List<BankCardVO> getBankCardList(EBankCard bc);
 
+	/**
+	 * 저장
+	 * @param vo
+	 * @return
+	 */
 	ReturnBasic saveBankCard(BankCardVO vo);
 	
 	/**

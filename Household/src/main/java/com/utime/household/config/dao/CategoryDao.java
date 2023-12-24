@@ -34,10 +34,17 @@ public interface CategoryDao {
 	
 	/**
 	 * 삭제
-	 * @param vo
+	 * @param no
 	 * @return
 	 */
-	int deleteCategory( CategoryVO vo )throws Exception;
+	int deleteCategory( long no )throws Exception;
+
+	/**
+	 * 상세 정보 조회
+	 * @param no
+	 * @return
+	 */
+	CategoryVO getCategory(long no);
 	
 }
 

@@ -13,51 +13,15 @@
 	<script type="text/javascript" th:inline="javascript">
 	
 	$(document).ready(function () {
-        $("#editBankCardModal").draggable({
+        $("#editCategoryModal").draggable({
             handle: ".modal-header"
         });
         
-        const inputBcList = /*[[${InputBC}]]*/null;
-        console.info( 'inputBcList', inputBcList );
-        
-        const selectBc = document.getElementById('selectBc');
-        selectBc.orgValue = inputBcList;
-
-        const valueToSelect = /*[[${data.bc}]]*/null;
-
-        for (let i = 0; i < selectBc.options.length; i++) {
-            const option = selectBc.options[i];
-            if (option.value === valueToSelect) {
-                option.selected = true;
-                break; // 일치하는 옵션을 찾으면 루프 종료
-            }
-        } 
-        
-        
-        onChangeBankCard( selectBc );
     });
-	
-	function onChangeBankCard( select ){
-		
-		const selectValue = select.value;
-		const inputBcList = select.orgValue;
-		
-		const selectInputBc = document.getElementById('selectInputBc');
-		selectInputBc.innerHTML = '';
-		
-		inputBcList.forEach(function (inputBc) {
-            if (inputBc.bc === selectValue) {
-                const option = document.createElement('option');
-                option.value = inputBc.name;
-                option.textContent = inputBc.dscr;
-                selectInputBc.appendChild(option);
-            }
-        });
-	}
 
 	</script>
 	
-	<div class="modal fade" id="editBankCardModal" tabindex="-1" role="dialog" aria-labelledby="editBankCardModalLabel" aria-hidden="true">
+	<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
             	
@@ -76,22 +40,15 @@
 					                <table class="table table-borderless">
 					                    <tbody>
 					                        <tr>
-					                            <th class="text-left" scope="row">은행/카드 종류</th>
+					                            <th class="text-left" scope="row">종류</th>
 					                            <td class="text-right">
-					                                <select name="bc" class="form-control" id="selectBc" onchange="onChangeBankCard(this)">
+					                                <select name="cType" class="form-control" >
 														<option 
-															th:each="item : ${BankCard}" 
+															th:each="item : ${cTypes}" 
 															th:value="${item}"
 															th:text="${item.dscr}"
-															th:selected="${item} == ${data.bc}"
+															th:selected="${item} == ${data.cType}"
 															></option>
-													</select>
-					                            </td>
-					                        </tr>
-					                        <tr>
-					                            <th class="text-left" scope="row">은행/카드 이름</th>
-					                            <td class="text-right">
-					                                <select name="inputBC" class="form-control" id="selectInputBc">
 													</select>
 					                            </td>
 					                        </tr>

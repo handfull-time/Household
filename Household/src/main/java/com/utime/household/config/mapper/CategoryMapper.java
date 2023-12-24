@@ -28,11 +28,18 @@ public interface CategoryMapper {
 	
 	
 	/**
-	 * EInputCategory 일치하는 정보 조회
+	 * 이름으로 정보 조회
 	 * @param inputBC
 	 * @return
 	 */
-	CategoryVO getCategory( @Param("name") String name );
+	CategoryVO getCategoryFromName( @Param("name") String name );
+	
+	/**
+	 * 번호로 정보 조회
+	 * @param no
+	 * @return
+	 */
+	CategoryVO getCategoryFromNo(@Param("no") long no);
 	
 	/**
 	 * 추가하기 전 동일 정보 체크
@@ -60,5 +67,7 @@ public interface CategoryMapper {
 	 * @param vo
 	 * @return
 	 */
-	int deleteCategory( CategoryVO vo );
+	int deleteCategory( @Param("no") long no );
+
+	
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.config.vo.CategoryVO;
+import com.utime.household.config.vo.ECategoryType;
 
 /**
  * 입출금 항목 서비스
@@ -17,6 +18,12 @@ public interface CategoryService {
 	List<CategoryVO> getCategoryList();
 	
 	/**
+	 * 내역 조회
+	 * @return
+	 */
+	List<CategoryVO> getCategoryList(ECategoryType cType);
+	
+	/**
 	 * 입출금 항목 저장
 	 * @param vo
 	 * @return
@@ -28,5 +35,12 @@ public interface CategoryService {
 	 * @param vo
 	 * @return
 	 */
-	ReturnBasic deleteCategory(CategoryVO vo);
+	ReturnBasic deleteCategory(long no);
+
+	/**
+	 * 상세 정보 조회
+	 * @param no
+	 * @return
+	 */
+	CategoryVO getCategory(long no);
 }

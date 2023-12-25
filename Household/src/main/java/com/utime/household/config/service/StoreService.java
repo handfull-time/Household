@@ -8,8 +8,11 @@ import com.utime.household.config.vo.StoreVO;
 
 public interface StoreService {
 	
+	
 	List<StoreVO> getStoreList();
 	
+	List<StoreVO> getStoreList(long categoryNo);
+
 	List<CategoryVO> getCategoryList();
 
 	/**
@@ -24,5 +27,12 @@ public interface StoreService {
 	 * @param vo
 	 * @return
 	 */
-	ReturnBasic deleteStore(StoreVO vo);
+	ReturnBasic deleteStore(long no);
+
+	/**
+	 * 상세 정보
+	 * @param no
+	 * @return
+	 */
+	StoreVO getStore(long no);
 }

@@ -14,98 +14,65 @@
 
 	<script type="text/javascript" th:inline="javascript">
 
-	/*<![CDATA[*/
-		const insertRes = /*[[${res}]]*/ null;
-	/*]]>*/
- 	$(function () {
- 		
- 		$('#DataTableStore').DataTable({
-	        "processing": false,
-	        "paging": true,
-	        "pageLength": 50,
-		});
-		
- 		if( insertRes != null && insertRes.code != "0"){
- 			toastr["error"]("오류", insertRes.code + ' - ' + insertRes.message);
- 		}
- 		
-		const submitForm = document.querySelector("#FormStore");
-		submitForm.addEventListener("submit", saveInfo);
+ 	$(function() {
+		doSearch();
 	});
-	
-	function saveInfo(event){
- 		//여기서 자동 submit을 막아줍니다.
- 		event.preventDefault(); 
- 		
- 		const isAdd = parseInt( $("#inputNo").val() ) < 0;
-		const name = $("#txtName").val();
-		
- 		toastConfirm( isAdd? '추가':' 수정', name + (isAdd? ' 추가':' 수정') + '하시겠습니까?', function(){
-			event.target.submit();
-		} );
-	}
-	
-	function onClear(){
-		$("#inputNo").val('-1');
-		$("#txtName").val('');
-		$("#selectCategory option:eq(0)").prop("selected", true);
-	}
-	
-	function getRowData( row ){
-		const cells = row.cells;
 
-	    const data = {
-	        no: row.getAttribute('no'),
-	        ctNo: cells[0].getAttribute('ct_no'),
-	        name: cells[1].textContent,
-	    };
+	function doSearch(){
+		const sendData = $('#FormStore' ).serialize();
+		
+		doSearchList(/*[[@{/Config/Store/List.list}]]*/null, sendData, 'listResult' );
+	}
+	
+	function onShowDetail(no){
+		
+		const sendObj = { no: no};
+		
+		onShowModalLayer( /*[[@{/Config/Store/Detail.layer}]]*/null, sendObj, 'editStoreModal' );
+	}
 
-		console.info(data);
-		
-		return data;			
-	}
-	
-	function onClickList(row){
-		
-		const data = getRowData( row );
+	function onDelete(no, name) {
 	    
-		$("#inputNo").val(data.no);
-		$("#txtName").val(data.name);
-	    $("#selectCategory").val( data.ctNo ).prop("selected", true);
-	}
-	
-	function onDelete(button) {
-		// 현재 행 찾기
-	    const row = button.closest('tr');
-	    
-	    const data = getRowData( row );
-	    
-	    toastConfirm('Remove', data.name
+	    toastConfirm('삭제', name
 				+ ' 삭제하시겠습니까?', function() {
-	    	
-	    	$.ajax({
-	            type: 'POST',
-	            url: /*[[@{/Config/Store/Remove.json}]]*/ null,
-	            data: { no: data.no },
-	            dataType: 'json',
-	            success: function(json) {
-	                if (json.code === '0') {
-	                	toastAlert('성공', '삭제에 성공했습니다.');
-	                	row.remove();
-	                	onClear();
-	                } else {
-	                	toastAlert('실패', '삭제에 실패했습니다. ' + json.code + ':' + json.message);
-	                }
-	            },
-	            error: function(request, status, error) {
-	            	console.log("code: " + request.status)
-		            console.log("message: " + request.responseText)
-		            console.log("error: " + error);
-	            	
-	            	toastAlert('Error', '삭제 요청 중 오류가 발생했습니다.');
-	            }
-	        });
-	    	
+	    	_onDelete( no, name );	
+		});
+	}
+	
+	function _onDelete( no, name ){
+		
+		onJsonAction( /*[[@{/Config/Store/Remove.json}]]*/ null, { no: no }, function(json){
+			if (json.code === '0') {
+            	toastAlert('성공', name + ' 삭제 성공했습니다.');
+            	doSearch();
+            } else {
+            	toastAlert('실패', name + ' 삭제 실패했습니다. ' + json.code + ':' + json.message);
+            }
+		});
+	}
+	
+	function modalSuccessClick(){
+		const data = getFormObject( 'editForm' );
+		const isAdd = data.no < 0;
+		
+		const title = isAdd? '추가':'수정';
+		const message = data.name + ' ' + title + '하시겠습니까?';
+		
+		toastConfirm(title, message, function() {
+			_onSave(title, data);
+		});
+	}
+	
+	function _onSave(title, data){
+		onJsonAction( /*[[@{/Config/Store/Save.json}]]*/ null, data, function(json){
+			if (json.code === '0') {
+				onHideModalLayer('editStoreModal');
+				
+            	toastAlert('성공', data.name + ' ' + title + ' 성공했습니다.');
+            	doSearch();
+            } else {
+            	toastAlert('실패', data.name + ' ' + title + ' 실패했습니다. ' + json.code + ':' + json.message);
+            }
 		});
 	}
 	</script>
@@ -114,57 +81,27 @@
 
 <div layout:fragment="content">
 	<div class="card shadow mb-4">
-		<form id="FormStore" method="POST" th:action="@{/Config/Store/Save.html}" target="_self">
-			<input type="hidden" name="no" id="inputNo" value="-1">
+		<form id="FormStore" >
 			<div class="row border-bottom-success shadow">
 			
 				<div class="card-body">
 					<div class="form-group">
-						<label for="selectCategory">입출금 항목<font color="red">*</font></label>
-						<select name="category.no" class="form-control" id="selectCategory" >
+						<label for="selectCategory">입출금 항목</label>
+						<select name="categoryNo" class="form-control" id="selectCategory" onchange="doSearch()">
+							<option value="-1">모두</option>
 							<option th:each="item : ${listCategory}" th:value="${item.no}" th:text="${item.name}"></option>
 						</select>
 					</div>
 				</div>
-
 				<div class="card-body">
 					<div class="form-group">
-						<label for="txtName">이름<font color="red">*</font></label> 
-						<input type="text" class="form-control" id="txtName" name="name" placeholder="이름 입력" required>
-					</div>
-				</div>
-
-				<div class="card-body">
-					<div class="form-group">
-						<button type="button" class="btn btn-primary" onclick="onClear()">초기화</button>
-						<button type="submit" class="btn btn-primary">저장</button>
+						<button type="button" class="btn btn-primary" onclick="onShowDetail(-1)">추가</button>
 					</div>
 				</div>
 			</div>
 		</form>
 
-		<div class="card-body">
-			<div class="table-responsive">
-				<table class="table table-bordered" id="DataTableStore">
-					<thead>
-						<tr>
-							<th>구분</th>
-							<th>이름</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="data : ${listStore}" th:attr="no=${data.no}" onclick="onClickList(this)">
-							<td class="text-center" th:attr="ct_no=${data.categoryNo}" th:text="${data.store}"></td>
-							<td class="text-center" th:text="${data.name}"></td>
-							<td class="text-center">
-							    <button type="button" class="btn btn-danger btn-sm" onclick="onDelete(this)">삭제</button>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
+		<div id="listResult"></div>
 	</div>
 </div>
 

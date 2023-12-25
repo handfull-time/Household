@@ -96,9 +96,9 @@
     	const isChangeAmount = currentRowData.amount !== intpuAmount;
     	currentRowData.amount = intpuAmount;
 
-    	// enabled 수정
-    	const radioEnabledY = editModal.querySelector('#EditRadioEnabledY');
-    	currentRowData.enabled = radioEnabledY.checked;
+    	// included 수정
+    	const radioIncludedY = editModal.querySelector('#EditRadioIncludedY');
+    	currentRowData.included = radioIncludedY.checked;
     	
     	const categoryTypeSelect = editModal.elements['categoryTypeSelect'];
     	const categoryTypeSelected = categoryTypeSelect.options[categoryTypeSelect.selectedIndex];
@@ -133,7 +133,7 @@
     		checkbox.checked = true;
 
     		cells[2].textContent = currentRowData.amount;
-    		cells[3].setAttribute('enabled', currentRowData.enabled);
+    		cells[3].setAttribute('included', currentRowData.included);
     		cells[4].setAttribute('category.type', currentRowData.category.type);
     		cells[4].textContent = currentRowData.category.typeName;
     		cells[5].textContent = currentRowData.category.name;
@@ -173,7 +173,7 @@
    	        regDate: "",
    	        dealDate: "",
    	        amount: 0,
-   	        enabled: true,
+   	        included: true,
    	        io: 'In',
    	        bcVo: { no: 0 },
    	        store: { no: 0, store: '' },
@@ -192,7 +192,7 @@
    	    const amountText = cells[2].textContent.replace(/[^0-9.-]+/g, ''); // 숫자 및 소수점, 음수 부호만 추출
    	    data.amount = parseInt(amountText, 10);
 
-   	    data.enabled = cells[3].getAttribute('enabled') === 'true'; //   textContent.trim() === '포함';
+   	    data.included = cells[3].getAttribute('included') === 'true'; //   textContent.trim() === '포함';
 
    	 	data.category.type = cells[4].getAttribute('category.type'); 
    	    // 입금/출금 종류
@@ -235,12 +235,12 @@
 		const editInputAmount = editModal.elements['editInputAmount'];
 		editInputAmount.value = data.amount.toLocaleString();
 
-		if( data.enabled ){
-			const radioEnabledY = editModal.querySelector('#EditRadioEnabledY'); // '포함' 라디오 버튼
-			radioEnabledY.checked = true;
+		if( data.included ){
+			const radioIncludedY = editModal.querySelector('#EditRadioIncludedY'); // '포함' 라디오 버튼
+			radioIncludedY.checked = true;
 		}else{
-			const radioEnabledN = editModal.querySelector('#EditRadioEnabledN'); // '비포함' 라디오 버튼
-			radioEnabledN.checked = true;
+			const radioIncludedN = editModal.querySelector('#EditRadioIncludedN'); // '비포함' 라디오 버튼
+			radioIncludedN.checked = true;
 		}
 		
 		const categoryTypeSelect = editModal.elements['categoryTypeSelect'];
@@ -371,7 +371,7 @@
 			            	<td class="text-center" ><input type="checkbox" class="rowCheckbox" th:checked="${data.store.categoryNo ne -1}"></td>
 			                <td class="text-center" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd hh:mm')}"></td><!-- 거래 일자 -->
 			                <td class="text-right" th:text="${#numbers.formatDecimal(data.amount, 2, 'COMMA', 0, 'POINT')}"></td><!-- 거래 금액 -->
-			                <td class="text-center" th:attr="enabled=${data.enabled}" th:text="${data.enabled? '포함':'비포함'}"></td><!-- 내역 포함 여부 -->
+			                <td class="text-center" th:attr="included=${data.included}" th:text="${data.included? '포함':'비포함'}"></td><!-- 내역 포함 여부 -->
 			                <th:block th:if="${data.store.categoryNo eq -1}">
 			                <td ></td><!-- 입금/출금 종류 -->
 			                <td th:attr="category.no='-1'"></td><!-- 입금/출금 항목 -->
@@ -382,7 +382,9 @@
 			                <td th:attr="category.no=${data.category.no}" th:text="${data.category.name}"></td><!-- 입금/출금 항목 -->
 			                <td th:text="${data.store.name}"></td><!-- 구분 키워드 -->
 							</th:block>
-			                <td onclick="showModalLayer(this)" th:attr="store.no=${data.store.no}" style="cursor: pointer" th:text="${data.store.store}"></td><!-- 사용처 -->
+			                <td th:attr="store.no=${data.store.no}" > <!-- 사용처 -->
+								<a href="javascript:void(0);" onclick="showModalLayer(this);" th:text="${data.store.store}"></a>
+							</td>
 			                <td th:text="${data.dscr}"></td><!-- 비고 -->
 			            </tr>
 			        </tbody>	

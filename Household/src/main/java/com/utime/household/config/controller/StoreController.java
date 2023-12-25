@@ -3,14 +3,11 @@ package com.utime.household.config.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.config.service.StoreService;
 import com.utime.household.config.vo.StoreVO;
@@ -34,38 +31,74 @@ public class StoreController {
 		return "redirect:/Config/Store/Home.html";
 	}
 	
+//	@GetMapping(value="Home.html")
+//	public String storeMain(ModelMap model, @ModelAttribute(value = "res") ReturnBasic res) {
+//		
+//		model.addAttribute("listStore",  service.getStoreList() );
+//		model.addAttribute("listCategory",  service.getCategoryList() );
+//		
+//		final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//		log.info(gson.toJson( service.getCategoryList() ));
+//		log.info(gson.toJson( service.getStoreList() ));
+//		
+//		
+//		if( res != null )
+//			model.addAttribute("res", res );
+//		
+//		return "config/store/store";
+//	}
+//	
+//	@PostMapping(value="Save.html", params = {"no", "name"})
+//	public String storeMain(RedirectAttributes redirectAttributes, StoreVO vo) {
+//		
+//		final ReturnBasic res = service.saveStore(vo);
+//		
+//		redirectAttributes.addFlashAttribute("res", res);
+//
+//		return "redirect:/Config/Store/Home.html";
+//	}
+	
 	@GetMapping(value="Home.html")
-	public String storeMain(ModelMap model, @ModelAttribute(value = "res") ReturnBasic res) {
+	public String bankCardMain(ModelMap model) {
 		
-		model.addAttribute("listStore",  service.getStoreList() );
 		model.addAttribute("listCategory",  service.getCategoryList() );
-		
-		final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		log.info(gson.toJson( service.getCategoryList() ));
-		log.info(gson.toJson( service.getStoreList() ));
-		
-		
-		if( res != null )
-			model.addAttribute("res", res );
 		
 		return "config/store/store";
 	}
 	
-	@PostMapping(value="Save.html", params = {"no", "name"})
-	public String storeMain(RedirectAttributes redirectAttributes, StoreVO vo) {
+	@PostMapping(value="List.list")
+	public String listBankCard(ModelMap model, @RequestParam(value = "categoryNo", defaultValue = "-1") long categoryNo) {
+		
+		model.addAttribute("listStore",  service.getStoreList(categoryNo) );
+
+		return "config/store/storeList";
+	}
+	
+	
+	@PostMapping(value="Detail.layer")
+	public String DetailBankCardLayer(ModelMap model, @RequestParam(value = "no") long no) {
+		
+		model.addAttribute("listCategory",  service.getCategoryList() );
+		model.addAttribute("data",  service.getStore(no) );
+
+		return "config/store/storeItem";
+	}
+	
+	
+	@ResponseBody
+	@PostMapping(value="Save.json")
+	public ReturnBasic saveBankCard(StoreVO vo) {
 		
 		final ReturnBasic res = service.saveStore(vo);
-		
-		redirectAttributes.addFlashAttribute("res", res);
 
-		return "redirect:/Config/Store/Home.html";
+		return res;
 	}
 	
 	@ResponseBody
-	@PostMapping(value="Remove.json", params = {"no"})
-	public ReturnBasic storeRemove(StoreVO vo) {
+	@PostMapping(value="Remove.json")
+	public ReturnBasic storeRemove(@RequestParam(value = "no") long no) {
 		
-		final ReturnBasic res = service.deleteStore(vo);
+		final ReturnBasic res = service.deleteStore(no);
 
 		return res;
 	}

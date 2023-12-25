@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.utime.household.common.mapper.CommonMapper;
-import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.config.dao.StoreDao;
 import com.utime.household.config.mapper.StoreMapper;
 import com.utime.household.config.vo.StoreVO;
@@ -40,8 +39,13 @@ class StoreDaoImpl implements StoreDao{
 	}
 
 	@Override
+	public List<StoreVO> getStoreList(long categoryNo) {
+		return mapper.getStoreList(categoryNo);
+	}
+
+	@Override
 	public List<StoreVO> getStoreList() {
-		return mapper.getStoreList();
+		return mapper.getStoreList(-1L);
 	}
 
 	@Override
@@ -63,56 +67,15 @@ class StoreDaoImpl implements StoreDao{
 		return result;
 	}
 	
-	private StoreVO getSplit(String name, String key) {
-		StoreVO result = null;
-		if( name.indexOf(key) > 0 ){
-			String [] split = name.split(key);
-			for( String item : split ) {
-				if( HouseholdUtils.isNotEmpty(item) ) {
-					result = mapper.getStore( name );
-	
-					if( result != null ) {
-						return result;
-					}
-				}
-			}
-		}
-		
-		return result;
-		
-	}
-	
 	@Override
-	public StoreVO getStore(String name) {
+	public StoreVO getStore(long no) {
 		
-		StoreVO result;
-		if( HouseholdUtils.isEmpty(name) ) {
-			result = new StoreVO();
-			return result;
-		}
-		
-		result = mapper.getStore( name );
-		if( result != null ) {
-			return result;
-		}
-		
-		result = this.getSplit(name, " ");
-		if( result != null ) {
-			return result;
-		}
-		
-		result = this.getSplit(name, ",");
-		if( result != null ) {
-			return result;
-		}
-		
-		result = new StoreVO();
-		return result;
+		return mapper.getStore(no);
 	}
 	
 	@Override
 	@Transactional( rollbackFor = Exception.class )
-	public int deleteStore(StoreVO vo) throws Exception {
-		return mapper.deleteStore(vo);
+	public int deleteStore(long no) throws Exception {
+		return mapper.deleteStore(no);
 	}
 }

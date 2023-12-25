@@ -23,15 +23,15 @@ public interface StoreMapper {
 	 * 카드 은행 목록 조회
 	 * @return
 	 */
-	List<StoreVO> getStoreList();
+	List<StoreVO> getStoreList(@Param("categoryNo") long categoryNo);
 	
 	
 	/**
-	 * 상점 일치하는 정보 조회
+	 * 상점 상세 정보 조회
 	 * @param name
 	 * @return
 	 */
-	StoreVO getStore( @Param("name") String name );
+	StoreVO getStore( @Param("no") long no);
 	
 	/**
 	 * 추가하기 전 동일 정보 체크
@@ -59,5 +59,5 @@ public interface StoreMapper {
 	 * @param vo
 	 * @return
 	 */
-	int deleteStore( StoreVO vo );
+	int deleteStore( @Param("no") long no );
 }

@@ -21,10 +21,16 @@ class StoreServiceImpl implements StoreService {
 	private final StoreDao dao;
 	
 	private final CategoryDao cd;
-
+	
 	@Override
 	public List<StoreVO> getStoreList() {
 		return dao.getStoreList();
+	}
+	
+
+	@Override
+	public List<StoreVO> getStoreList(long categoryNo) {
+		return dao.getStoreList(categoryNo);
 	}
 	
 	@Override
@@ -54,12 +60,26 @@ class StoreServiceImpl implements StoreService {
 	}
 	
 	@Override
-	public ReturnBasic deleteStore(StoreVO vo) {
+	public ReturnBasic deleteStore(long no) {
 		final ReturnBasic result = new ReturnBasic();
 		try {
-			this.dao.deleteStore(vo);
+			this.dao.deleteStore(no);
 		} catch (Exception e) {
 			result.setCodeMessage("ESS0Y1", e.getMessage());
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public StoreVO getStore(long no) {
+		final StoreVO result;
+		
+		if( no < 0L ) {
+			result = new StoreVO();
+			result.setNo(no);
+		}else {
+			result = this.dao.getStore(no); 
 		}
 		
 		return result;

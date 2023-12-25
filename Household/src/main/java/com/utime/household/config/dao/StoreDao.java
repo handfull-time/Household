@@ -10,8 +10,14 @@ public interface StoreDao {
 	 * 목록 조회
 	 * @return
 	 */
+	List<StoreVO> getStoreList(long categoryNo);
+
+	/**
+	 * 목록 전체 조회
+	 * @return
+	 */
 	List<StoreVO> getStoreList();
-	
+
 	/**
 	 * 추가
 	 * @param vo
@@ -20,13 +26,12 @@ public interface StoreDao {
 	 */
 	int saveStore(StoreVO vo)throws Exception;
 	
-	
 	/**
-	 * EInputBankCard 일치하는 정보 조회
-	 * @param inputBC
+	 * 상세 정보
+	 * @param no
 	 * @return
 	 */
-	StoreVO getStore( String name );
+	StoreVO getStore(long no);
 	
 	/**
 	 * 삭제
@@ -34,7 +39,8 @@ public interface StoreDao {
 	 * @return
 	 * @throws Exception
 	 */
-	int deleteStore(StoreVO vo)throws Exception;
+	int deleteStore(long no)throws Exception;
+
 	
 }
 

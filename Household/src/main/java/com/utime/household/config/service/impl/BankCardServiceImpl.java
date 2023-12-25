@@ -54,7 +54,7 @@ class BankCardServiceImpl implements BankCardService {
 	
 	@Override
 	public BankCardVO getBankCard(long no) {
-		BankCardVO result;
+		final BankCardVO result;
 		
 		if( no < 0L ) {
 			result = new BankCardVO();

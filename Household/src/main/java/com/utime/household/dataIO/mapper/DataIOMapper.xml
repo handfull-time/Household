@@ -22,8 +22,8 @@
 		) VALUES (
 			#{dealDate}
 			, #{amount}
-			, #{included, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
-			, #{io}
+			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
+			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
 			, #{bcVo.no}
 			, #{category.no}
 			, #{store.no}

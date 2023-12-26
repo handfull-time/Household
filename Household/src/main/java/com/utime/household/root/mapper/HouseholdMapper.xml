@@ -12,7 +12,7 @@
 			, REG_DATE DATE DEFAULT (DATETIME('NOW','LOCALTIME')) <!-- 작성 일자 -->
 			, DEAL_DATE DATE NOT NULL <!-- 거래 일자 -->
 			, AMOUNT INTEGER(12) NOT NULL <!-- 금액 -->
-			, INCLUDED CHAR(1) NOT NULL CHECK(ENABLED IN ('T', 'F'))  <!--  포함 여부 T:포함, F:미포함 -->
+			, INCLUDED CHAR(1) NOT NULL CHECK(INCLUDED IN ('T', 'F'))  <!--  포함 여부 T:포함, F:미포함 -->
 			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O')) <!-- 입/출금 I 입금, O 출금 -->
 			, BANK_CARD_NO INTEGER NOT NULL <!-- 입금 출금 구분 -->
 			, CATEGORY_NO INTEGER NOT NULL <!-- 사용처 타입 고유 번호 -->

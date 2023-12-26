@@ -2,6 +2,8 @@ package com.utime.household.config.service.impl;
 
 import java.util.List;
 
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import com.utime.household.common.util.HouseholdUtils;
@@ -36,61 +38,60 @@ class CategoryServiceImpl implements CategoryService {
 		}
 	}
 	
-	private void initData() throws Exception {
+	@EventListener(ApplicationReadyEvent.class)
+	private void handleApplicationReadyEvent() {
 		
-		dao.saveCategory(new CategoryVO("급여", ECategoryType.Income ));
-		dao.saveCategory(new CategoryVO("월세", ECategoryType.Income ));
-		dao.saveCategory(new CategoryVO("저축만기", ECategoryType.Income ));
-		dao.saveCategory(new CategoryVO("환불", ECategoryType.Income ));
-		
-		dao.saveCategory(new CategoryVO("이체", ECategoryType.Saving ));
-		dao.saveCategory(new CategoryVO("적금", ECategoryType.Saving ));
-		dao.saveCategory(new CategoryVO("예금", ECategoryType.Saving ));
+		final int cnt = dao.getCategoryCount();
+		if( cnt > 0 )
+			return;
 
-		dao.saveCategory(new CategoryVO("식비", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("마트", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("교통", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("외식", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("관리", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("통신", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("효도", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("보험", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("세금", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("오락", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("생활", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("교육", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("교양", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("피복", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("회비", ECategoryType.Expense ));
-		dao.saveCategory(new CategoryVO("의료", ECategoryType.Expense ));
-		
-		this.initStore("마트", "마트", "홈플러스");
-		this.initStore("의료", "병원", "약국", "메디팜", "의원", "의료원");
-		this.initStore("교통", "버스", "지하철", "정유", "주유소", "자동차");
-		this.initStore("관리", "관리비", "도시가스");
-		this.initStore("통신", "통신료");
-		this.initStore("회비", "연회비");
-		this.initStore("급여", "급여");
-		this.initStore("월세", "월세");
-		this.initStore("교육", "태권도", "학원");
+		try {
+			dao.saveCategory(new CategoryVO("급여", ECategoryType.Income ));
+			dao.saveCategory(new CategoryVO("월세", ECategoryType.Income ));
+			dao.saveCategory(new CategoryVO("저축만기", ECategoryType.Income ));
+			dao.saveCategory(new CategoryVO("환불", ECategoryType.Income ));
+			
+			dao.saveCategory(new CategoryVO("이체", ECategoryType.Saving ));
+			dao.saveCategory(new CategoryVO("적금", ECategoryType.Saving ));
+			dao.saveCategory(new CategoryVO("예금", ECategoryType.Saving ));
+
+			dao.saveCategory(new CategoryVO("식비", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("마트", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("교통", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("외식", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("관리", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("통신", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("효도", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("보험", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("세금", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("오락", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("생활", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("교육", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("교양", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("피복", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("회비", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("의료", ECategoryType.Expense ));
+			
+			this.initStore("급여", "급여");
+			this.initStore("월세", "월세");
+			this.initStore("마트", "마트", "홈플러스");
+			this.initStore("교통", "버스", "지하철", "정유", "주유소", "자동차");
+			this.initStore("의료", "병원", "약국", "메디팜", "의원", "의료원");
+			this.initStore("관리", "관리비", "도시가스");
+			this.initStore("통신", "통신료");
+			this.initStore("회비", "연회비");
+			this.initStore("교육", "태권도", "학원");
+			
+		} catch (Exception e) {
+			log.error("", e);
+		}
+
 	}
-
+	
 	@Override
 	public List<CategoryVO> getCategoryList() {
 		
-		List<CategoryVO> result = dao.getCategoryList(null);
-		if( result.size() < 1 ) {
-			
-			try {
-				this.initData();
-			} catch (Exception e) {
-				log.error("", e);
-			}
-			
-			result = dao.getCategoryList(null);
-		}
-		
-		return result;
+		return dao.getCategoryList(null);
 	}
 	
 	@Override

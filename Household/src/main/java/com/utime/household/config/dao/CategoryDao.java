@@ -9,6 +9,12 @@ import com.utime.household.config.vo.ECategoryType;
  * 입출금 항목 DAO
  */
 public interface CategoryDao {
+	
+	/**
+	 * 수량
+	 * @return
+	 */
+	int getCategoryCount();
 
 	/**
 	 * 목록 조회
@@ -45,6 +51,8 @@ public interface CategoryDao {
 	 * @return
 	 */
 	CategoryVO getCategory(long no);
+
+	
 	
 }
 

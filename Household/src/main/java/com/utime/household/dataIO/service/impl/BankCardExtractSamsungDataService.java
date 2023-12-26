@@ -23,6 +23,7 @@ import com.utime.household.config.dao.StoreDao;
 import com.utime.household.config.vo.BankCardVO;
 import com.utime.household.config.vo.CategoryVO;
 import com.utime.household.config.vo.StoreVO;
+import com.utime.household.dataIO.vo.EInOut;
 import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 import com.utime.household.dataIO.vo.HouseholdDataVO;
 import com.utime.household.dataIO.vo.InputBankCardDefine;
@@ -115,6 +116,8 @@ class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 	    				if( HouseholdUtils.isNotEmpty(installmentMonth) ) {
 	    					addItem.setDscr( (isDscr? (dscr + ", "):"") + installmentMonth +"개월 (" + installmentCount + "회차)");
 	    				}
+	    				
+	    				addItem.setIo( addItem.getAmount() > 0? EInOut.Out:EInOut.In );
 	    				
 	    				if( addItem.getAmount() != 0 ) {
 	    					list.add(addItem);

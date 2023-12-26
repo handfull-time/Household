@@ -19,6 +19,12 @@ public interface CategoryMapper {
 	 * @return
 	 */
 	public int createCategory();
+	
+	/**
+	 * 수량
+	 * @return
+	 */
+	int getCategoryCount();
 
 	/**
 	 * 카드 은행 목록 조회

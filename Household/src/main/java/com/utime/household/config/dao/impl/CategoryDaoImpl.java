@@ -37,6 +37,11 @@ class CategoryDaoImpl implements CategoryDao{
 			log.error("", e);
 		}
 	}
+	
+	@Override
+	public int getCategoryCount() {
+		return mapper.getCategoryCount();
+	}
 
 	@Override
 	public List<CategoryVO> getCategoryList(ECategoryType cType) {

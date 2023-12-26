@@ -187,7 +187,7 @@
    	    const checkbox = cells[0].querySelector('input[type="checkbox"]');
    	    data.isChecked = checkbox.checked;
  
-   	    data.dealDate = cells[1].textContent;
+   	    data.dealDate = cells[1].textContent.trim();
  
    	    const amountText = cells[2].textContent.replace(/[^0-9.-]+/g, ''); // 숫자 및 소수점, 음수 부호만 추출
    	    data.amount = parseInt(amountText, 10);
@@ -199,17 +199,17 @@
    	    data.category.no = parseInt(cells[5].getAttribute('category.no'), 10);
 
    	    // 입금/출금 항목
-   	    data.category.name = cells[5].textContent;
+   	    data.category.name = cells[5].textContent.trim();
 
    	    // 입금/출금 구분
-   	    data.store.store = cells[6].textContent;
+   	    data.store.store = cells[6].textContent.trim();
 
    	    // 사용처
    	    data.store.no = parseInt(cells[7].getAttribute('store.no'), 10);
-   	    data.store.store = cells[7].textContent;
+   	    data.store.store = cells[7].textContent.trim();
 
    	    // 비고
-   	    data.dscr = cells[8].textContent;
+   	    data.dscr = cells[8].textContent.trim();
    	    
 		console.info(data);
 		

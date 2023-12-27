@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!--//네임스페이스에는 mapper 가 있는 풀 패키지명과 매퍼명을 등록 한다. -->
+<mapper namespace="com.utime.household.environment.mapper.BankCardMapper">
+
+	<!-- 은행 카드 테이블 생성 -->
+	<insert id="createBankCard">
+		CREATE TABLE HH_BANK_CARD (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))
+			, BC CHAR(1) CHECK(BC IN ('B', 'C', 'O')) <!-- 카드 은행 구분 B:은행, C:카드, O:기타 -->
+			, NAME TEXT(32) NOT NULL <!-- 이름 -->
+			, INPUT_BC TEXT(16) DEFAULT NULL <!-- EInputBankCard 값 -->
+		)
+	</insert>
+	
+	<resultMap id="BankCardVoMap" type="com.utime.household.environment.vo.BankCardVO">
+		<id column="NO" property="no" />
+		<id column="BC" property="bc" typeHandler="com.utime.household.environment.handler.BankCardTypeHandler" />
+		<id column="NAME" property="name" />
+		<id column="INPUT_BC" property="inputBC"  typeHandler="com.utime.household.environment.handler.InputBcTypeHandler" />
+	</resultMap>
+
+	<!-- 카드 은행 목록 조회 -->
+	<select id="getBankCardList" resultMap="BankCardVoMap">
+		SELECT
+			NO
+			, BC
+			, NAME
+			, INPUT_BC
+		FROM HH_BANK_CARD
+		WHERE 1=1
+			<if test="bc != null ">
+			AND BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
+			</if>
+			AND ENABLED = 'Y'
+		ORDER BY NAME
+	</select>
+	
+	<!-- 추가하기 전 동일 정보 체크 -->
+	<select id="sameCheckBankCard" resultType="boolean" parameterType="com.utime.household.environment.vo.BankCardVO">
+		SELECT 
+			CASE COUNT(1) 
+	   			WHEN 1 THEN 1
+				ELSE 0
+	   		END AS RES 
+	   	FROM HH_BANK_CARD
+	   	WHERE 1=1
+	   		AND BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
+	   		AND NAME = #{name}
+	   		AND INPUT_BC = #{inputBC, typeHandler=com.utime.household.environment.handler.InputBcTypeHandler}
+	   		AND ENABLED = 'Y'
+	</select>
+	
+	<!-- 추가 -->
+	<insert id="insertBankCard" parameterType="com.utime.household.environment.vo.BankCardVO">
+		INSERT INTO HH_BANK_CARD (
+			BC
+			, NAME
+			, INPUT_BC
+		) VALUES (
+			#{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
+			, #{name}
+			, #{inputBC, typeHandler=com.utime.household.environment.handler.InputBcTypeHandler}
+		)
+	</insert>
+	
+	<!-- 수정 -->
+	<update id="updateBankCard" parameterType="com.utime.household.environment.vo.BankCardVO">
+		UPDATE HH_BANK_CARD SET
+			BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
+			, NAME = #{name}
+			, INPUT_BC = #{inputBC, typeHandler=com.utime.household.environment.handler.InputBcTypeHandler}
+		WHERE NO = #{no}
+	</update>
+	
+	<!-- 정보 조회 -->
+	<select id="getBankCard" parameterType="map" resultMap="BankCardVoMap">
+		SELECT
+			NO
+			, BC
+			, NAME
+			, INPUT_BC
+		FROM HH_BANK_CARD
+		WHERE NO = #{no}
+	</select>
+	
+	<!-- 삭제 -->
+	<update id="deleteBankCard" parameterType="map">
+		UPDATE HH_BANK_CARD SET
+			ENABLED = 'N'
+		WHERE NO = #{no}
+	</update>
+	
+</mapper>

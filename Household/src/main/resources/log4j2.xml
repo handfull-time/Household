@@ -25,7 +25,7 @@
 		</RollingFile>
 	</appenders>
 
-	<loggers>
+	<!-- <loggers>
 	
 		<logger name="log4jdbc.log4j2" level="off" additivity="false">
 			<AppenderRef ref="Console" />
@@ -44,5 +44,27 @@
 			<AppenderRef ref="File" />
 		</root>
 		
+	</loggers> -->
+	<loggers>
+		<logger name="log4jdbc.log4j2" level="off" additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="File" />
+		</logger>
+		
+		<Logger name="jdbc.sqltiming" level="debug">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="File" />
+		</Logger>
+		
+		<Logger name="jdbc.sqlonly" level="off" />
+		<Logger name="jdbc.audit" level="off" />
+		<Logger name="jdbc.resultset" level="off" />
+		<Logger name="jdbc.resultsettable" level="off" />
+		<Logger name="jdbc.connection" level="off" />
+		
+		<root level="info">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="File" />
+		</root>
 	</loggers>
 </configuration>

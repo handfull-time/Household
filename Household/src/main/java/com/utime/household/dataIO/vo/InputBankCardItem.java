@@ -1,6 +1,6 @@
 package com.utime.household.dataIO.vo;
 
-import com.utime.household.config.vo.EBankCard;
+import com.utime.household.environment.vo.EBankCard;
 
 import lombok.Getter;
 import lombok.ToString;

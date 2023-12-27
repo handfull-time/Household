@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/LayoutCommon}">
+
+<th:block layout:fragment="title">사용처</th:block>
+
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+</th:block>
+
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+
+	<script type="text/javascript" th:inline="javascript">
+
+ 	$(function() {
+		doSearch();
+	});
+
+	function doSearch(){
+		const sendData = $('#FormStore' ).serialize();
+		
+		doSearchList(/*[[@{/Env/Store/List.list}]]*/null, sendData, 'listResult' );
+	}
+	
+	function onShowDetail(no){
+		
+		const sendObj = { no: no};
+		
+		onShowModalLayer( /*[[@{/Env/Store/Detail.layer}]]*/null, sendObj, 'editStoreModal' );
+	}
+
+	function onDelete(no, name) {
+	    
+	    toastConfirm('삭제', name
+				+ ' 삭제하시겠습니까?', function() {
+	    	_onDelete( no, name );	
+		});
+	}
+	
+	function _onDelete( no, name ){
+		
+		onJsonAction( /*[[@{/Env/Store/Remove.json}]]*/ null, { no: no }, function(json){
+			if (json.code === '0') {
+            	toastAlert('성공', name + ' 삭제 성공했습니다.');
+            	doSearch();
+            } else {
+            	toastAlert('실패', name + ' 삭제 실패했습니다. ' + json.code + ':' + json.message);
+            }
+		});
+	}
+	
+	function modalSuccessClick(){
+		const data = getFormObject( 'editForm' );
+		const isAdd = data.no < 0;
+		
+		const title = isAdd? '추가':'수정';
+		const message = data.name + ' ' + title + '하시겠습니까?';
+		
+		toastConfirm(title, message, function() {
+			_onSave(title, data);
+		});
+	}
+	
+	function _onSave(title, data){
+		onJsonAction( /*[[@{/Env/Store/Save.json}]]*/ null, data, function(json){
+			if (json.code === '0') {
+				onHideModalLayer('editStoreModal');
+				
+            	toastAlert('성공', data.name + ' ' + title + ' 성공했습니다.');
+            	doSearch();
+            } else {
+            	toastAlert('실패', data.name + ' ' + title + ' 실패했습니다. ' + json.code + ':' + json.message);
+            }
+		});
+	}
+	</script>
+
+</th:block>
+
+<div layout:fragment="content">
+	<div class="card shadow mb-4">
+		<form id="FormStore" >
+			<div class="row border-bottom-success shadow">
+			
+				<div class="card-body">
+					<div class="form-group">
+						<label for="selectCategory">입출금 항목</label>
+						<select name="categoryNo" class="form-control" id="selectCategory" onchange="doSearch()">
+							<option value="-1">모두</option>
+							<option th:each="item : ${listCategory}" th:value="${item.no}" th:text="${item.name}"></option>
+						</select>
+					</div>
+				</div>
+				<div class="card-body">
+					<div class="form-group">
+						<button type="button" class="btn btn-primary" onclick="onShowDetail(-1)">추가</button>
+					</div>
+				</div>
+			</div>
+		</form>
+
+		<div id="listResult"></div>
+	</div>
+</div>
+
+</html>

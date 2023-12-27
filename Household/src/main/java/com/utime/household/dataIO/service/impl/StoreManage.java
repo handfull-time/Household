@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.utime.household.common.util.HouseholdUtils;
-import com.utime.household.config.vo.StoreVO;
+import com.utime.household.environment.vo.StoreVO;
 
 class StoreManage extends ArrayList<StoreVO>{
 

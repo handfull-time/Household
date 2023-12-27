@@ -3,7 +3,7 @@ package com.utime.household.dataIO.vo;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.utime.household.config.vo.EBankCard;
+import com.utime.household.environment.vo.EBankCard;
 
 public final class InputBankCardList {
 	

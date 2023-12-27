@@ -17,12 +17,12 @@ public interface DataIOService {
 	 * @param file
 	 * @return
 	 */
-	HouseholdDataListResVO upload(long bankCardNo, MultipartFile file);
+	HouseholdDataListResVO analyzeData(long bankCardNo, MultipartFile file);
 
 	/**
 	 * 데이터 저장
 	 * @param vo
 	 * @return
 	 */
-	HouseholdResDataVO addData(HouseholdReqDataVO vo);
+	HouseholdResDataVO saveData(HouseholdReqDataVO vo);
 }

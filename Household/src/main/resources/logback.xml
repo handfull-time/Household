@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="true" scanPeriod="30 seconds">
+    <property name="LOG_FORMAT" value="%d{yyyy-MM-dd HH:mm:ss:SSS} %5p [%c] %n%m%n" />
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+	    <encoder>
+		    <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%t] %C - %msg%n</pattern>
+		</encoder>
+    </appender>
+    
+    <!-- DB 로그 출력을 담당하는 appender 설정 -->
+    <appender name="DBLogAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="File" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>.logs/Household.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>.logs/Household.%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_FORMAT}</pattern>
+        </encoder>
+    </appender>
+
+<!--     <logger name="log4jdbc.log4j2" level="DEBUG" additivity="false">
+        <appender-ref ref="Console" />
+        <appender-ref ref="File" />
+    </logger> -->
+
+    <logger name="jdbc.sqltiming" level="DEBUG">
+    	<appender-ref ref="DBLogAppender" />
+        <appender-ref ref="Console" />
+        <appender-ref ref="File" />
+    </logger>
+
+    <logger name="jdbc.sqlonly" level="DEBUG" />
+    <logger name="jdbc.audit" level="OFF" />
+    <logger name="jdbc.resultset" level="OFF" />
+    <logger name="jdbc.resultsettable" level="OFF" />
+    <logger name="jdbc.connection" level="OFF" />
+
+    <root level="INFO">
+        <appender-ref ref="Console" />
+        <appender-ref ref="File" />
+    </root>
+</configuration>

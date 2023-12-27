@@ -7,7 +7,7 @@
 	<insert id="createCategory">
 		CREATE TABLE HH_CATEGORY (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
-			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
 			, CT CHAR(1) NOT NULL CHECK(CT IN ('I', 'S', 'E')) <!-- ECategoryType -->
 			, NAME TEXT(32) NOT NULL 
 		)

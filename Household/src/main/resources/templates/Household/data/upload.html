@@ -29,7 +29,7 @@
  		
  		//여기서 자동 submit을 막아줍니다.
  		event.preventDefault();
-		toastConfirm( '전송', selectFile.name + ' 파일을 전송하시겠습니까?', function(){
+		toastConfirm( '분석', selectFile.name + ' 파일을 분석하시겠습니까?', function(){
 			event.target.submit();
 		} );
 	}
@@ -89,7 +89,7 @@
                     <input type="file" class="btn btn-info" name="uploadFile" id="InputFileSource" accept=".xlsx, .xls" aria-describedby="fileHelp" required >
                     <small id="fileHelp" class="form-text text-muted">카드 사용 또는 은행 입출금 내역 엑셀 파일을 올려주세요.</small>
                 </div>
-            	<button type="submit" class="btn btn-primary" >파일 전송</button>
+            	<button type="submit" class="btn btn-primary" >파일 분석</button>
             </form>
             <!-- <button class="btn btn-primary" onclick="uploadFile()">Upload</button> -->
         </div>

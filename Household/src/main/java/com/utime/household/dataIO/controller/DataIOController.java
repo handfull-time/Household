@@ -57,7 +57,7 @@ public class DataIOController {
 	@PostMapping(value = {"UploadResult.html"})
 	public String rootUploadFile(ModelMap model, @RequestParam("bankCard") long bankCardNo, @RequestParam("uploadFile") MultipartFile file) {
 		
-		final HouseholdDataListResVO res = service.upload(bankCardNo, file );
+		final HouseholdDataListResVO res = service.analyzeData(bankCardNo, file );
 		if( res.isError() ) {
 			model.addAttribute("res", res);
 			return "common/error";
@@ -103,7 +103,7 @@ public class DataIOController {
 		
 		final HouseholdReqDataVO vo = gson.fromJson(json, HouseholdReqDataVO.class);
 		
-		final HouseholdResDataVO res = service.addData( vo );
+		final HouseholdResDataVO res = service.saveData( vo );
 		
 		if( res.isError() ) {
 			return "error";

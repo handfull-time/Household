@@ -3,6 +3,12 @@
 <!--//네임스페이스에는 mapper 가 있는 풀 패키지명과 매퍼명을 등록 한다. -->
 <mapper namespace="com.utime.household.dataIO.mapper.DataIOMapper">
 
+	<sql id="HouseholdDataCoulmns">
+		NO
+		, CT
+		, NAME
+	</sql>
+
 	<!-- 추가 -->
 	<insert id="insertHouseholdData" parameterType="com.utime.household.dataIO.vo.HouseholdDataVO">
 		INSERT INTO HH_RECORD (
@@ -36,6 +42,62 @@
 		)
 	</insert>
 	
+	<resultMap id="HouseholdDataVOMap" type="com.utime.household.dataIO.vo.HouseholdDataVO">
+		<id column="NO" property="no" />
+		<id column="REG_DATE" property="regDate" />
+		<id column="DEAL_DATE" property="dealDate" />
+		<id column="AMOUNT" property="amount" />
+		<id column="IN_OUT" property="io" typeHandler="com.utime.household.dataIO.handler.InoutTypeHandler"/>
 
+		<id column="BANK_CARD_NO" property="bcVo.no" />
+		<id column="BC" property="bcVo.bc" typeHandler="com.utime.household.environment.handler.BankCardTypeHandler" />
+		<id column="BC_NAME" property="bcVo.name" />
+		<id column="INPUT_BC" property="bcVo.inputBC"  typeHandler="com.utime.household.environment.handler.InputBcTypeHandler" />
+
+		<id column="CATEGORY_NO" property="category.no" />
+		<id column="CT" property="cType" typeHandler="com.utime.household.environment.handler.ECategoryTypeTypeHandler" />
+		<id column="CATEGORY_NAME" property="category.name" />
+		
+		<id column="STORE_NO" property="store.no" />
+		<id column="STORE" property="store.name" />
+		<id column="CONTENT" property="store.store" />
+		
+		<id column="DESCRIPTION" property="dscr" />
+		<id column="OWNER_RECORD_NO" property="ownerNo" />
+	</resultMap>
+	
+	<!-- 자료 조회 -->
+	<select id="getHouseholdDataList" parameterType="com.utime.household.dataIO.vo.OuputReqVO" resultMap="HouseholdDataVOMap">
+		SELECT 
+			HR.NO
+			,HR.REG_DATE
+			,HR.DEAL_DATE
+			,HR.AMOUNT
+			,HR.IN_OUT
+			,HR.BANK_CARD_NO
+			,HBC.INPUT_BC
+			,HBC.BC 
+			,HBC.NAME AS BC_NAME
+			,HR.CATEGORY_NO
+			,HC.CT 
+			,HC.NAME AS CATEGORY_NAME
+			,HR.STORE_NO
+			,HUS.STORE 
+			,HR.CONTENT
+			,HR.DESCRIPTION
+			,HR.OWNER_RECORD_NO
+		FROM
+			HH_RECORD HR
+			INNER JOIN HH_BANK_CARD HBC ON HR.BANK_CARD_NO = HBC.NO
+			INNER JOIN HH_CATEGORY HC ON HR.CATEGORY_NO = HC.NO
+			LEFT OUTER JOIN HH_USAGE_STORE HUS ON HR.STORE_NO = HUS.USAGE_STORE_NO AND HUS.CATEGORY_NO = HC.NO 
+		WHERE 1=1
+			AND HR.ENABLED = 'Y'
+			AND HR.INCLUDED = 'T'
+			<if test="bcNo > -1">
+			AND HR.BANK_CARD_NO = #{bcNo}
+			</if>
+		ORDER BY HR.DEAL_DATE 
+	</select>
 	
 </mapper>

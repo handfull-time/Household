@@ -27,7 +27,7 @@ class DataIOServiceImpl implements DataIOService{
 	private final DataIODao ioDao;
 	
 	@Override
-	public HouseholdDataListResVO upload(long bankCardNo, MultipartFile file) {
+	public HouseholdDataListResVO analyzeData(long bankCardNo, MultipartFile file) {
 		
 		log.info(file.getOriginalFilename());
 		
@@ -58,13 +58,14 @@ class DataIOServiceImpl implements DataIOService{
 	
 
 	@Override
-	public HouseholdResDataVO addData(HouseholdReqDataVO vo) {
+	public HouseholdResDataVO saveData(HouseholdReqDataVO vo) {
 		final HouseholdResDataVO result = new HouseholdResDataVO();
 		
-		result.setBcVo( bankCardDao.getBankCard(vo.getBcNo()) );
+		final BankCardVO bcVo = bankCardDao.getBankCard(vo.getBcNo());
+		result.setBcVo( bcVo );
 		
 		try {
-			result.setCount( ioDao.insertHouseholdData( vo.getList() ) );
+			result.setCount( ioDao.insertHouseholdData( bcVo, vo.getList() ) );
 		} catch (Exception e) {
 			log.error("", e);
 			result.setCodeMessage("EHS0A2", e.getMessage());

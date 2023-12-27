@@ -7,7 +7,7 @@
 	<insert id="createBankCard">
 		CREATE TABLE HH_BANK_CARD (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
-			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
 			, BC CHAR(1) CHECK(BC IN ('B', 'C', 'O')) <!-- 카드 은행 구분 B:은행, C:카드, O:기타 -->
 			, NAME TEXT(32) NOT NULL <!-- 이름 -->
 			, INPUT_BC TEXT(16) DEFAULT NULL <!-- EInputBankCard 값 -->

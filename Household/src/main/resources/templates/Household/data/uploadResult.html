@@ -189,6 +189,7 @@
    	    data.isChecked = checkbox.checked;
  
    	    data.dealDate = cells[1].textContent.trim();
+   	 	data.io = cells[1].getAttribute('io'); 
  
    	    const amountText = cells[2].textContent.replace(/[^0-9.-]+/g, ''); // 숫자 및 소수점, 음수 부호만 추출
    	    data.amount = parseInt(amountText, 10);
@@ -370,7 +371,7 @@
 			        <tbody>
 			            <tr th:each="data : ${list}" th:attr="no=${data.no}">
 			            	<td class="text-center" ><input type="checkbox" class="rowCheckbox" th:checked="${data.store.categoryNo ne -1}"></td>
-			                <td class="text-center" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd hh:mm')}"></td><!-- 거래 일자 -->
+			                <td class="text-center" th:attr="io=${data.io}" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd hh:mm')}"></td><!-- 거래 일자 -->
 			                <td class="text-right" th:text="${#numbers.formatDecimal(data.amount, 2, 'COMMA', 0, 'POINT')}"></td><!-- 거래 금액 -->
 			                <td class="text-center" th:attr="included=${data.included}" th:text="${data.included? '포함':'비포함'}"></td><!-- 내역 포함 여부 -->
 			                <th:block th:if="${data.store.categoryNo eq -1}">

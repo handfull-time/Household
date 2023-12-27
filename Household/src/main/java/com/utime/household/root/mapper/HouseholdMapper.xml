@@ -8,7 +8,7 @@
 	<insert id="createRecord">
 		CREATE TABLE HH_RECORD (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
-			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
 			, REG_DATE DATE DEFAULT (DATETIME('NOW','LOCALTIME')) <!-- 작성 일자 -->
 			, DEAL_DATE DATE NOT NULL <!-- 거래 일자 -->
 			, AMOUNT INTEGER(12) NOT NULL <!-- 금액 -->

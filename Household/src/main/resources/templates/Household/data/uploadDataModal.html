@@ -45,12 +45,12 @@
 		categoryChange( categorySelect );
 	}
 	
-	function categoryChange( selectCate ){
+	function categoryChange( selectCategory ){
 		
-		const selectValue = selectCate.value;
+		const selectCategoryValue = selectCategory.value;
 		
-		if( selectValue ){
-			const categoryNo = parseInt(selectValue); 
+		if( selectCategoryValue ){
+			const categoryNo = parseInt(selectCategoryValue); 
 			
 			const storeSelect = document.getElementById('storeSelect');
 			storeSelect.innerHTML = '';
@@ -74,7 +74,7 @@
 	    storeSelect.innerHTML = ''; // 초기화
 	
 	    storeData.forEach(function (store) {
-	        var option = document.createElement('option');
+	        const option = document.createElement('option');
 	        option.value = store.no; // Store의 no 값을 value로 설정
 	        option.textContent = store.name; // Store의 이름을 옵션 텍스트로 설정
 	        storeSelect.appendChild(option);
@@ -159,7 +159,7 @@
 	
 	function registerKeyword(){
 		const regKeyStore = document.getElementById('regKeyStore');
-		const regKeyStoreValue = regKeyStore.value;
+		const regKeyStoreValue = regKeyStore.value.trim();
 		console.info( 'regKeyStoreValue', regKeyStoreValue);
 		
 		if( regKeyStoreValue.length < 1 ){
@@ -174,31 +174,39 @@
 			return false;
 		}
 
-		toastConfirm( '추가', '['+selectedOption.text+'] '+ regKeyStoreValue +' 구분 키워드 추가 하시겠습니까?', function(){
+		toastConfirm( '추가', '['+selectedOption.text+'] '+ regKeyStoreValue +' 구분 키워드 추가 하시겠습니까?', 
+			function(){
 
-			let minNo = 0;
-			for (let data of storeData ) {
-		        if (data.no > minNo ) {
-		        	minNo = data.no;
-		        }
-		    }
-			
-			minNo -= 1;
-			
-			const addItem = new Object();
-			addItem.no = minNo;
-			addItem.name = regKeyStoreValue;
-			addItem.categoryNo = parseInt( selectedOption.value );
-			
-			storeData.push( addItem );
-			
-			console.info( 'storeData add', addItem);
-			
-			categoryChange( categorySelect );
-			regKeyStore.value = '';
-			const editRegKeyword = document.getElementById('editRegKeyword');
-			editRegKeyword.classList.add('hidden');
-		} );
+				let minNo = 0;
+				for (let data of storeData ) {
+			        if (data.no < minNo ) {
+			        	minNo = data.no;
+			        }
+			    }
+				
+				minNo -= 1;
+				
+				const addItem = new Object();
+				addItem.no = minNo;
+				addItem.name = regKeyStoreValue;
+				addItem.categoryNo = parseInt( selectedOption.value );
+				
+				storeData.push( addItem );
+				
+				console.info( 'storeData add', addItem);
+				
+				categoryChange( categorySelect );
+				
+				// 이벤트를 발생시켜 선택한 값을 반영
+				const storeSelect = document.getElementById('storeSelect');
+				storeSelect.value = minNo;
+				storeSelect.dispatchEvent(new Event('change'));
+				
+				regKeyStore.value = '';
+				const editRegKeyword = document.getElementById('editRegKeyword');
+				editRegKeyword.classList.add('hidden');
+			} 
+		);
 		
 	}
 	
@@ -230,7 +238,7 @@
                 <form id="editForm">
 	                <div class="modal-body">
 					    <div class="card">
-					        <div class="card-header py-2">
+					        <div class="card-header py-0">
 					            <p class="lead text-gray"><span id="editDealDate"></span></p> <!-- 원 거래일자 -->
 					            <p class="lead text-gray"><span id="editDlgOriginStore" ></span></p> <!-- 원 거래처 -->
 					        </div>

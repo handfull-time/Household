@@ -18,4 +18,19 @@ public class BankCardVO extends BasicItemVO{
 	
 	/** 입출금 매칭 정보 */
 	InputBankCardItem inputBC;
+	
+	/**
+	 * 은행 정보
+	 */
+	BankVO bank;
+	
+	/**
+	 * 카드 정보
+	 */
+	CardInforVO card;
+	
+	/**
+	 * 비고
+	 */
+	String dscr;
 }

@@ -1,5 +1,10 @@
 package com.utime.household.dataIO.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -7,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.utime.household.dataIO.dao.DataIODao;
 import com.utime.household.dataIO.service.DataIOService;
 import com.utime.household.dataIO.vo.HouseholdDataListResVO;
+import com.utime.household.dataIO.vo.HouseholdDataVO;
 import com.utime.household.dataIO.vo.HouseholdReqDataVO;
 import com.utime.household.dataIO.vo.HouseholdResDataVO;
 import com.utime.household.dataIO.vo.InputBankCardList;
@@ -68,15 +74,38 @@ class DataIOServiceImpl implements DataIOService{
 	public HouseholdResDataVO saveData(HouseholdReqDataVO vo) {
 		final HouseholdResDataVO result = new HouseholdResDataVO();
 		
-		final BankCardVO bcVo = bankCardDao.getBankCard(vo.getBcNo());
+		final BankCardVO bcVo = bankCardDao.getSimpleBankCard(vo.getBcNo());
 		result.setBcVo( bcVo );
 		
+		List<HouseholdDataVO> list = vo.getList();
+		HouseholdDataVO first = list.get(0);
+		Date minDate = first.getDealDate();
+        Date maxDate = first.getDealDate();
+		
+		for( HouseholdDataVO item : list) {
+			item.setBcVo(bcVo);
+			final Date date  = item.getDealDate();
+			
+			if (date.before(minDate)) {
+                minDate = date;
+            }
+			
+			if (date.after(maxDate)) {
+                maxDate = date;
+            }
+		}
+		
 		try {
-			result.setCount( ioDao.insertHouseholdData( bcVo, vo.getList() ) );
+			ioDao.insertHouseholdData( bcVo, list );
 		} catch (Exception e) {
 			log.error("", e);
 			result.setCodeMessage("EHS0A2", e.getMessage());
 		}
+		
+		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
+		
+		result.setBegin( sdf.format(minDate) );
+		result.setEnd( sdf.format(maxDate) );
 		
 		return result;
 	}

@@ -25,16 +25,13 @@ public class DataController {
 	
 	@GetMapping(value = {"", "/"})
 	public String goMain() {
-		return "redirect:/Config/BankCard/Home.html";
+		return "redirect:/Data/Home.html";
 	}
 	
 	@GetMapping(value="Home.html")
-	public String dataEmptyMain(ModelMap model, 
-			@RequestParam(value = "bcNo", defaultValue = "-1") long bcNo, 
-			@RequestParam(value = "begin", defaultValue = "") String begin, 
-			@RequestParam(value = "end", defaultValue = "") String end) {
+	public String dataEmptyMain(ModelMap model, OuputReqVO reqVo) {
 		
-		if( begin.length() < 1 && end.length() < 1 ) {
+		if( reqVo.getBegin().length() < 1 && reqVo.getEnd().length() < 1 ) {
 			final Calendar calendar = Calendar.getInstance(Locale.KOREA);
 			
 	        // 월의 첫 날짜 계산
@@ -46,15 +43,10 @@ public class DataController {
 	        calendar.add(Calendar.DATE, -1);
 	        Date lastDayOfMonth = calendar.getTime();
 	        
-			final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
-			begin = sdf.format(firstDayOfMonth);
-			end = sdf.format(lastDayOfMonth);
+			final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
+			reqVo.setBegin( sdf.format(firstDayOfMonth) );
+			reqVo.setEnd( sdf.format(lastDayOfMonth) );
 		}
-		
-		final OuputReqVO reqVo = new OuputReqVO();
-		reqVo.setBcNo(bcNo);
-		reqVo.setBegin(begin);
-		reqVo.setEnd(end);
 		
 		model.addAttribute("list", service.getHouseholdDataList(reqVo));
 		

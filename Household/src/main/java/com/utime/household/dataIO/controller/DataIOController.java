@@ -96,7 +96,7 @@ public class DataIOController {
 	}
 			
 	@PostMapping(value = {"DoSaveData.html"})
-	public String doSaveData(ModelMap model, @RequestParam("jsonData") String json ) {
+	public String doSaveData( @RequestParam("jsonData") String json ) {
 		
 		final Gson gson = new GsonBuilder().setPrettyPrinting()
 				.registerTypeAdapter(Date.class, new GsonDateConverter()).create();
@@ -109,9 +109,7 @@ public class DataIOController {
 			return "error";
 		}
 		
-		model.addAttribute("res", res);
-		
-		return "data/saveResult";
+		return "redirect:/Data/Home.html?bcNo="+vo.getBcNo()+"&begin="+res.getBegin()+"&end="+res.getEnd();
 	}
 
 }

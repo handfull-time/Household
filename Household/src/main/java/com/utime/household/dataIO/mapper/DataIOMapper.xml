@@ -88,13 +88,13 @@
 		WHERE 1=1
 			AND HR.ENABLED = 'Y'
 			AND HR.INCLUDED = 'T'
-			<if test="bcNo != 0">
+			<if test="bcNo > -1">
 			AND HR.BANK_CARD_NO = #{bcNo}
 			</if>
-			<if test="categoryNo != 0">
+			<if test="categoryNo > -1">
 			AND HR.CATEGORY_NO = #{categoryNo}
 			</if>
-			<if test="storeNo != 0">
+			<if test="storeNo > -1">
 			AND HR.STORE_NO = #{storeNo}
 			</if>
 			<if test="amount != 0">

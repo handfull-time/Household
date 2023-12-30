@@ -14,5 +14,5 @@ public class HouseholdResDataVO extends ReturnBasic{
 	
 	BankCardVO bcVo;
 	
-	int count;
+	String begin, end;
 }

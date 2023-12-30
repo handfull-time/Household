@@ -16,17 +16,17 @@ public class OuputReqVO {
 	/**
 	 * 은행 카드 번호
 	 */
-	long bcNo;
+	long bcNo = -1L;
 	
 	/** 
 	 * 분류 고유 번호 
 	 */
-	long categoryNo;
+	long categoryNo = -1L;
 	
 	/** 
 	 * 분류 고유 번호 
 	 */
-	long storeNo;
+	long storeNo = -1L;
 
 	/**
 	 * 비교 금액. 0이면 안함.

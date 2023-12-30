@@ -8,11 +8,17 @@ import java.sql.SQLException;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
+import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.environment.vo.ECategoryType;
 
 public class ECategoryTypeTypeHandler implements TypeHandler<ECategoryType>{
 	
 	private static ECategoryType getCategoryType( String s ) {
+		
+		if( HouseholdUtils.isEmpty(s) ) {
+			return null;
+		}
+		
 		ECategoryType result;
 		switch (s) {
 		case "I": result = ECategoryType.Income; break;

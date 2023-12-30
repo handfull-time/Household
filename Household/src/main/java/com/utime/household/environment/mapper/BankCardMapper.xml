@@ -10,11 +10,11 @@
 			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
 			, BC CHAR(1) CHECK(BC IN ('B', 'C', 'O')) <!-- 카드 은행 구분 B:은행, C:카드, O:기타 -->
 			, NAME TEXT(32) NOT NULL <!-- 이름 -->
-			, INPUT_BC TEXT(16) DEFAULT NULL <!-- EInputBankCard 값 -->
 			, BANK_KIND TEXT(16) DEFAULT NULL <!-- 은행 종류 -->
 			, BANK_ACCOUNT_TYPE CHAR(1) DEFAULT NULL CHECK (BANK_ACCOUNT_TYPE IN ('O', 'T', 'R', 'F')) <!-- 은행 계좌 종류 -->
 			, BANK_ACCOUNT_NUMBER TEXT(16) DEFAULT NULL <!-- 은행 계좌 번호 -->
 			, BANK_ACCOUNT_HOLDER TEXT(16) DEFAULT NULL <!-- 은행 계좌 예금 주 -->
+			, CARD_COMPANY TEXT(16) DEFAULT NULL <!-- 카드 종류 -->
 			, CARD_TYPE CHAR(1) DEFAULT NULL CHECK (CARD_TYPE IN ('C', 'H', 'P', 'G', 'I', 'O')) <!-- 카드 종류 -->
 			, CARD_BANK_CARD_NO INTEGER DEFAULT -1 <!-- 연계 은행 번호 -->
 			, CARD_WITHDRAWAL_DATE INTEGER DEFAULT 0 <!-- 매월 출금일자. -->
@@ -26,13 +26,13 @@
 		<id column="NO" property="no" />
 		<id column="BC" property="bc" typeHandler="com.utime.household.environment.handler.BankCardTypeHandler" />
 		<id column="NAME" property="name" />
-		<id column="INPUT_BC" property="inputBC"  typeHandler="com.utime.household.environment.handler.InputBcTypeHandler" />
 
 		<id column="BANK_KIND" property="bank.bankKind"/>
 		<id column="BANK_ACCOUNT_TYPE" property="bank.accountType" typeHandler="com.utime.household.environment.handler.AccountTypeTypeHandler"/>
 		<id column="BANK_ACCOUNT_NUMBER" property="bank.accountNumber"/>
 		<id column="BANK_ACCOUNT_HOLDER" property="bank.accountHolder"/>
 		
+		<id column="CARD_COMPANY" property="card.cardCompany"/>
 		<id column="CARD_TYPE" property="card.cardType" typeHandler="com.utime.household.environment.handler.CardTypeTypeHandler"/>
 		<id column="CARD_WITHDRAWAL_DATE" property="card.withdrawalDate"/>
 		
@@ -52,18 +52,17 @@
 			NO
 			, BC
 			, NAME
-			, INPUT_BC
 			, BANK_KIND
 			, BANK_ACCOUNT_TYPE
+			, CARD_COMPANY
 			, CARD_TYPE
-			, CARD_WITHDRAWAL_DATE
 			, DSCR
 		FROM HH_BANK_CARD
 		WHERE 1=1
+			AND ENABLED = 'Y'
 			<if test="bc != null ">
 			AND BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
 			</if>
-			AND ENABLED = 'Y'
 		ORDER BY NAME
 	</select>
 	
@@ -76,26 +75,24 @@
 	   		END AS RES 
 	   	FROM HH_BANK_CARD
 	   	WHERE 1=1
+	   		AND ENABLED = 'Y'
 	   		AND BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
 	   		AND NAME = #{name}
-	   		AND INPUT_BC = #{inputBC, typeHandler=com.utime.household.environment.handler.InputBcTypeHandler}
-	   		AND ENABLED = 'Y'
 	</select>
 	
 	<!-- 추가 -->
 	<insert id="insertBankCard" parameterType="com.utime.household.environment.vo.BankCardVO">
 		INSERT INTO HH_BANK_CARD (
-			NO
-			, BC
+			BC
 			, NAME
-			, INPUT_BC
-			<if test=" null != bank ">
+			<if test=" bc.name() == 'Bank' ">
 			, BANK_KIND
 			, BANK_ACCOUNT_TYPE
 			, BANK_ACCOUNT_NUMBER
 			, BANK_ACCOUNT_HOLDER
 			</if>
-			<if test=" null != card ">
+			<if test=" bc.name() == 'Card' ">
+			, CARD_COMPANY
 			, CARD_TYPE
 			, CARD_BANK_CARD_NO
 			, CARD_WITHDRAWAL_DATE
@@ -106,14 +103,14 @@
 		) VALUES (
 			#{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
 			, #{name}
-			, #{inputBC, typeHandler=com.utime.household.environment.handler.InputBcTypeHandler}
-			<if test=" null != bank ">
+			<if test=" bc.name() == 'Bank' ">
 			, #{bank.bankKind}
 			, #{bank.accountType, typeHandler=com.utime.household.environment.handler.AccountTypeTypeHandler}
 			, #{bank.accountNumber}
 			, #{bank.accountHolder}
 			</if>
-			<if test=" null != card ">
+			<if test=" bc.name() == 'Card' ">
+			, #{card.cardCompany}
 			, #{card.cardType, typeHandler=com.utime.household.environment.handler.CardTypeTypeHandler}
 			, #{card.bank.no}
 			, #{card.withdrawalDate}
@@ -127,16 +124,15 @@
 	<!-- 수정 -->
 	<update id="updateBankCard" parameterType="com.utime.household.environment.vo.BankCardVO">
 		UPDATE HH_BANK_CARD SET
-			BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
-			, NAME = #{name}
-			, INPUT_BC = #{inputBC, typeHandler=com.utime.household.environment.handler.InputBcTypeHandler}
-			<if test=" null != bank ">
+			NAME = #{name}
+			<if test=" bc.name() == 'Bank' ">
 			, BANK_KIND = #{bank.bankKind}                                                                               
 			, BANK_ACCOUNT_TYPE = #{bank.accountType, typeHandler=com.utime.household.environment.handler.AccountTypeTypeHandler}
 			, BANK_ACCOUNT_NUMBER = #{bank.accountNumber}                                                                          
 			, BANK_ACCOUNT_HOLDER = #{bank.accountHolder}                                                                          
 			</if>
-			<if test=" null != card ">
+			<if test=" bc.name() == 'Card' ">
+			, CARD_COMPANY = #{card.cardCompany} 
 			, CARD_TYPE = #{card.cardType, typeHandler=com.utime.household.environment.handler.CardTypeTypeHandler}
 			, CARD_BANK_CARD_NO = #{card.bank.no}                                                                          
 			, CARD_WITHDRAWAL_DATE = #{card.withdrawalDate}                                                                   
@@ -153,11 +149,11 @@
 			NO
 			, BC
 			, NAME
-			, INPUT_BC
 			, BANK_KIND
 			, BANK_ACCOUNT_TYPE
 			, BANK_ACCOUNT_NUMBER
 			, BANK_ACCOUNT_HOLDER
+			, CARD_COMPANY
 			, CARD_TYPE
 			, CARD_BANK_CARD_NO
 			, CARD_WITHDRAWAL_DATE

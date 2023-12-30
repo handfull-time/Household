@@ -8,7 +8,12 @@ import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.environment.dao.BankCardDao;
 import com.utime.household.environment.service.BankCardService;
 import com.utime.household.environment.vo.BankCardVO;
+import com.utime.household.environment.vo.BankVO;
+import com.utime.household.environment.vo.CardInforVO;
+import com.utime.household.environment.vo.EAccountType;
 import com.utime.household.environment.vo.EBankCard;
+import com.utime.household.environment.vo.EBankKind;
+import com.utime.household.environment.vo.ECardType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -59,8 +64,27 @@ class BankCardServiceImpl implements BankCardService {
 		if( no < 0L ) {
 			result = new BankCardVO();
 			result.setNo(no);
-			result.setBc(EBankCard.Bank);
-			result.setInputBC(null);
+			
+			if( no == -1L ) {
+				// 은행 추가.
+				result.setBc(EBankCard.Bank);
+				final BankVO bank = new BankVO();
+				result.setBank(bank);
+				
+				bank.setBankKind(EBankKind.KB);
+				bank.setAccountType(EAccountType.Ordinary);
+				
+			}else {
+				// 카드 추가.
+				result.setBc(EBankCard.Card);
+				final CardInforVO card = new CardInforVO();
+				result.setCard(card);
+				card.setCardType(ECardType.Credit);
+				final BankCardVO b = new BankCardVO();
+				b.setNo(-1);
+				card.setBank(b);
+			}
+			
 		}else {
 			result = this.dao.getBankCard(no);
 		}

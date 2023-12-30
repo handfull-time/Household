@@ -8,11 +8,17 @@ import java.sql.SQLException;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
+import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.environment.vo.EBankCard;
 
 public class BankCardTypeHandler implements TypeHandler<EBankCard>{
 	
 	private static EBankCard getBankCard( String s ) {
+		
+		if( HouseholdUtils.isEmpty(s) ) {
+			return null;
+		}
+		
 		EBankCard result;
 		switch (s) {
 		case "B": result = EBankCard.Bank; break;

@@ -4,8 +4,8 @@ package com.utime.household.environment.vo;
  * 계좌 종류
  */
 public enum EAccountType {
-	Ordinary("O", "보통예금")
-	,Term("T", "보통예금")
+	Ordinary("O", "수시 입출금")
+	,Term("T", "정기예금")
 	,Regular("R", "정기적금")
 	,Free("F", "자유적금");
 	

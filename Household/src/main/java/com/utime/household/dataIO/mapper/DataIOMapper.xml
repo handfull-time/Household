@@ -52,7 +52,7 @@
 		<id column="BANK_CARD_NO" property="bcVo.no" />
 		<id column="BC" property="bcVo.bc" typeHandler="com.utime.household.environment.handler.BankCardTypeHandler" />
 		<id column="BC_NAME" property="bcVo.name" />
-		<id column="INPUT_BC" property="bcVo.inputBC"  typeHandler="com.utime.household.environment.handler.InputBcTypeHandler" />
+<!-- 		<id column="INPUT_BC" property="bcVo.inputBC"  typeHandler="com.utime.household.environment.handler.InputBcTypeHandler" /> -->
 
 		<id column="CATEGORY_NO" property="category.no" />
 		<id column="CT" property="cType" typeHandler="com.utime.household.environment.handler.ECategoryTypeTypeHandler" />

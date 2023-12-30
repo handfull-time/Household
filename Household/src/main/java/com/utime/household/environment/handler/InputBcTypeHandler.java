@@ -11,15 +11,17 @@ import org.apache.ibatis.type.TypeHandler;
 import com.utime.household.dataIO.vo.InputBankCardItem;
 import com.utime.household.dataIO.vo.InputBankCardList;
 
+@Deprecated
 public class InputBcTypeHandler implements TypeHandler<InputBankCardItem>{
 	
 	private static InputBankCardItem getBankCard( String s ) {
-		final InputBankCardItem result = InputBankCardList.getItem(s);
-		
-		if( result == null )
-			throw new IllegalArgumentException("Unexpected value: " + s);
-		
-		return result;
+//		final InputBankCardItem result = InputBankCardList.getItem(s);
+//		
+//		if( result == null )
+//			throw new IllegalArgumentException("Unexpected value: " + s);
+//		
+//		return result;
+		return null;
 	}
 	
 	@Override
@@ -39,6 +41,6 @@ public class InputBcTypeHandler implements TypeHandler<InputBankCardItem>{
 
 	@Override
 	public void setParameter(PreparedStatement arg0, int arg1, InputBankCardItem arg2, JdbcType arg3)throws SQLException {
-		arg0.setString(arg1, arg2.getName());
+//		arg0.setString(arg1, arg2.getName());
 	}
 }

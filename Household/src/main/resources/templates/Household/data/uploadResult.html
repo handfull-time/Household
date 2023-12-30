@@ -26,6 +26,8 @@
 
 	let currentRowData = null;
 	
+	const dataRawList = /*[[${list}]]*/ null;
+	
     $(function () {
 		console.info('걍...');
 		
@@ -361,6 +363,7 @@
 			                <th>거래 일자</th>
 			                <th>거래 금액</th>
 			                <th>내역 포함 여부</th>
+			                <th>입금/출금</th>
 			                <th>입금/출금 종류</th>
 			                <th>입금/출금 항목</th>
 			                <th>구분 키워드</th>
@@ -369,23 +372,24 @@
 			            </tr>
 			        </thead>
 			        <tbody>
-			            <tr th:each="data : ${list}" th:attr="no=${data.no}">
+			            <tr th:each="data, status : ${list}" th:attr="index=${status.index}">
 			            	<td class="text-center" ><input type="checkbox" class="rowCheckbox" th:checked="${data.store.categoryNo ne -1}"></td>
-			                <td class="text-center" th:attr="io=${data.io}" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd hh:mm')}"></td><!-- 거래 일자 -->
+			                <td class="text-center" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd hh:mm')}"></td><!-- 거래 일자 -->
 			                <td class="text-right" th:text="${#numbers.formatDecimal(data.amount, 2, 'COMMA', 0, 'POINT')}"></td><!-- 거래 금액 -->
-			                <td class="text-center" th:attr="included=${data.included}" th:text="${data.included? '포함':'비포함'}"></td><!-- 내역 포함 여부 -->
+			                <td class="text-center" th:text="${data.included? '포함':'비포함'}"></td><!-- 내역 포함 여부 -->
+			                <td class="text-center" th:text="${data.io.dscr}"></td><!-- 내역 포함 여부 -->
 			                <th:block th:if="${data.store.categoryNo eq -1}">
 			                <td ></td><!-- 입금/출금 종류 -->
-			                <td th:attr="category.no='-1'"></td><!-- 입금/출금 항목 -->
+			                <td ></td><!-- 입금/출금 항목 -->
 			                <td ></td><!-- 구분 키워드 -->
 							</th:block>
 			                <th:block th:if="${data.store.categoryNo ne -1}">
-			                <td th:attr="category.type=${data.category.cType}" th:text="${data.category.cType.dscr}"></td><!-- 입금/출금 종류 -->
-			                <td th:attr="category.no=${data.category.no}" th:text="${data.category.name}"></td><!-- 입금/출금 항목 -->
+			                <td th:text="${data.category.cType.dscr}"></td><!-- 입금/출금 종류 -->
+			                <td th:text="${data.category.name}"></td><!-- 입금/출금 항목 -->
 			                <td th:text="${data.store.name}"></td><!-- 구분 키워드 -->
 							</th:block>
-			                <td th:attr="store.no=${data.store.no}" > <!-- 사용처 -->
-								<a href="javascript:void(0);" onclick="showModalLayer(this);" th:text="${data.store.store}"></a>
+			                <td > <!-- 사용처 -->
+								<a href="javascript:void(0);" onclick="showModalLayer(/*[[${status.index}]*/null);" th:text="${data.store.store}"></a>
 							</td>
 			                <td th:text="${data.dscr}"></td><!-- 비고 -->
 			            </tr>

@@ -42,7 +42,7 @@ class DataIOServiceImpl implements DataIOService{
 			return result;
 		}
 		
-		final BankCardExtractDataService service = ctx.getBean(bcVo.getInputBC().getBean(), BankCardExtractDataService.class);
+		final BankCardExtractDataService service = null;// ctx.getBean(bcVo.getInputBC().getBean(), BankCardExtractDataService.class);
 		
 		try {
 			result = service.extractData( bcVo, file );

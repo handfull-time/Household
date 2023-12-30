@@ -26,9 +26,7 @@
 		
 		function onShowDetail(no){
 			
-			const sendObj = { no: no};
-			
-			onShowModalLayer( /*[[@{/Env/BankCard/Detail.layer}]]*/null, sendObj, 'editBankCardModal' );
+			onShowModalLayer( /*[[@{/Env/BankCard/Detail.layer}]]*/null, { no: no}, 'editBankCardModal' );
 		}
 
 		function onDelete(no, name) {
@@ -97,9 +95,15 @@
 					</div>
 				</div>
 				<div class="card-body">
-					<div class="form-group">
-						<button type="button" class="btn btn-primary" onclick="onShowDetail(-1)">추가</button>
-					</div>
+					<div class="dropdown no-arrow mb-4">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            추가
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="">
+                            <a class="dropdown-item" href="javascript:onShowDetail(-1);" >은행 추가</a>
+                            <a class="dropdown-item" href="javascript:void(0);" onclick="onShowDetail(-2)" >카드 추가</a>
+                        </div>
+                    </div>
 				</div>
 			</div>
 		</form>

@@ -9,10 +9,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.utime.household.common.vo.ReturnBasic;
+import com.utime.household.dataIO.vo.InputBankCardList;
 import com.utime.household.environment.service.BankCardService;
 import com.utime.household.environment.vo.BankCardVO;
+import com.utime.household.environment.vo.EAccountType;
 import com.utime.household.environment.vo.EBankCard;
-import com.utime.household.dataIO.vo.InputBankCardList;
+import com.utime.household.environment.vo.EBankKind;
+import com.utime.household.environment.vo.ECardCompany;
+import com.utime.household.environment.vo.ECardType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -70,9 +74,19 @@ public class BankCardController {
 	@PostMapping(value="Detail.layer")
 	public String DetailBankCardLayer(ModelMap model, @RequestParam(value = "no") long no) {
 		
-		model.addAttribute("BankCard", EBankCard.values() );
-		model.addAttribute("InputBC", InputBankCardList.valuse() );
-		model.addAttribute("data",  service.getBankCard(no) );
+		final BankCardVO item = service.getBankCard(no);
+		
+		if( item.getBc() == EBankCard.Bank ) {
+			model.addAttribute("BankKinds", EBankKind.values() );
+			model.addAttribute("BankCards", EBankCard.values() );
+			model.addAttribute("AccountTypes", EAccountType.values() );
+		}else {
+			model.addAttribute("CardCompanies", ECardCompany.values() );
+			model.addAttribute("CardTypes", ECardType.values() );
+			model.addAttribute("Banks", service.getBankCardList(EBankCard.Bank) );
+		}
+		
+		model.addAttribute("data",  item );
 
 		return "Environment/bankcard/bankcardItem";
 	}

@@ -1,6 +1,8 @@
 package com.utime.household.dataIO.vo;
 
 import com.utime.household.environment.vo.EBankCard;
+import com.utime.household.environment.vo.EBankKind;
+import com.utime.household.environment.vo.ECardCompany;
 
 import lombok.Getter;
 import lombok.ToString;
@@ -13,33 +15,31 @@ import lombok.ToString;
 public class InputBankCardItem {
 	
 	/**
-	 * 이름
-	 */
-	private final String name;
-	
-	/**
 	 * 은행 or 카드
 	 */
 	private final EBankCard bc;
+	
+	private final EBankKind bk;
+	
+	private final ECardCompany ck;
 	
 	/**
 	 * 분석 모듈 bean 이름
 	 */
 	private final String bean;
 	
-	/**
-	 * 비고
-	 */
-	private final String dscr;
-	
-	public InputBankCardItem(String name) {
-		this(name, null, null, null);
+	public InputBankCardItem(EBankKind bk, String bean) {
+		this(bk, null, null);
+	}
+
+	public InputBankCardItem(ECardCompany ck, String bean) {
+		this(null, ck, null);
 	}
 	
-	public InputBankCardItem(String name, EBankCard bc, String bean, String dscr) {
-		this.name = name;
-		this.bc = bc;
+	public InputBankCardItem(EBankKind bk, ECardCompany ck, String bean) {
+		this.bc = (bk == null)? EBankCard.Card:EBankCard.Bank;
+		this.bk = bk;
+		this.ck = ck;
 		this.bean = bean;
-		this.dscr = dscr;
 	}
 }

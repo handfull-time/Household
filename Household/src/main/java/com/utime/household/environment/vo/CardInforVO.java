@@ -11,6 +11,10 @@ import lombok.ToString;
 @Getter
 @ToString
 public class CardInforVO {
+	
+	/** 카드 업체 */
+	ECardCompany cardCompany;
+	
 	/**
 	 * 카드 종류
 	 */

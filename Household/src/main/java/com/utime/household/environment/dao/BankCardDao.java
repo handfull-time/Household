@@ -29,6 +29,13 @@ public interface BankCardDao {
 	BankCardVO getBankCard( long no );
 	
 	/**
+	 * 정보 조회
+	 * @param no
+	 * @return
+	 */
+	BankCardVO getSimpleBankCard( long no );
+	
+	/**
 	 * 삭제
 	 * @param vo
 	 * @return

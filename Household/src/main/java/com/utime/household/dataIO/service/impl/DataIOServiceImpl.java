@@ -9,6 +9,7 @@ import com.utime.household.dataIO.service.DataIOService;
 import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 import com.utime.household.dataIO.vo.HouseholdReqDataVO;
 import com.utime.household.dataIO.vo.HouseholdResDataVO;
+import com.utime.household.dataIO.vo.InputBankCardList;
 import com.utime.household.environment.dao.BankCardDao;
 import com.utime.household.environment.vo.BankCardVO;
 
@@ -42,7 +43,13 @@ class DataIOServiceImpl implements DataIOService{
 			return result;
 		}
 		
-		final BankCardExtractDataService service = null;// ctx.getBean(bcVo.getInputBC().getBean(), BankCardExtractDataService.class);
+		String beanName = InputBankCardList.getBeanName(bcVo);
+		
+		final BankCardExtractDataService service = ctx.getBean(beanName, BankCardExtractDataService.class);
+
+		bcVo.setBank(null);
+		bcVo.setCard(null);
+		bcVo.setDscr(null);
 		
 		try {
 			result = service.extractData( bcVo, file );

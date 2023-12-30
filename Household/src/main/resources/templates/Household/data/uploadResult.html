@@ -83,28 +83,36 @@
 	    	return;
 	    }
 	    
+	    const editFormData = getFormObject( 'editForm' );
+	    console.info( 'editForm', editFormData );
+	    
     	const editModal = document.getElementById('editForm');
-    	
+     	
     	const categorySelect = editModal.elements['categorySelect'];
 		const selectedOption = categorySelect.options[categorySelect.selectedIndex];
 		if( selectedOption.value.length < 1 ){
 			toastAlert( '경고' , '입출금 항목 ['+selectedOption.text+']는 저장 할 수 없습니다.', 'warning');
 			return false;
-		}
+		} 
 		
     	// amount 수정
-    	const editInputAmount = editModal.elements['editInputAmount'];
-    	const intpuAmount = parseInt(editInputAmount.value.replace(/[^0-9.-]+/g, ''), 10);
+    	//const editInputAmount = editModal.elements['editInputAmount'];
+    	//const intpuAmount = parseInt(editInputAmount.value.replace(/[^0-9.-]+/g, ''), 10);
+    	const intpuAmount = parseInt(editFormData.amount.replace(/[^0-9.-]+/g, ''), 10);
     	const isChangeAmount = currentRowData.amount !== intpuAmount;
     	currentRowData.amount = intpuAmount;
 
     	// included 수정
-    	const radioIncludedY = editModal.querySelector('#EditRadioIncludedY');
-    	currentRowData.included = radioIncludedY.checked;
+    	//const radioIncludedY = editModal.querySelector('#EditRadioIncludedY');
+    	//currentRowData.included = radioIncludedY.checked;
+    	currentRowData.included = editFormData.included === 'true';
     	
     	const categoryTypeSelect = editModal.elements['categoryTypeSelect'];
     	const categoryTypeSelected = categoryTypeSelect.options[categoryTypeSelect.selectedIndex];
-    	currentRowData.category.type = categoryTypeSelected.value;
+    	if( currentRowData.category == null ){
+    		currentRowData.category = new Object();
+    	}
+    	currentRowData.category.ctype = categoryTypeSelected.value;
     	currentRowData.category.typeName = categoryTypeSelected.text;
 
     	// category 수정
@@ -116,18 +124,27 @@
     	const storeSelectNo = storeSelect.selectedIndex;
     	if( storeSelectNo > -1 ){
         	currentRowData.store.no = parseInt(storeSelect.value, 10);
-        	currentRowData.store.store = storeSelect.options[storeSelect.selectedIndex].text;
+        	currentRowData.store.name = storeSelect.options[storeSelect.selectedIndex].text;
     	}else{
         	currentRowData.store.no = -1;
-        	currentRowData.store.store = '';
+        	currentRowData.store.name = '';
     	}
 
     	// 비고 수정
-    	const editInputDscr = editModal.elements['editInputDscr'];
-    	currentRowData.dscr = editInputDscr.value;
-
+    	//const editInputDscr = editModal.elements['editInputDscr'];
+    	//currentRowData.dscr = editInputDscr.value;
+    	currentRowData.dscr = editFormData.dscr.trim();
+    	
     	// 수정된 데이터를 화면에 반영
     	const selectRow = currentRowData.rowData;
+    	const index = currentRowData.index;
+    	delete currentRowData.index;
+    	delete currentRowData.rowData;
+
+    	// 복제한 데이터 다시 추가.
+    	dataRawList.splice(index, 1);
+    	dataRawList.splice(index, 0, currentRowData);
+    	
     	if (selectRow) {
     		const cells = selectRow.cells;
 
@@ -135,14 +152,15 @@
     		checkbox.checked = true;
 
     		cells[2].textContent = currentRowData.amount;
-    		cells[3].setAttribute('included', currentRowData.included);
-    		cells[4].setAttribute('category.type', currentRowData.category.type);
-    		cells[4].textContent = currentRowData.category.typeName;
-    		cells[5].textContent = currentRowData.category.name;
-    		cells[5].setAttribute('category.no', currentRowData.category.no);
-    		cells[6].textContent = currentRowData.store.store;
-    		cells[7].setAttribute('store.no', currentRowData.store.no);
-    		cells[8].textContent = currentRowData.dscr;
+            cells[3].textContent = currentRowData.included? '포함':'비포함';
+//    		cells[3].setAttribute('included', currentRowData.included);
+//    		cells[4].setAttribute('category.type', currentRowData.category.type);
+    		cells[5].textContent = currentRowData.category.typeName;
+    		cells[6].textContent = currentRowData.category.name;
+//    		cells[5].setAttribute('category.no', currentRowData.category.no);
+    		cells[7].textContent = currentRowData.store.name;
+//    		cells[7].setAttribute('store.no', currentRowData.store.no);
+    		cells[9].textContent = currentRowData.dscr;
     	}
     	
 		currentRowData = null;
@@ -169,7 +187,7 @@
 	function getRowData( row ){
 		const cells = row.cells;
 		
-	     
+	    /*  
 	    const data = {
 	    	no: -1,
 	    	isChecked:false,
@@ -183,13 +201,22 @@
    	        category: { no: 0, type:'' },
    	        dscr: ""
 	    };
+	     */
+	     
+	    const index = parseInt( row.getAttribute('index') );
+	    const orgData = dataRawList[index];
+	    const data = {...orgData};
+	    data.index = index;
+	    const date = new Date(data.dealDate);
+	    data.dealDate = `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
-	    data.no = row.getAttribute('no'); 
+//	    data.no = row.getAttribute('no'); 
 	     
    	    // 첫 번째 셀 (체크박스)
    	    const checkbox = cells[0].querySelector('input[type="checkbox"]');
    	    data.isChecked = checkbox.checked;
  
+   	 /* 
    	    data.dealDate = cells[1].textContent.trim();
    	 	data.io = cells[1].getAttribute('io'); 
  
@@ -214,12 +241,15 @@
 
    	    // 비고
    	    data.dscr = cells[8].textContent.trim();
-   	    
+   	     */
 		console.info(data);
 		
 		return data;			
 	}
 	
+	/**
+	 * Modal layer 값 설정
+	 */
 	function showModalLayer(cell){
 		const row = cell.closest('tr');
 		
@@ -251,9 +281,9 @@
 		const categorySelect = editModal.elements['categorySelect'];
 		const editRegKeyword = editModal.querySelector('#editRegKeyword');
 
-		if( data.category.no > -1 ){
+		if( data.category != null ){
 			
-			categoryTypeSelect.value = data.category.type;
+			categoryTypeSelect.value = data.category.ctype;
 			categoryTypeChange( categoryTypeSelect );
 			
 			categorySelect.value = data.category.no;
@@ -374,7 +404,7 @@
 			        <tbody>
 			            <tr th:each="data, status : ${list}" th:attr="index=${status.index}">
 			            	<td class="text-center" ><input type="checkbox" class="rowCheckbox" th:checked="${data.store.categoryNo ne -1}"></td>
-			                <td class="text-center" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd hh:mm')}"></td><!-- 거래 일자 -->
+			                <td class="text-center" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd HH:mm')}"></td><!-- 거래 일자 -->
 			                <td class="text-right" th:text="${#numbers.formatDecimal(data.amount, 2, 'COMMA', 0, 'POINT')}"></td><!-- 거래 금액 -->
 			                <td class="text-center" th:text="${data.included? '포함':'비포함'}"></td><!-- 내역 포함 여부 -->
 			                <td class="text-center" th:text="${data.io.dscr}"></td><!-- 내역 포함 여부 -->
@@ -389,7 +419,7 @@
 			                <td th:text="${data.store.name}"></td><!-- 구분 키워드 -->
 							</th:block>
 			                <td > <!-- 사용처 -->
-								<a href="javascript:void(0);" onclick="showModalLayer(/*[[${status.index}]*/null);" th:text="${data.store.store}"></a>
+								<a href="javascript:void(0);" onclick="showModalLayer(this);" th:text="${data.store.store}"></a>
 							</td>
 			                <td th:text="${data.dscr}"></td><!-- 비고 -->
 			            </tr>

@@ -17,4 +17,32 @@ public class OuputReqVO {
 	 * 은행 카드 번호
 	 */
 	long bcNo;
+	
+	/** 
+	 * 분류 고유 번호 
+	 */
+	long categoryNo;
+	
+	/** 
+	 * 분류 고유 번호 
+	 */
+	long storeNo;
+
+	/**
+	 * 비교 금액. 0이면 안함.
+	 */
+	int amount;
+	
+	/**
+	 * amount 가 0이 아닐때 
+	 * true : 이상 금액
+	 * false : 이하 금액
+	 */
+	boolean amountThan;
+	
+	/**
+	 * true : 최신 날짜 순
+	 * false : 과거 날짜 순
+	 */
+	boolean dateOrder;
 }

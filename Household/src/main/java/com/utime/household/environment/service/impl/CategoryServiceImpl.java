@@ -56,9 +56,10 @@ class CategoryServiceImpl implements CategoryService {
 			dao.saveCategory(new CategoryVO("예금", ECategoryType.Saving ));
 
 			dao.saveCategory(new CategoryVO("식비", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("가구", ECategoryType.Expense ));
 			dao.saveCategory(new CategoryVO("마트", ECategoryType.Expense ));
 			dao.saveCategory(new CategoryVO("교통", ECategoryType.Expense ));
-			dao.saveCategory(new CategoryVO("외식", ECategoryType.Expense ));
+			dao.saveCategory(new CategoryVO("차량", ECategoryType.Expense ));
 			dao.saveCategory(new CategoryVO("관리", ECategoryType.Expense ));
 			dao.saveCategory(new CategoryVO("통신", ECategoryType.Expense ));
 			dao.saveCategory(new CategoryVO("효도", ECategoryType.Expense ));
@@ -75,7 +76,8 @@ class CategoryServiceImpl implements CategoryService {
 			this.initStore("급여", "급여");
 			this.initStore("월세", "월세");
 			this.initStore("마트", "마트", "홈플러스");
-			this.initStore("교통", "버스", "지하철", "정유", "주유소", "자동차");
+			this.initStore("교통", "버스", "지하철" , "하이패스");
+			this.initStore("차량", "정유", "주유소", "자동차");
 			this.initStore("의료", "병원", "약국", "메디팜", "의원", "의료원");
 			this.initStore("관리", "관리비", "도시가스");
 			this.initStore("통신", "통신료");

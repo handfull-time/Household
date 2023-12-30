@@ -74,12 +74,13 @@ public class DataIOController {
 
 	class GsonDateConverter implements JsonSerializer<Date>, JsonDeserializer<Date> {
 		
-		private static final String FORMAT = "yyyy.MM.dd hh:mm";
+		private final String FORMAT = "yyyy.MM.dd HH:mm";
+		private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT);
 
 		@Override
 		public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
 				throws JsonParseException {
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT);
+			
 			try {
 				return json == null ? null : simpleDateFormat.parse(json.getAsString());
 			} catch (ParseException e) {
@@ -89,7 +90,6 @@ public class DataIOController {
 
 		@Override
 		public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT);
 			return src == null ? null : new JsonPrimitive(simpleDateFormat.format(src));
 		}
 

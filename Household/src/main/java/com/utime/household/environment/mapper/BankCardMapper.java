@@ -36,6 +36,13 @@ public interface BankCardMapper {
 	BankCardVO getBankCard( @Param("no") long no );
 	
 	/**
+	 * 간단 정보 조회
+	 * @param no
+	 * @return
+	 */
+	BankCardVO getSimpleBankCard( @Param("no") long no );
+	
+	/**
 	 * 추가하기 전 동일 정보 체크
 	 * @param vo
 	 * @return true : 동일한 것이 있다.

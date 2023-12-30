@@ -63,6 +63,11 @@ class BankCardDaoImpl implements BankCardDao{
 	}
 	
 	@Override
+	public BankCardVO getSimpleBankCard(long no) {
+		return mapper.getSimpleBankCard( no );
+	}
+	
+	@Override
 	public BankCardVO getBankCard(long no) {
 		
 		return mapper.getBankCard( no );

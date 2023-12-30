@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.dataIO.dao.DataIODao;
 import com.utime.household.dataIO.mapper.DataIOMapper;
 import com.utime.household.dataIO.vo.HouseholdDataListResVO;
@@ -65,8 +66,20 @@ class DataIODaoImpl implements DataIODao{
 	
 	@Override
 	public HouseholdDataListResVO getHouseholdDataList(OuputReqVO reqVo) {
-		HouseholdDataListResVO result = null;
-		List<HouseholdDataVO> list = mapper.getHouseholdDataList( reqVo );
-		return null;
+		
+		if( HouseholdUtils.isNotEmpty(reqVo.getBegin()) && HouseholdUtils.isNotEmpty(reqVo.getEnd()) ) {
+			final String begin = reqVo.getBegin();
+			reqVo.setBegin( begin.substring(0, 4) + "-" + begin.substring(4, 6) + "-" + begin.substring(6, 8) );
+	        
+			final String end = reqVo.getEnd();
+			reqVo.setEnd( end.substring(0, 4) + "-" + end.substring(4, 6) + "-" + end.substring(6, 8) );
+		}
+		
+		
+		HouseholdDataListResVO result = new HouseholdDataListResVO();
+		
+		result.setList(mapper.getHouseholdDataList( reqVo ));
+		
+		return result;
 	}
 }

@@ -14,5 +14,7 @@ public class InputBankCardDefine {
 	public static final String NameShinhan = "ShinhanService";
 	
 	public static final String NameIncheonEum = "IncheonEumService";
+	
+	public static final String NameUnknown = "UnknownService";
 
 }

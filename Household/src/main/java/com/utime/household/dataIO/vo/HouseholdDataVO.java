@@ -24,7 +24,7 @@ public class HouseholdDataVO {
 	Date regDate;
 	
 	/** 거래 일자 */
-	@DateTimeFormat(pattern = "yyyy.MM.dd hh:mm")
+//	@DateTimeFormat(pattern = "yyyy.MM.dd hh:mm")
 	Date dealDate;
 	
 	/** 거래 금액 */

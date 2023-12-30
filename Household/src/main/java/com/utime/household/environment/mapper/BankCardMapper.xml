@@ -143,6 +143,16 @@
 		WHERE NO = #{no}
 	</update>
 	
+	<!-- 간단 정보 조회 -->
+	<select id="getSimpleBankCard" parameterType="map" resultMap="BankCardVoMap">
+		SELECT
+			NO
+			, BC
+			, NAME
+		FROM HH_BANK_CARD
+		WHERE NO = #{no}
+	</select>
+	
 	<!-- 정보 조회 -->
 	<select id="getBankCard" parameterType="map" resultMap="BankCardVoMap">
 		SELECT

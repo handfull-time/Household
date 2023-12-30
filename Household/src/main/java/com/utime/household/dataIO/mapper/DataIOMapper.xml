@@ -19,9 +19,7 @@
 			, BANK_CARD_NO <!-- 입금 출금 구분 -->
 			, CATEGORY_NO <!-- 사용처 타입 -->
 			, STORE_NO
-			<if test="store.store != null and store.store != '' ">
 			, CONTENT
-			</if>
 			<if test="dscr != null and dscr != '' ">
 			, DESCRIPTION
 			</if>
@@ -33,9 +31,7 @@
 			, #{bcVo.no}
 			, #{category.no}
 			, #{store.no}
-			<if test="store.store != null and store.store != '' ">
 			, #{store.store}
-			</if>
 			<if test="dscr != null and dscr != '' ">
 			, #{dscr}
 			</if>
@@ -52,7 +48,6 @@
 		<id column="BANK_CARD_NO" property="bcVo.no" />
 		<id column="BC" property="bcVo.bc" typeHandler="com.utime.household.environment.handler.BankCardTypeHandler" />
 		<id column="BC_NAME" property="bcVo.name" />
-<!-- 		<id column="INPUT_BC" property="bcVo.inputBC"  typeHandler="com.utime.household.environment.handler.InputBcTypeHandler" /> -->
 
 		<id column="CATEGORY_NO" property="category.no" />
 		<id column="CT" property="cType" typeHandler="com.utime.household.environment.handler.ECategoryTypeTypeHandler" />
@@ -75,7 +70,6 @@
 			,HR.AMOUNT
 			,HR.IN_OUT
 			,HR.BANK_CARD_NO
-			,HBC.INPUT_BC
 			,HBC.BC 
 			,HBC.NAME AS BC_NAME
 			,HR.CATEGORY_NO
@@ -94,10 +88,23 @@
 		WHERE 1=1
 			AND HR.ENABLED = 'Y'
 			AND HR.INCLUDED = 'T'
-			<if test="bcNo > -1">
+			<if test="bcNo != 0">
 			AND HR.BANK_CARD_NO = #{bcNo}
 			</if>
-		ORDER BY HR.DEAL_DATE 
+			<if test="categoryNo != 0">
+			AND HR.CATEGORY_NO = #{categoryNo}
+			</if>
+			<if test="storeNo != 0">
+			AND HR.STORE_NO = #{storeNo}
+			</if>
+			<if test="amount != 0">
+			AND HR.AMOUNT <choose><when test = "amountThan"> <![CDATA[>=]]> </when><otherwise> <![CDATA[<=]]> </otherwise></choose> #{amount}
+			</if>
+			<if test=" null != begin and '' != begin and null != end and '' != end">
+			AND HR.DEAL_DATE BETWEEN strftime('%Y%m%d', #{begin}) AND strftime('%Y%m%d', #{end})  
+			</if>
+			
+		ORDER BY HR.DEAL_DATE <choose><when test = "dateOrder">DESC</when><otherwise>ASC</otherwise></choose>
 	</select>
 	
 </mapper>

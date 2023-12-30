@@ -250,18 +250,18 @@
 					                        <tr>
 					                            <th class="text-left" scope="row">금액</th>
 					                            <td class="text-right">
-					                                <input type="text" id="editInputAmount" class="form-control border-1 text-right" oninput="formatAmount(this)">
+					                                <input type="text" name="amount" id="editInputAmount" class="form-control border-1 text-right" oninput="formatAmount(this)">
 					                            </td>
 					                        </tr>
 					                        <tr>
 					                            <th class="text-left" scope="row">포함/비포함</th>
 					                            <td class="text-right">
 					                                <label for="EditRadioIncludedY" id="lbEditRadioIncludedY">
-					                                    <input type="radio" name="EditRadioIncluded" id="EditRadioIncludedY" value="true" />
+					                                    <input type="radio" name="included" id="EditRadioIncludedY" value="true" />
 					                                    포함
 					                                </label>
 					                                <label for="EditRadioIncludedN" id="lbEditRadioIncludedN">
-					                                    <input type="radio" name="EditRadioIncluded" id="EditRadioIncludedN" value="false" />
+					                                    <input type="radio" name="included" id="EditRadioIncludedN" value="false" />
 					                                    비포함
 					                                </label>
 					                            </td>
@@ -269,7 +269,7 @@
 					                        <tr>
 					                            <th class="text-left" scope="row">입출금 종류</th>
 					                            <td class="text-right">
-					                                <select class="form-control" id="categoryTypeSelect" onchange="categoryTypeChange(this)">
+					                                <select class="form-control" name="category.ctype" id="categoryTypeSelect" onchange="categoryTypeChange(this)">
 					                                    <option th:each="item : ${listCategoryType}" th:value="${item}" th:text="${item.dscr}"></option>
 					                                </select>
 					                            </td>
@@ -286,7 +286,7 @@
 					                        <tr>
 					                            <th class="text-left" scope="row">구분 키워드</th>
 					                            <td class="text-right">
-					                                <select name="cType" class="form-control" id="storeSelect">
+					                                <select name="store.no" class="form-control" id="storeSelect">
 					                                </select>
 					                            </td>
 					                        </tr>
@@ -306,7 +306,7 @@
 					                        <tr>
 					                            <th class="text-left" scope="row">비고</th>
 					                            <td class="text-right">
-					                                <input type="text" id="editInputDscr" class="form-control border-1 text-left">
+					                                <input type="text" name="dscr" id="editInputDscr" class="form-control border-1 text-left">
 					                            </td>
 					                        </tr>
 					                    </tbody>

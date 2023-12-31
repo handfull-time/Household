@@ -2,7 +2,6 @@ package com.utime.household.dataIO.dao;
 
 import java.util.List;
 
-import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 import com.utime.household.dataIO.vo.HouseholdDataVO;
 import com.utime.household.dataIO.vo.OuputReqVO;
 import com.utime.household.environment.vo.BankCardVO;
@@ -17,7 +16,7 @@ public interface DataIODao {
 	 * @param file
 	 * @return
 	 */
-	HouseholdDataListResVO getHouseholdDataList(OuputReqVO reqVo);
+	List<HouseholdDataVO> getHouseholdDataList(OuputReqVO reqVo);
 	
 	
 }

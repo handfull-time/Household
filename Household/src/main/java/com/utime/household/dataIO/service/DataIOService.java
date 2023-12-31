@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 import com.utime.household.dataIO.vo.HouseholdReqDataVO;
 import com.utime.household.dataIO.vo.HouseholdResDataVO;
+import com.utime.household.dataIO.vo.OuputReqVO;
 
 /**
  * 자료 입출력 서비스
@@ -25,4 +26,12 @@ public interface DataIOService {
 	 * @return
 	 */
 	HouseholdResDataVO saveData(HouseholdReqDataVO vo);
+	
+	/**
+	 * 데이터 조회
+	 * @param bankCardNo
+	 * @param file
+	 * @return
+	 */
+	HouseholdDataListResVO getHouseholdDataList(OuputReqVO reqVo);
 }

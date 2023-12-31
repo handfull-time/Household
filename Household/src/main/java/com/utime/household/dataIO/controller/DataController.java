@@ -9,10 +9,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import com.utime.household.dataIO.service.DataService;
+import com.utime.household.common.util.HouseholdUtils;
+import com.utime.household.dataIO.service.DataIOService;
 import com.utime.household.dataIO.vo.OuputReqVO;
+import com.utime.household.environment.service.BankCardService;
+import com.utime.household.environment.service.StoreService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +23,11 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("Data")
 public class DataController {
 	
-	private final DataService service;
+	private final DataIOService dataService;
+	
+	private final BankCardService bcService;
+	
+	private final StoreService stService;
 	
 	@GetMapping(value = {"", "/"})
 	public String goMain() {
@@ -31,7 +37,7 @@ public class DataController {
 	@GetMapping(value="Home.html")
 	public String dataEmptyMain(ModelMap model, OuputReqVO reqVo) {
 		
-		if( reqVo.getBegin().length() < 1 && reqVo.getEnd().length() < 1 ) {
+		if( HouseholdUtils.isEmpty(reqVo.getBegin()) && HouseholdUtils.isEmpty(reqVo.getEnd()) ) {
 			final Calendar calendar = Calendar.getInstance(Locale.KOREA);
 			
 	        // 월의 첫 날짜 계산
@@ -48,9 +54,13 @@ public class DataController {
 			reqVo.setEnd( sdf.format(lastDayOfMonth) );
 		}
 		
-		model.addAttribute("list", service.getHouseholdDataList(reqVo));
+		model.addAttribute("reqVo", reqVo);
+		model.addAttribute("bankCards", bcService.getBankCardList());
+		model.addAttribute("categories", stService.getCategoryList());
+		model.addAttribute("stores", stService.getStoreList());
+		model.addAttribute("result", dataService.getHouseholdDataList(reqVo));
 		
-		return "data/bankcard/bankcard";
+		return "data/dataMain";
 	}
 
 

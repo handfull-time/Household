@@ -80,7 +80,7 @@
 	            <div class="form-group">
 		            <label for="exampleSelect">은행/카드 선택</label>
 		            <select name="bankCard" class="form-control" id="exampleSelect">
-		            	<option th:each="item : ${bankCard}" 
+		            	<option th:each="item : ${bankCards}" 
 						th:value="${item.no}" 
 						th:text="${item.name}" ></option>
 		            </select>

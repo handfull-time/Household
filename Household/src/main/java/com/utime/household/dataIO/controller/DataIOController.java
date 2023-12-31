@@ -43,8 +43,8 @@ public class DataIOController {
 	
 	@GetMapping(value = {"Upload.html"})
 	public String rootUploadShow(ModelMap model) {
-		model.addAttribute("bankCard", bcService.getBankCardList());//EInputBankCard.values()
-		return "data/upload";
+		model.addAttribute("bankCards", bcService.getBankCardList());
+		return "dataIO/upload";
 	}
 
 //	@ResponseBody
@@ -69,7 +69,7 @@ public class DataIOController {
 		model.addAttribute("listCategory", stService.getCategoryList());
 		model.addAttribute("listStore", stService.getStoreList());
 		
-		return "data/uploadResult";
+		return "dataIO/uploadResult";
 	}
 
 	class GsonDateConverter implements JsonSerializer<Date>, JsonDeserializer<Date> {

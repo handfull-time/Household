@@ -43,10 +43,10 @@
 		
 		onJsonAction( /*[[@{/Env/Store/Remove.json}]]*/ null, { no: no }, function(json){
 			if (json.code === '0') {
-            	toastAlert('성공', name + ' 삭제 성공했습니다.');
+            	toastAlert('성공', name + ' 삭제 성공했습니다.', 'success');
             	doSearch();
             } else {
-            	toastAlert('실패', name + ' 삭제 실패했습니다. ' + json.code + ':' + json.message);
+            	toastAlert('실패', name + ' 삭제 실패했습니다. ' + json.code + ':' + json.message, 'warning');
             }
 		});
 	}
@@ -68,10 +68,10 @@
 			if (json.code === '0') {
 				onHideModalLayer('editStoreModal');
 				
-            	toastAlert('성공', data.name + ' ' + title + ' 성공했습니다.');
+            	toastAlert('성공', data.name + ' ' + title + ' 성공했습니다.', 'success');
             	doSearch();
             } else {
-            	toastAlert('실패', data.name + ' ' + title + ' 실패했습니다. ' + json.code + ':' + json.message);
+            	toastAlert('실패', data.name + ' ' + title + ' 실패했습니다. ' + json.code + ':' + json.message, 'warning');
             }
 		});
 	}

@@ -98,20 +98,14 @@
 	            dataType: 'json',
 	            success: function(json) {
 	                if (json.code === '0') {
-	                	toastAlert('성공', '삭제에 성공했습니다.');
+	                	toastAlert('성공', '삭제에 성공했습니다.', 'success');
 	                	row.remove();
 	                	onClear();
 	                } else {
-	                	toastAlert('실패', '삭제에 실패했습니다. ' + json.code + ':' + json.message);
+	                	toastAlert('실패', '삭제에 실패했습니다. ' + json.code + ':' + json.message, 'warning');
 	                }
 	            },
-	            error: function(request, status, error) {
-	            	console.log("code: " + request.status)
-		            console.log("message: " + request.responseText)
-		            console.log("error: " + error);
-	            	
-	            	toastAlert('Error', '삭제 요청 중 오류가 발생했습니다.');
-	            }
+	            error: _ajaxError
 	        });
 	    	
 		});

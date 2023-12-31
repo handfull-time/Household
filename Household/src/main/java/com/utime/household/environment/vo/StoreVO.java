@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * 사용처 정보
+ */
 @Setter
 @Getter
 @ToString(callSuper = true)

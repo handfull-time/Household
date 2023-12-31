@@ -19,7 +19,7 @@ public class OuputReqVO {
 	long bcNo = -1L;
 	
 	/** 
-	 * 분류 고유 번호 
+	 * 입출금 항목 번호 
 	 */
 	long categoryNo = -1L;
 	
@@ -45,4 +45,9 @@ public class OuputReqVO {
 	 * false : 과거 날짜 순
 	 */
 	boolean dateOrder;
+	
+	/**
+	 * 내용
+	 */
+	String content;
 }

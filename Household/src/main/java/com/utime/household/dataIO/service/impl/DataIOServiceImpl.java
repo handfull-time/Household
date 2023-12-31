@@ -16,6 +16,7 @@ import com.utime.household.dataIO.vo.HouseholdDataVO;
 import com.utime.household.dataIO.vo.HouseholdReqDataVO;
 import com.utime.household.dataIO.vo.HouseholdResDataVO;
 import com.utime.household.dataIO.vo.InputBankCardList;
+import com.utime.household.dataIO.vo.OuputReqVO;
 import com.utime.household.environment.dao.BankCardDao;
 import com.utime.household.environment.vo.BankCardVO;
 
@@ -106,6 +107,17 @@ class DataIOServiceImpl implements DataIOService{
 		
 		result.setBegin( sdf.format(minDate) );
 		result.setEnd( sdf.format(maxDate) );
+		
+		return result;
+	}
+	
+	@Override
+	public HouseholdDataListResVO getHouseholdDataList(OuputReqVO reqVo) {
+		
+		final HouseholdDataListResVO result = new HouseholdDataListResVO();
+		
+		result.setBcVo( bankCardDao.getBankCard(reqVo.getBcNo()) );
+		result.setList( ioDao.getHouseholdDataList(reqVo) );
 		
 		return result;
 	}

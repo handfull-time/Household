@@ -7,15 +7,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface HouseholdMapper {
-	
-	
-	/**
-	 * 가계부 메인 데이터 생성
-	 * @return
-	 */
-	public int createRecord();
-
-
-
 
 }

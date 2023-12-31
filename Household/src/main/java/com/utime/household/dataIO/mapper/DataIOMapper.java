@@ -15,6 +15,12 @@ import com.utime.household.dataIO.vo.OuputReqVO;
 public interface DataIOMapper {
 	
 	/**
+	 * 가계부 메인 데이터 생성
+	 * @return
+	 */
+	public int createRecord();
+	
+	/**
 	 * 데이터 추가
 	 * @param vo
 	 * @return

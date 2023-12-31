@@ -1,4 +1,3 @@
-<script xmlns:th="http://www.thymeleaf.org" >
 /**
  * Toast 설정
  * @see https://codeseven.github.io/toastr/demo.html
@@ -129,11 +128,12 @@ function toastAlert( title, message , type = "info") {
 }
 
 function _ajaxError(request, status, error) {
-	console.log('code: ' + request.status);
-    console.log('message: ' + request.responseText);
-    console.log('error: ' + error);
+	console.log('code: ', request.status);
+    console.log('message: ', request.responseText);
+    console.log('status: ', status);
+    console.log('error: ', error);
 	
-	toastAlert('Error', '오류가 발생했습니다.');	
+	toastAlert('오류', '오류가 발생했습니다.' + request.status + ', ' + request.responseText, 'error');	
 }
 
 function doSearchList(urlAddress, sendData, resultId){
@@ -217,5 +217,3 @@ function getFormObject(formId) {
     
     return formObject;
 }
-
-</script>

@@ -3,6 +3,28 @@
 <!--//네임스페이스에는 mapper 가 있는 풀 패키지명과 매퍼명을 등록 한다. -->
 <mapper namespace="com.utime.household.dataIO.mapper.DataIOMapper">
 
+	<!-- 가계부 메인 데이터 생성 -->
+	<insert id="createRecord">
+		CREATE TABLE HH_RECORD (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
+			, REG_DATE DATE DEFAULT (DATETIME('NOW','LOCALTIME')) <!-- 작성 일자 -->
+			, DEAL_DATE DATE NOT NULL <!-- 거래 일자 -->
+			, AMOUNT INTEGER(12) NOT NULL <!-- 금액 -->
+			, INCLUDED CHAR(1) NOT NULL CHECK(INCLUDED IN ('T', 'F'))  <!--  포함 여부 T:포함, F:미포함 -->
+			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O')) <!-- 입/출금 I 입금, O 출금 -->
+			, BANK_CARD_NO INTEGER NOT NULL <!-- 입금 출금 구분 -->
+			, CATEGORY_NO INTEGER NOT NULL <!-- 사용처 타입 고유 번호 -->
+			, STORE_NO INTEGER DEFAULT -1 <!-- 사용처 고유 번호-->
+			, CONTENT TEXT(128) DEFAULT NULL <!-- 사용처 -->
+			, DESCRIPTION TEXT(256) DEFAULT NULL <!-- 비고 -->
+			, OWNER_RECORD_NO INTEGER DEFAULT -1 <!-- 원 출처 번호 -->
+			, FOREIGN KEY(BANK_CARD_NO) REFERENCES HH_BANK_CARD(NO)
+    		, FOREIGN KEY(CATEGORY_NO) REFERENCES HH_CATEGORY(NO)
+    		, FOREIGN KEY(STORE_NO) REFERENCES HH_USAGE_STORE(NO)
+		)
+	</insert>
+	
 	<sql id="HouseholdDataCoulmns">
 		NO
 		, CT
@@ -24,7 +46,7 @@
 			, DESCRIPTION
 			</if>
 		) VALUES (
-			#{dealDate}
+			#{dealDate.format('yyyy-MM-dd HH:mm')}
 			, #{amount}
 			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
@@ -41,7 +63,7 @@
 	<resultMap id="HouseholdDataVOMap" type="com.utime.household.dataIO.vo.HouseholdDataVO">
 		<id column="NO" property="no" />
 		<id column="REG_DATE" property="regDate" />
-		<id column="DEAL_DATE" property="dealDate" />
+		<id column="DEAL_DATE" property="dealDate" typeHandler="com.utime.household.dataIO.handler.DealDateTypeHandler"/>
 		<id column="AMOUNT" property="amount" />
 		<id column="IN_OUT" property="io" typeHandler="com.utime.household.dataIO.handler.InoutTypeHandler"/>
 
@@ -50,7 +72,7 @@
 		<id column="BC_NAME" property="bcVo.name" />
 
 		<id column="CATEGORY_NO" property="category.no" />
-		<id column="CT" property="cType" typeHandler="com.utime.household.environment.handler.ECategoryTypeTypeHandler" />
+		<id column="CT" property="category.cType" typeHandler="com.utime.household.environment.handler.ECategoryTypeTypeHandler" />
 		<id column="CATEGORY_NAME" property="category.name" />
 		
 		<id column="STORE_NO" property="store.no" />
@@ -84,7 +106,7 @@
 			HH_RECORD HR
 			INNER JOIN HH_BANK_CARD HBC ON HR.BANK_CARD_NO = HBC.NO
 			INNER JOIN HH_CATEGORY HC ON HR.CATEGORY_NO = HC.NO
-			LEFT OUTER JOIN HH_USAGE_STORE HUS ON HR.STORE_NO = HUS.USAGE_STORE_NO AND HUS.CATEGORY_NO = HC.NO 
+			LEFT OUTER JOIN HH_USAGE_STORE HUS ON HR.STORE_NO = HUS.NO AND HUS.CATEGORY_NO = HC.NO 
 		WHERE 1=1
 			AND HR.ENABLED = 'Y'
 			AND HR.INCLUDED = 'T'
@@ -98,13 +120,17 @@
 			AND HR.STORE_NO = #{storeNo}
 			</if>
 			<if test="amount != 0">
-			AND HR.AMOUNT <choose><when test = "amountThan"> <![CDATA[>=]]> </when><otherwise> <![CDATA[<=]]> </otherwise></choose> #{amount}
+			AND HR.AMOUNT <choose><when test="amountThan"> <![CDATA[>=]]> </when><otherwise> <![CDATA[<=]]> </otherwise></choose> #{amount}
 			</if>
 			<if test=" null != begin and '' != begin and null != end and '' != end">
-			AND HR.DEAL_DATE BETWEEN strftime('%Y%m%d', #{begin}) AND strftime('%Y%m%d', #{end})  
+			AND HR.DEAL_DATE BETWEEN DATE(#{begin}) AND DATE(#{end}, '+1 DAY')
 			</if>
-			
-		ORDER BY HR.DEAL_DATE <choose><when test = "dateOrder">DESC</when><otherwise>ASC</otherwise></choose>
+			<if test=" null != content and '' != content">
+			AND ( HR.CONTENT LIKE '%${content}%' OR HR.DESCRIPTION LIKE '%${content}%' )
+			</if>
+		ORDER BY 
+			HR.DEAL_DATE <choose><when test="dateOrder">DESC</when><otherwise>ASC</otherwise></choose>
+			,HR.NO <choose><when test="dateOrder">DESC</when><otherwise>ASC</otherwise></choose>
 	</select>
 	
 </mapper>

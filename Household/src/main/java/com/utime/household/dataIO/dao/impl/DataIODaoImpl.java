@@ -7,16 +7,17 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.utime.household.common.mapper.CommonMapper;
 import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.dataIO.dao.DataIODao;
 import com.utime.household.dataIO.mapper.DataIOMapper;
-import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 import com.utime.household.dataIO.vo.HouseholdDataVO;
 import com.utime.household.dataIO.vo.OuputReqVO;
 import com.utime.household.environment.mapper.StoreMapper;
 import com.utime.household.environment.vo.BankCardVO;
 import com.utime.household.environment.vo.StoreVO;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,9 +26,28 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 class DataIODaoImpl implements DataIODao{
 
-	final DataIOMapper mapper;
+	private final CommonMapper common;
 	
-	final StoreMapper storeMapper;
+	private final DataIOMapper mapper;
+	
+	private final StoreMapper storeMapper;
+	
+	@PostConstruct
+	private void construct() {
+		try {
+			
+			// 가계부 메인 데이터
+			if( ! common.existTable("HH_RECORD") ) {
+				log.info("HH_RECORD 생성");
+				mapper.createRecord();
+				common.createIndex("HH_RECORD_REG_DATE_INDX", "HH_RECORD", "DEAL_DATE");
+			}
+			
+		} catch (Exception e) {
+			log.error("", e);
+		}
+	}
+	
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -65,21 +85,20 @@ class DataIODaoImpl implements DataIODao{
 	}
 	
 	@Override
-	public HouseholdDataListResVO getHouseholdDataList(OuputReqVO reqVo) {
+	public List<HouseholdDataVO> getHouseholdDataList(OuputReqVO reqVo) {
 		
 		if( HouseholdUtils.isNotEmpty(reqVo.getBegin()) && HouseholdUtils.isNotEmpty(reqVo.getEnd()) ) {
 			final String begin = reqVo.getBegin();
-			reqVo.setBegin( begin.substring(0, 4) + "-" + begin.substring(4, 6) + "-" + begin.substring(6, 8) );
+			if( begin.length() == 8) {
+				reqVo.setBegin( begin.substring(0, 4) + "-" + begin.substring(4, 6) + "-" + begin.substring(6, 8) );
+			}
 	        
 			final String end = reqVo.getEnd();
-			reqVo.setEnd( end.substring(0, 4) + "-" + end.substring(4, 6) + "-" + end.substring(6, 8) );
+			if( end.length() == 8 ) {
+				reqVo.setEnd( end.substring(0, 4) + "-" + end.substring(4, 6) + "-" + end.substring(6, 8) );
+			}
 		}
 		
-		
-		HouseholdDataListResVO result = new HouseholdDataListResVO();
-		
-		result.setList(mapper.getHouseholdDataList( reqVo ));
-		
-		return result;
+		return mapper.getHouseholdDataList( reqVo );
 	}
 }

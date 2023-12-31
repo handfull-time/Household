@@ -8,11 +8,5 @@ import com.utime.household.dataIO.vo.OuputReqVO;
  */
 public interface DataService {
 	
-	/**
-	 * 데이터 조회
-	 * @param bankCardNo
-	 * @param file
-	 * @return
-	 */
-	HouseholdDataListResVO getHouseholdDataList(OuputReqVO reqVo);
+	
 }

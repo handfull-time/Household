@@ -106,11 +106,9 @@
 			            	<th>은행/카드</th>
 			            	<th>입출금</th>
 			                <th>거래 금액</th>
-			                <th>입금/출금</th>
 			                <th>입금/출금 종류</th>
 			                <th>입금/출금 항목</th>
-			                <th>구분 키워드</th>
-			                <th>사용처</th>
+			                <th>내용</th>
 			                <th>비고</th>
 			            </tr>
 			        </thead>
@@ -120,8 +118,6 @@
 			            	<td th:text="${data.bcVo.name}"></td>
 			            	<td class="text-center" th:text="${data.io.dscr}"></td>
 			                <td class="text-right" th:text="${#numbers.formatDecimal(data.amount, 2, 'COMMA', 0, 'POINT')}"></td><!-- 거래 금액 -->
-			                <td class="text-center" th:text="${data.included? '포함':'비포함'}"></td><!-- 내역 포함 여부 -->
-			                <td class="text-center" th:text="${data.io.dscr}"></td><!-- 내역 포함 여부 -->
 			                <td class="text-right" th:text="${data.category.cType.dscr}"></td><!-- 입금/출금 종류 -->
 			                <td class="text-right" th:text="${data.category.name}"></td><!-- 입금/출금 항목 -->
 			                <td class="text-right" th:text="${data.store.name}"></td><!-- 구분 키워드 -->

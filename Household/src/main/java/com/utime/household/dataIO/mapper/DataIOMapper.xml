@@ -25,6 +25,124 @@
 		)
 	</insert>
 	
+	<!-- 가계부 임시 데이터 생성 -->
+	<insert id="createRecordTemp">
+		CREATE TABLE HH_RECORD_TEMP (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, DEAL_DATE DATE NOT NULL <!-- 거래 일자 -->
+			, AMOUNT INTEGER(12) NOT NULL <!-- 금액 -->
+			, INCLUDED CHAR(1) NOT NULL CHECK(INCLUDED IN ('T', 'F'))  <!--  포함 여부 T:포함, F:미포함 -->
+			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O')) <!-- 입/출금 I 입금, O 출금 -->
+			, BANK_CARD_NO INTEGER NOT NULL <!-- 입금 출금 구분 -->
+			, CATEGORY_NO INTEGER NOT NULL <!-- 사용처 타입 고유 번호 -->
+			, STORE_NO INTEGER DEFAULT -1 <!-- 사용처 고유 번호-->
+			, CONTENT TEXT(128) DEFAULT NULL <!-- 사용처 -->
+			, DESCRIPTION TEXT(256) DEFAULT NULL <!-- 비고 -->
+		)
+	</insert>
+	
+	<!-- 모든 임시 데이터 삭제 -->
+	<update id="deleteRecordTemp">
+		DELETE FROM HH_RECORD_TEMP
+	</update>
+	
+	<!-- 임시 데이터 추가 -->
+	<insert id="insertHouseholdTempData" parameterType="com.utime.household.dataIO.vo.HouseholdDataVO">
+		INSERT INTO HH_RECORD_TEMP (
+			DEAL_DATE <!-- 거래 일자 -->
+			, AMOUNT <!-- 금액 -->
+			, INCLUDED<!--  포함 여부 T:포함, F:미포함 -->
+			, IN_OUT <!-- 입/출금 I 입금, O 출금 -->
+			, BANK_CARD_NO <!-- 입금 출금 구분 -->
+			, CATEGORY_NO <!-- 사용처 타입 -->
+			, STORE_NO
+			, CONTENT
+			<if test="dscr != null and dscr != '' ">
+			, DESCRIPTION
+			</if>
+		) VALUES (
+			#{dealDate.format('yyyy-MM-dd HH:mm')}
+			, #{amount}
+			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
+			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
+			, #{bcVo.no}
+			, #{category.no}
+			, #{store.no}
+			, #{store.store}
+			<if test="dscr != null and dscr != '' ">
+			, #{dscr}
+			</if>
+		)
+	</insert>
+	
+	<!-- 원본 데이터와 임시 데이터의 동일 데이터 조회 -->
+	<select id="selectHouseholdSameDataList" parameterType="map" resultMap="HouseholdDataVOMap">
+		SELECT 
+			HR.NO
+			,HR.DEAL_DATE
+			,HR.AMOUNT
+			,HR.IN_OUT
+			,HR.BANK_CARD_NO
+			,HR.CATEGORY_NO
+			,HR.CONTENT
+			,HR.DESCRIPTION
+		FROM 
+		    HH_RECORD HR 
+			INNER JOIN 
+			    HH_RECORD_TEMP TMP 
+			ON 1=1
+			    AND HR.DEAL_DATE = TMP.DEAL_DATE 
+				AND HR.BANK_CARD_NO = TMP.BANK_CARD_NO;
+			    AND HR.AMOUNT = TMP.AMOUNT 
+			    AND HR.CONTENT = TMP.CONTENT;
+		WHERE 1=1
+			AND HR.ENABLED = 'Y'
+			AND HR.INCLUDED = 'T'
+			AND HR.DEAL_DATE BETWEEN DATE(#{begin.format('yyyy-MM-dd HH:mm'))}) AND DATE(#{end.format('yyyy-MM-dd HH:mm')}, '+1 DAY')
+		ORDER BY 
+			HR.DEAL_DATE ASC
+			,HR.NO ASC
+	</select>
+	
+	<!-- 원본 데이터에 없는 임시 데이터 추가. -->
+	<insert id="insertHouseholdTempToOriginData" parameterType="map" >
+		INSERT INTO TT_RECORD (
+			DEAL_DATE
+			, AMOUNT
+			, INCLUDED
+			, IN_OUT
+			, BANK_CARD_NO
+			, CATEGORY_NO
+			, STORE_NO
+			, CONTENT
+			, DESCRIPTION
+		) 
+		SELECT 
+			DEAL_DATE
+			, AMOUNT
+			, INCLUDED
+			, IN_OUT
+			, BANK_CARD_NO
+			, CATEGORY_NO
+			, STORE_NO
+			, CONTENT
+			, DESCRIPTION
+		FROM 
+		    HH_RECORD_TEMP TMP
+		WHERE 
+		    NOT EXISTS (
+		        SELECT 1
+		        FROM HH_RECORD HR
+		        WHERE 1=1
+				    AND HR.DEAL_DATE = TMP.DEAL_DATE 
+					AND HR.BANK_CARD_NO = TMP.BANK_CARD_NO;
+				    AND HR.AMOUNT = TMP.AMOUNT 
+				    AND HR.CONTENT = TMP.CONTENT;
+				    AND HR.DEAL_DATE BETWEEN DATE(#{begin.format('yyyy-MM-dd HH:mm')}) AND DATE(#{end.format('yyyy-MM-dd HH:mm')}, '+1 DAY')
+		    )
+	</insert>
+	
+	
 	<sql id="HouseholdDataCoulmns">
 		NO
 		, CT
@@ -84,7 +202,7 @@
 	</resultMap>
 	
 	<!-- 자료 조회 -->
-	<select id="getHouseholdDataList" parameterType="com.utime.household.dataIO.vo.OuputReqVO" resultMap="HouseholdDataVOMap">
+	<select id="selectHouseholdDataList" parameterType="com.utime.household.dataIO.vo.OuputReqVO" resultMap="HouseholdDataVOMap">
 		SELECT 
 			HR.NO
 			,HR.REG_DATE

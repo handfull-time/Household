@@ -103,7 +103,7 @@ public class DataIOController {
 		
 		final HouseholdReqDataVO vo = gson.fromJson(json, HouseholdReqDataVO.class);
 		
-		final HouseholdResDataVO res = service.saveData( vo );
+		final HouseholdResDataVO res = service.saveCompareData( vo );
 		
 		if( res.isError() ) {
 			return "error";

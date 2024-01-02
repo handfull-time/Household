@@ -72,7 +72,7 @@ class DataIOServiceImpl implements DataIOService{
 	
 
 	@Override
-	public HouseholdResDataVO saveData(HouseholdReqDataVO vo) {
+	public HouseholdResDataVO saveCompareData(HouseholdReqDataVO vo) {
 		final HouseholdResDataVO result = new HouseholdResDataVO();
 		
 		final BankCardVO bcVo = bankCardDao.getSimpleBankCard(vo.getBcNo());
@@ -97,7 +97,7 @@ class DataIOServiceImpl implements DataIOService{
 		}
 		
 		try {
-			ioDao.insertHouseholdData( bcVo, list );
+			ioDao.addHouseholdData( list, minDate, maxDate );
 		} catch (Exception e) {
 			log.error("", e);
 			result.setCodeMessage("EHS0A2", e.getMessage());
@@ -107,6 +107,28 @@ class DataIOServiceImpl implements DataIOService{
 		
 		result.setBegin( sdf.format(minDate) );
 		result.setEnd( sdf.format(maxDate) );
+		
+		return result;
+	}
+	
+	@Override
+	public HouseholdResDataVO saveDirectData(HouseholdReqDataVO vo) {
+		final HouseholdResDataVO result = new HouseholdResDataVO();
+		
+		final BankCardVO bcVo = bankCardDao.getSimpleBankCard(vo.getBcNo());
+		result.setBcVo( bcVo );
+		
+		List<HouseholdDataVO> list = vo.getList();
+		
+		for( HouseholdDataVO item : list) {
+			item.setBcVo(bcVo);
+			try {
+				ioDao.addHouseholdData(item);
+			} catch (Exception e) {
+				log.error("", e);
+				result.setCodeMessage("EHS0A2", e.getMessage());
+			}
+		}
 		
 		return result;
 	}

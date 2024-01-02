@@ -1,5 +1,6 @@
 package com.utime.household.dataIO.dao.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ class DataIODaoImpl implements DataIODao{
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public int insertHouseholdData(BankCardVO bcVo, List<HouseholdDataVO> list) throws Exception {
+	public int addHouseholdData(List<HouseholdDataVO> list, Date minDate, Date maxDate) throws Exception {
 
 		int result = 0;
 		if( list == null || list.size() < 1 ) {
@@ -75,13 +76,32 @@ class DataIODaoImpl implements DataIODao{
 				}
 			}
 		}
-
+		
+		// 임시 테이블 클리어.
+		mapper.deleteRecordTemp();
+		
+		// 임시 테이블에 추가.
 		for( HouseholdDataVO item : list) {
-			item.setBcVo(bcVo);
-			result += mapper.insertHouseholdData(item);
+			result += mapper.insertHouseholdTempData(item);
 		}
+		
+		// 동일 데이터 비교
+		final List<HouseholdDataVO> sameList = mapper.selectHouseholdSameDataList(minDate, maxDate);
+		
+		mapper.insertHouseholdTempToOriginData(minDate, maxDate);
+
+//		for( HouseholdDataVO item : list) {
+//			item.setBcVo(bcVo);
+//			result += mapper.insertHouseholdData(item);
+//		}
 
 		return result;
+	}
+	
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public int addHouseholdData(HouseholdDataVO vo) throws Exception {
+		return mapper.insertHouseholdData(vo);
 	}
 	
 	@Override
@@ -99,6 +119,6 @@ class DataIODaoImpl implements DataIODao{
 			}
 		}
 		
-		return mapper.getHouseholdDataList( reqVo );
+		return mapper.selectHouseholdDataList( reqVo );
 	}
 }

@@ -21,11 +21,18 @@ public interface DataIOService {
 	HouseholdDataListResVO analyzeData(long bankCardNo, MultipartFile file);
 
 	/**
-	 * 데이터 저장
+	 * 비교 후 데이터 저장
 	 * @param vo
 	 * @return
 	 */
-	HouseholdResDataVO saveData(HouseholdReqDataVO vo);
+	HouseholdResDataVO saveCompareData(HouseholdReqDataVO vo);
+	
+	/**
+	 * 비교 없이 바로 데이터 저장
+	 * @param vo
+	 * @return
+	 */
+	HouseholdResDataVO saveDirectData(HouseholdReqDataVO vo);
 	
 	/**
 	 * 데이터 조회

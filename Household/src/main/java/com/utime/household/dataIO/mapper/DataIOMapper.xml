@@ -197,6 +197,7 @@
 		<id column="CONTENT" property="store.store" />
 		
 		<id column="DESCRIPTION" property="dscr" />
+		<id column="HASH" property="hash" />
 		<id column="OWNER_RECORD_NO" property="ownerNo" />
 	</resultMap>
 	

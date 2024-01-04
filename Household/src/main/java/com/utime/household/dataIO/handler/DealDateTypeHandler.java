@@ -11,7 +11,9 @@ import java.util.Locale;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
-
+/**
+ * 거래 일자 변환 핸들러
+ */
 public class DealDateTypeHandler implements TypeHandler<Date>{
 	
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREA);

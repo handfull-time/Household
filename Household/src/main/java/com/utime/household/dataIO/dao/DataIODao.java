@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.utime.household.dataIO.vo.HouseholdDataVO;
+import com.utime.household.dataIO.vo.HouseholdSaveResultVO;
 import com.utime.household.dataIO.vo.OuputReqVO;
 
 public interface DataIODao {
@@ -17,7 +18,7 @@ public interface DataIODao {
 	 * @return
 	 * @throws Exception
 	 */
-	int addHouseholdData(List<HouseholdDataVO> list, Date minDate, Date maxDate ) throws Exception;
+	HouseholdSaveResultVO addHouseholdData(List<HouseholdDataVO> list, Date minDate, Date maxDate ) throws Exception;
 	
 	/**
 	 * 데이터 추가

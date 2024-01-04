@@ -13,9 +13,9 @@ import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.dataIO.dao.DataIODao;
 import com.utime.household.dataIO.mapper.DataIOMapper;
 import com.utime.household.dataIO.vo.HouseholdDataVO;
+import com.utime.household.dataIO.vo.HouseholdSaveResultVO;
 import com.utime.household.dataIO.vo.OuputReqVO;
 import com.utime.household.environment.mapper.StoreMapper;
-import com.utime.household.environment.vo.BankCardVO;
 import com.utime.household.environment.vo.StoreVO;
 
 import jakarta.annotation.PostConstruct;
@@ -38,11 +38,23 @@ class DataIODaoImpl implements DataIODao{
 		try {
 			
 			// 가계부 메인 데이터
-			if( ! common.existTable("HH_RECORD") ) {
+			final String tableName = "HH_RECORD";
+			if( ! common.existTable(tableName) ) {
 				log.info("HH_RECORD 생성");
 				mapper.createRecord();
-				common.createIndex("HH_RECORD_REG_DATE_INDX", "HH_RECORD", "DEAL_DATE");
+				common.createIndex("HH_RECORD_DEAL_DATE_INDX", tableName, "DEAL_DATE");
+				common.createIndex("HH_RECORD_BANK_CARD_NO_INDX", tableName, "BANK_CARD_NO");
+				common.createIndex("HH_RECORD_CATEGORY_NO_INDX", tableName, "CATEGORY_NO");
+				common.createIndex("HH_RECORD_STORE_NO_INDX", tableName, "STORE_NO");
 			}
+			
+			if( ! common.existTable("HH_RECORD_TEMP") ) {
+				log.info("HH_RECORD_TEMP 생성");
+				mapper.createRecordTemp();
+				common.createIndex("HH_RECORD_TEMP_DEAL_DATE_INDX", "HH_RECORD_TEMP", "DEAL_DATE");
+			}
+			
+			
 			
 		} catch (Exception e) {
 			log.error("", e);
@@ -52,9 +64,9 @@ class DataIODaoImpl implements DataIODao{
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public int addHouseholdData(List<HouseholdDataVO> list, Date minDate, Date maxDate) throws Exception {
+	public HouseholdSaveResultVO addHouseholdData(List<HouseholdDataVO> list, Date minDate, Date maxDate) throws Exception {
 
-		int result = 0;
+		final HouseholdSaveResultVO result = new HouseholdSaveResultVO();
 		if( list == null || list.size() < 1 ) {
 			return result;
 		}
@@ -80,18 +92,23 @@ class DataIODaoImpl implements DataIODao{
 		// 임시 테이블 클리어.
 		mapper.deleteRecordTemp();
 		
+		int addCnt = 0;
 		// 임시 테이블에 추가.
 		for( HouseholdDataVO item : list) {
-			result += mapper.insertHouseholdTempData(item);
+			addCnt += mapper.insertHouseholdTempData(item);
 		}
+		log.info("임시 추가 갯수 " + addCnt);
 		
 		// 동일 데이터 비교
 		final List<HouseholdDataVO> sameList = mapper.selectHouseholdSameDataList(minDate, maxDate);
+		log.info("동일 데이터 " + sameList);
 		
 		mapper.insertHouseholdTempToOriginData(minDate, maxDate);
+		
+		// 임시 테이블 클리어.
+		mapper.deleteRecordTemp();
 
 //		for( HouseholdDataVO item : list) {
-//			item.setBcVo(bcVo);
 //			result += mapper.insertHouseholdData(item);
 //		}
 

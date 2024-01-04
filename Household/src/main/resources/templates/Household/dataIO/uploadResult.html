@@ -201,12 +201,16 @@
    	        category: { no: 0, type:'' },
    	        dscr: ""
 	    };
-	     */
-	     
+	    */
+	    
+	    // 인덱스 조회
 	    const index = parseInt( row.getAttribute('index') );
+	    // 원본 데이터 추출
 	    const orgData = dataRawList[index];
+	    // 데이터 복제
 	    const data = {...orgData};
 	    data.index = index;
+	    // 날짜 변환
 	    const date = new Date(data.dealDate);
 	    data.dealDate = `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
@@ -314,8 +318,6 @@
 	    const rows = tbody.querySelectorAll('tr');
 	    const sendList = [];
 
-	    
-	    
 	    let missCategoryData = null;
 	    rows.forEach(function(row) {
 	    	
@@ -435,7 +437,7 @@
 		</div> <!-- card body -->
 	</div>
 	
-	<th:block th:replace="data/uploadDataModal :: editModal"/>
+	<th:block th:replace="dataIO/uploadDataModal :: editModal"/>
 	
 </div>
 

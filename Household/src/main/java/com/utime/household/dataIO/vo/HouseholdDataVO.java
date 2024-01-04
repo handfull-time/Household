@@ -2,19 +2,15 @@ package com.utime.household.dataIO.vo;
 
 import java.util.Date;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.utime.household.environment.vo.BankCardVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.StoreVO;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Setter
 @Getter
-@ToString(callSuper = true)
 public class HouseholdDataVO {
 
 	/** 고유 번호 */
@@ -48,6 +44,36 @@ public class HouseholdDataVO {
 	/** 비고 */
 	String dscr;
 	
+	/**
+	 * 데이터고유 해쉬
+	 */
+	int hash;
+	
 	/** 원 출처 번호 */
 	long ownerNo;
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("[no=").append(no).append(", ");
+		if (regDate != null)
+			builder.append("regDate=").append(regDate).append(", ");
+		if (dealDate != null)
+			builder.append("dealDate=").append(dealDate).append(", ");
+		builder.append("amount=").append(amount).append(", included=").append(included).append(", ");
+		if (io != null)
+			builder.append("io=").append(io).append(", ");
+		if (bcVo != null)
+			builder.append("bcVo=").append(bcVo).append(", ");
+		if (category != null)
+			builder.append("category=").append(category).append(", ");
+		if (store != null)
+			builder.append("store=").append(store).append(", ");
+		if (dscr != null)
+			builder.append("dscr=").append(dscr).append(", ");
+		builder.append("hash=").append(hash).append(", ownerNo=").append(ownerNo).append("]\n");
+		return builder.toString();
+	}
+	
+	
 }

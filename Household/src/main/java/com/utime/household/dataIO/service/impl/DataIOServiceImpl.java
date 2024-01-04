@@ -34,6 +34,14 @@ class DataIOServiceImpl implements DataIOService{
 	
 	private final DataIODao ioDao;
 	
+	private final String splitChar = "";
+	
+	private int getHash( int index, HouseholdDataVO item ) {
+		final String hash = index + splitChar + item.getDealDate().getTime() + splitChar + item.getAmount() + splitChar + item.getStore().getStore();
+		return hash.hashCode();
+	}
+	
+	
 	@Override
 	public HouseholdDataListResVO analyzeData(long bankCardNo, MultipartFile file) {
 		
@@ -58,9 +66,21 @@ class DataIOServiceImpl implements DataIOService{
 		bcVo.setCard(null);
 		bcVo.setDscr(null);
 		
+		
 		try {
 			result = service.extractData( bcVo, file );
 			result.setBcVo( bcVo );
+
+			// 데이터 유니크 보장을 위해 추가.
+			if( result != null && ! result.isError() && result.getList() != null ) {
+				
+				final List<HouseholdDataVO> list = result.getList();
+				for( int i=0 ; i<list.size() ; i++ ) {
+					final HouseholdDataVO item = list.get(i);
+					item.setHash( this.getHash( i, item ) );
+				}
+			}
+			
 		} catch (Exception e) {
 			log.error("", e);
 			result = new HouseholdDataListResVO();
@@ -83,7 +103,9 @@ class DataIOServiceImpl implements DataIOService{
 		Date minDate = first.getDealDate();
         Date maxDate = first.getDealDate();
 		
-		for( HouseholdDataVO item : list) {
+		for( int i=0 ; i<list.size() ; i++ ) {
+			final HouseholdDataVO item = list.get(i);
+
 			item.setBcVo(bcVo);
 			final Date date  = item.getDealDate();
 			
@@ -94,6 +116,10 @@ class DataIOServiceImpl implements DataIOService{
 			if (date.after(maxDate)) {
                 maxDate = date;
             }
+			
+			if( item.getHash() == 0 ) {
+				item.setHash( this.getHash( i, item ) );	
+			}
 		}
 		
 		try {
@@ -120,8 +146,14 @@ class DataIOServiceImpl implements DataIOService{
 		
 		List<HouseholdDataVO> list = vo.getList();
 		
-		for( HouseholdDataVO item : list) {
+		for( int i=0 ; i<list.size() ; i++ ) {
+			final HouseholdDataVO item = list.get(i);
 			item.setBcVo(bcVo);
+			
+			if( item.getHash() == 0 ) {
+				item.setHash( this.getHash( i, item ) );	
+			}
+			
 			try {
 				ioDao.addHouseholdData(item);
 			} catch (Exception e) {

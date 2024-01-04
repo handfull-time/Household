@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.common.vo.HouseholdDefine;
 
 import lombok.Data;

@@ -9,15 +9,24 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * 분석 결과
- */
 @Setter
 @Getter
 @ToString(callSuper = true)
-public class HouseholdDataListResVO extends ReturnBasic{
+public class HouseholdSaveResultVO extends ReturnBasic{
 
-	List<HouseholdDataVO> list;
-	
+	/**
+	 * 은행/카드
+	 */
 	BankCardVO bcVo;
+
+	/**
+	 * 추가된 데이터
+	 */
+	List<HouseholdDataVO> addList;
+	
+	/**
+	 * 예외된 데이터
+	 */
+	List<HouseholdDataVO> exList;
+	
 }

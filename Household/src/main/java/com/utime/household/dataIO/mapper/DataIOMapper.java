@@ -48,14 +48,14 @@ public interface DataIOMapper {
 	 * @param reqVo
 	 * @return
 	 */
-	List<HouseholdDataVO> selectHouseholdSameDataList(@Param("minDate") Date minDate, @Param("maxDate") Date maxDate);
+	List<HouseholdDataVO> selectHouseholdSameDataList(@Param("begin") Date beginDate, @Param("end") Date endDate);
 	
 	/**
 	 * 원본 데이터에 없는 임시 데이터 추가.
 	 * @param reqVo
 	 * @return
 	 */
-	int insertHouseholdTempToOriginData(@Param("minDate") Date minDate, @Param("maxDate") Date maxDate);
+	int insertHouseholdTempToOriginData(@Param("begin") Date beginDate, @Param("end") Date endDate);
 	
 	/**
 	 * 데이터 추가

@@ -2,6 +2,9 @@ package com.utime.household.common.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class HouseholdUtils {
 	/**
@@ -48,4 +51,26 @@ public class HouseholdUtils {
 		e.printStackTrace( out );
 		return new String( sw.getBuffer() );
     }
+    
+    /**
+     * md5
+     * @param text
+     * @return
+     */
+    public static String md5Digest(String text) {
+        final StringBuffer sb = new StringBuffer();
+	    try {
+	        final MessageDigest md = MessageDigest.getInstance("MD5");
+	        md.update(text.getBytes("UTF-8"));
+	        final byte byteData[] = md.digest();
+	        for (int i = 0; i < byteData.length; i++) {
+	            sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+	        }
+	    } catch (NoSuchAlgorithmException e) {
+	        e.printStackTrace();
+	    } catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	    return sb.toString().toUpperCase();
+	}
 }

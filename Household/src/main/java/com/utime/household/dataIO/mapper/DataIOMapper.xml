@@ -18,6 +18,7 @@
 			, STORE_NO INTEGER DEFAULT -1 <!-- 사용처 고유 번호-->
 			, CONTENT TEXT(128) DEFAULT NULL <!-- 사용처 -->
 			, DESCRIPTION TEXT(256) DEFAULT NULL <!-- 비고 -->
+			, HASH INTEGER DEFAULT 0 <!-- 데이터 유니크 보장 -->
 			, OWNER_RECORD_NO INTEGER DEFAULT -1 <!-- 원 출처 번호 -->
 			, FOREIGN KEY(BANK_CARD_NO) REFERENCES HH_BANK_CARD(NO)
     		, FOREIGN KEY(CATEGORY_NO) REFERENCES HH_CATEGORY(NO)
@@ -29,15 +30,16 @@
 	<insert id="createRecordTemp">
 		CREATE TABLE HH_RECORD_TEMP (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
-			, DEAL_DATE DATE NOT NULL <!-- 거래 일자 -->
-			, AMOUNT INTEGER(12) NOT NULL <!-- 금액 -->
-			, INCLUDED CHAR(1) NOT NULL CHECK(INCLUDED IN ('T', 'F'))  <!--  포함 여부 T:포함, F:미포함 -->
-			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O')) <!-- 입/출금 I 입금, O 출금 -->
-			, BANK_CARD_NO INTEGER NOT NULL <!-- 입금 출금 구분 -->
-			, CATEGORY_NO INTEGER NOT NULL <!-- 사용처 타입 고유 번호 -->
-			, STORE_NO INTEGER DEFAULT -1 <!-- 사용처 고유 번호-->
-			, CONTENT TEXT(128) DEFAULT NULL <!-- 사용처 -->
-			, DESCRIPTION TEXT(256) DEFAULT NULL <!-- 비고 -->
+			, DEAL_DATE DATE NOT NULL
+			, AMOUNT INTEGER(12) NOT NULL 
+			, INCLUDED CHAR(1) NOT NULL CHECK(INCLUDED IN ('T', 'F'))
+			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O'))
+			, BANK_CARD_NO INTEGER NOT NULL
+			, CATEGORY_NO INTEGER NOT NULL
+			, STORE_NO INTEGER DEFAULT -1
+			, CONTENT TEXT(128) DEFAULT NULL
+			, DESCRIPTION TEXT(256) DEFAULT NULL
+			, HASH INTEGER DEFAULT 0
 		)
 	</insert>
 	
@@ -49,19 +51,20 @@
 	<!-- 임시 데이터 추가 -->
 	<insert id="insertHouseholdTempData" parameterType="com.utime.household.dataIO.vo.HouseholdDataVO">
 		INSERT INTO HH_RECORD_TEMP (
-			DEAL_DATE <!-- 거래 일자 -->
-			, AMOUNT <!-- 금액 -->
-			, INCLUDED<!--  포함 여부 T:포함, F:미포함 -->
-			, IN_OUT <!-- 입/출금 I 입금, O 출금 -->
-			, BANK_CARD_NO <!-- 입금 출금 구분 -->
-			, CATEGORY_NO <!-- 사용처 타입 -->
+			DEAL_DATE 
+			, AMOUNT
+			, INCLUDED
+			, IN_OUT
+			, BANK_CARD_NO 
+			, CATEGORY_NO
 			, STORE_NO
 			, CONTENT
 			<if test="dscr != null and dscr != '' ">
 			, DESCRIPTION
 			</if>
+			, HASH
 		) VALUES (
-			#{dealDate.format('yyyy-MM-dd HH:mm')}
+			DATE(#{dealDate, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler})
 			, #{amount}
 			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
@@ -72,6 +75,7 @@
 			<if test="dscr != null and dscr != '' ">
 			, #{dscr}
 			</if>
+			, #{hash}
 		)
 	</insert>
 	
@@ -84,21 +88,21 @@
 			,HR.IN_OUT
 			,HR.BANK_CARD_NO
 			,HR.CATEGORY_NO
+			,HR.STORE_NO
 			,HR.CONTENT
 			,HR.DESCRIPTION
+			,HR.HASH
 		FROM 
 		    HH_RECORD HR 
 			INNER JOIN 
 			    HH_RECORD_TEMP TMP 
 			ON 1=1
-			    AND HR.DEAL_DATE = TMP.DEAL_DATE 
-				AND HR.BANK_CARD_NO = TMP.BANK_CARD_NO;
-			    AND HR.AMOUNT = TMP.AMOUNT 
-			    AND HR.CONTENT = TMP.CONTENT;
+			    AND HR.HASH = TMP.HASH 
 		WHERE 1=1
 			AND HR.ENABLED = 'Y'
 			AND HR.INCLUDED = 'T'
-			AND HR.DEAL_DATE BETWEEN DATE(#{begin.format('yyyy-MM-dd HH:mm'))}) AND DATE(#{end.format('yyyy-MM-dd HH:mm')}, '+1 DAY')
+			AND HR.DEAL_DATE BETWEEN DATE(#{begin, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler})
+				AND DATE(#{end, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler}, '+1 DAY')
 		ORDER BY 
 			HR.DEAL_DATE ASC
 			,HR.NO ASC
@@ -106,7 +110,7 @@
 	
 	<!-- 원본 데이터에 없는 임시 데이터 추가. -->
 	<insert id="insertHouseholdTempToOriginData" parameterType="map" >
-		INSERT INTO TT_RECORD (
+		INSERT INTO HH_RECORD (
 			DEAL_DATE
 			, AMOUNT
 			, INCLUDED
@@ -116,6 +120,7 @@
 			, STORE_NO
 			, CONTENT
 			, DESCRIPTION
+			, HASH
 		) 
 		SELECT 
 			DEAL_DATE
@@ -127,6 +132,7 @@
 			, STORE_NO
 			, CONTENT
 			, DESCRIPTION
+			, HASH
 		FROM 
 		    HH_RECORD_TEMP TMP
 		WHERE 
@@ -134,20 +140,11 @@
 		        SELECT 1
 		        FROM HH_RECORD HR
 		        WHERE 1=1
-				    AND HR.DEAL_DATE = TMP.DEAL_DATE 
-					AND HR.BANK_CARD_NO = TMP.BANK_CARD_NO;
-				    AND HR.AMOUNT = TMP.AMOUNT 
-				    AND HR.CONTENT = TMP.CONTENT;
-				    AND HR.DEAL_DATE BETWEEN DATE(#{begin.format('yyyy-MM-dd HH:mm')}) AND DATE(#{end.format('yyyy-MM-dd HH:mm')}, '+1 DAY')
+				    AND HR.HASH = TMP.HASH 
+				    AND HR.DEAL_DATE BETWEEN DATE(#{begin, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler})
+						AND DATE(#{end, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler}, '+1 DAY')
 		    )
 	</insert>
-	
-	
-	<sql id="HouseholdDataCoulmns">
-		NO
-		, CT
-		, NAME
-	</sql>
 
 	<!-- 추가 -->
 	<insert id="insertHouseholdData" parameterType="com.utime.household.dataIO.vo.HouseholdDataVO">
@@ -163,8 +160,9 @@
 			<if test="dscr != null and dscr != '' ">
 			, DESCRIPTION
 			</if>
+			,HASH
 		) VALUES (
-			#{dealDate.format('yyyy-MM-dd HH:mm')}
+			DATE(#{dealDate, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler})
 			, #{amount}
 			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
@@ -175,6 +173,7 @@
 			<if test="dscr != null and dscr != '' ">
 			, #{dscr}
 			</if>
+			,{hash}
 		)
 	</insert>
 	

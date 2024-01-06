@@ -8,10 +8,12 @@ import java.util.Date;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -96,7 +98,7 @@ public class DataIOController {
 	}
 			
 	@PostMapping(value = {"DoSaveData.html"})
-	public String doSaveData( @RequestParam("jsonData") String json ) {
+	public String doSaveData(RedirectAttributes redirectAttributes, @RequestParam("jsonData") String json ) {
 		
 		final Gson gson = new GsonBuilder().setPrettyPrinting()
 				.registerTypeAdapter(Date.class, new GsonDateConverter()).create();
@@ -109,7 +111,18 @@ public class DataIOController {
 			return "error";
 		}
 		
-		return "redirect:/Data/Home.html?bcNo="+vo.getBcNo()+"&begin="+res.getBegin()+"&end="+res.getEnd();
+		redirectAttributes.addFlashAttribute("res", res);
+		
+		return "redirect:/IO/DoSaveResult.html";
 	}
+	
+	@GetMapping(value = {"DoSaveResult.html"})
+	public String doSaveResult( ModelMap model, @ModelAttribute(value = "res") HouseholdResDataVO res ) {
+		
+		model.addAttribute("res", res);
+//		return "redirect:/Data/Home.html?bcNo="+vo.getBcNo()+"&begin="+res.getBegin()+"&end="+res.getEnd();
+		return "dataIO/saveResult";
+	}
+	
 
 }

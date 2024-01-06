@@ -64,7 +64,7 @@
 			</if>
 			, HASH
 		) VALUES (
-			DATE(#{dealDate, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler})
+			DATETIME(#{dealDate, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler})
 			, #{amount}
 			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
@@ -79,19 +79,26 @@
 		)
 	</insert>
 	
+	<sql id="SameSelectSQL">
+		${Header}DEAL_DATE
+		, ${Header}AMOUNT
+		, ${Header}INCLUDED
+		, ${Header}IN_OUT
+		, ${Header}BANK_CARD_NO
+		, ${Header}CATEGORY_NO
+		, ${Header}STORE_NO
+		, ${Header}CONTENT
+		, ${Header}DESCRIPTION
+		, ${Header}HASH
+	</sql>
+	
 	<!-- 원본 데이터와 임시 데이터의 동일 데이터 조회 -->
 	<select id="selectHouseholdSameDataList" parameterType="map" resultMap="HouseholdDataVOMap">
 		SELECT 
 			HR.NO
-			,HR.DEAL_DATE
-			,HR.AMOUNT
-			,HR.IN_OUT
-			,HR.BANK_CARD_NO
-			,HR.CATEGORY_NO
-			,HR.STORE_NO
-			,HR.CONTENT
-			,HR.DESCRIPTION
-			,HR.HASH
+			,<include refid="SameSelectSQL" >
+				<property name="Header" value="HR."/>
+			</include>
 		FROM 
 		    HH_RECORD HR 
 			INNER JOIN 
@@ -111,28 +118,14 @@
 	<!-- 원본 데이터에 없는 임시 데이터 추가. -->
 	<insert id="insertHouseholdTempToOriginData" parameterType="map" >
 		INSERT INTO HH_RECORD (
-			DEAL_DATE
-			, AMOUNT
-			, INCLUDED
-			, IN_OUT
-			, BANK_CARD_NO
-			, CATEGORY_NO
-			, STORE_NO
-			, CONTENT
-			, DESCRIPTION
-			, HASH
+			<include refid="SameSelectSQL" >
+				<property name="Header" value=""/>
+			</include>
 		) 
 		SELECT 
-			DEAL_DATE
-			, AMOUNT
-			, INCLUDED
-			, IN_OUT
-			, BANK_CARD_NO
-			, CATEGORY_NO
-			, STORE_NO
-			, CONTENT
-			, DESCRIPTION
-			, HASH
+			<include refid="SameSelectSQL" >
+				<property name="Header" value="TMP."/>
+			</include>
 		FROM 
 		    HH_RECORD_TEMP TMP
 		WHERE 
@@ -145,6 +138,25 @@
 						AND DATE(#{end, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler}, '+1 DAY')
 		    )
 	</insert>
+	
+	<!-- 원본 데이터와 임시 데이터의 다른 데이터 조회 -->
+	<select id="selectHouseholdDeferentDataList" parameterType="map" resultMap="HouseholdDataVOMap">
+		SELECT 
+			<include refid="SameSelectSQL" >
+				<property name="Header" value="TMP."/>
+			</include>
+		FROM 
+		    HH_RECORD_TEMP TMP
+		WHERE 
+		    NOT EXISTS (
+		        SELECT 1
+		        FROM HH_RECORD HR
+		        WHERE 1=1
+				    AND HR.HASH = TMP.HASH 
+				    AND HR.DEAL_DATE BETWEEN DATE(#{begin, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler})
+						AND DATE(#{end, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler}, '+1 DAY')
+		    )
+	</select>
 
 	<!-- 추가 -->
 	<insert id="insertHouseholdData" parameterType="com.utime.household.dataIO.vo.HouseholdDataVO">
@@ -162,7 +174,7 @@
 			</if>
 			,HASH
 		) VALUES (
-			DATE(#{dealDate, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler})
+			DATETIME(#{dealDate, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler})
 			, #{amount}
 			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}

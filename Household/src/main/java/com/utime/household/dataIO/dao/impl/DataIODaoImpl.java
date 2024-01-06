@@ -13,9 +13,11 @@ import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.dataIO.dao.DataIODao;
 import com.utime.household.dataIO.mapper.DataIOMapper;
 import com.utime.household.dataIO.vo.HouseholdDataVO;
-import com.utime.household.dataIO.vo.HouseholdSaveResultVO;
+import com.utime.household.dataIO.vo.HouseholdResDataVO;
 import com.utime.household.dataIO.vo.OuputReqVO;
+import com.utime.household.environment.mapper.CategoryMapper;
 import com.utime.household.environment.mapper.StoreMapper;
+import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.StoreVO;
 
 import jakarta.annotation.PostConstruct;
@@ -32,6 +34,8 @@ class DataIODaoImpl implements DataIODao{
 	private final DataIOMapper mapper;
 	
 	private final StoreMapper storeMapper;
+	
+	private final CategoryMapper categoryMapper;
 	
 	@PostConstruct
 	private void construct() {
@@ -61,12 +65,29 @@ class DataIODaoImpl implements DataIODao{
 		}
 	}
 	
+	private void genericHouseList(final Map<Long, CategoryVO> cMap, final Map<Long, StoreVO> sMap, List<HouseholdDataVO> list) {
+		for( HouseholdDataVO item : list ) {
+			final StoreVO store = sMap.get( item.getStore().getNo() );
+			if( store != null ) {
+				item.getStore().setName(store.getName());
+			}else {
+				item.getStore().setName("");
+			}
+			final CategoryVO category = cMap.get( item.getCategory().getNo() );
+			if( category != null ) {
+				item.setCategory(category);
+			}else {
+				item.setCategory(category);
+			}
+		}
+	}
+	
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public HouseholdSaveResultVO addHouseholdData(List<HouseholdDataVO> list, Date minDate, Date maxDate) throws Exception {
+	public int addHouseholdData(HouseholdResDataVO outResult, List<HouseholdDataVO> list, Date beginDate, Date endDate) throws Exception {
 
-		final HouseholdSaveResultVO result = new HouseholdSaveResultVO();
+		int result = 0;
 		if( list == null || list.size() < 1 ) {
 			return result;
 		}
@@ -100,17 +121,38 @@ class DataIODaoImpl implements DataIODao{
 		log.info("임시 추가 갯수 " + addCnt);
 		
 		// 동일 데이터 비교
-		final List<HouseholdDataVO> sameList = mapper.selectHouseholdSameDataList(minDate, maxDate);
-		log.info("동일 데이터 " + sameList);
+		final List<HouseholdDataVO> sameList = mapper.selectHouseholdSameDataList(beginDate, endDate);
+//		log.info("동일 데이터 " + sameList);
+		outResult.setExList(sameList);
 		
-		mapper.insertHouseholdTempToOriginData(minDate, maxDate);
+		final List<HouseholdDataVO> deferentList = mapper.selectHouseholdDeferentDataList(beginDate, endDate);
+//		log.info("추가될 데이터 " + deferentList);
+		outResult.setAddList(deferentList);
+		
+		
+		result = mapper.insertHouseholdTempToOriginData(beginDate, endDate);
+		log.info("추가된 데이터 " + result);
 		
 		// 임시 테이블 클리어.
 		mapper.deleteRecordTemp();
-
-//		for( HouseholdDataVO item : list) {
-//			result += mapper.insertHouseholdData(item);
-//		}
+		
+		final Map<Long, CategoryVO> cMap = new HashMap<>();
+		final Map<Long, StoreVO> sMap = new HashMap<>();
+		{
+			final List<CategoryVO> cList = categoryMapper.getCategoryList(null);
+			for( CategoryVO item : cList ) {
+				cMap.put(item.getNo(), item);
+			}
+			
+			final List<StoreVO> sList = storeMapper.getStoreList(-1L);
+			for( StoreVO item : sList ) {
+				sMap.put(item.getNo(), item);
+			}
+		}
+		
+		this.genericHouseList(cMap, sMap, sameList);
+		
+		this.genericHouseList(cMap, sMap, deferentList);
 
 		return result;
 	}

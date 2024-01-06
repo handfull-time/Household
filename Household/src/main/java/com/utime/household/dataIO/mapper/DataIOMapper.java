@@ -51,6 +51,14 @@ public interface DataIOMapper {
 	List<HouseholdDataVO> selectHouseholdSameDataList(@Param("begin") Date beginDate, @Param("end") Date endDate);
 	
 	/**
+	 * 원본 데이터와 임시 데이터의 다른 데이터 조회
+	 * @param beginDate
+	 * @param endDate
+	 * @return
+	 */
+	List<HouseholdDataVO> selectHouseholdDeferentDataList(@Param("begin") Date beginDate, @Param("end") Date endDate);
+	
+	/**
 	 * 원본 데이터에 없는 임시 데이터 추가.
 	 * @param reqVo
 	 * @return

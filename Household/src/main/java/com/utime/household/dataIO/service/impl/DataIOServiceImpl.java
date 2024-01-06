@@ -123,7 +123,7 @@ class DataIOServiceImpl implements DataIOService{
 		}
 		
 		try {
-			ioDao.addHouseholdData( list, minDate, maxDate );
+			ioDao.addHouseholdData( result, list, minDate, maxDate );
 		} catch (Exception e) {
 			log.error("", e);
 			result.setCodeMessage("EHS0A2", e.getMessage());

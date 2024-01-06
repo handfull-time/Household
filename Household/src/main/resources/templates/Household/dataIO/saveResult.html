@@ -3,7 +3,7 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{common/LayoutCommon}">
 
-<th:block layout:fragment="title">[[${res.bcVo.name}]] 자료 저장 결과</th:block>
+<th:block layout:fragment="title">[[${res == null? '':res.bcVo.name}]] 자료 저장 결과</th:block>
 
 <!-- index.html 고유 CSS 추가 -->
 <th:block layout:fragment="css">
@@ -32,6 +32,8 @@
 		
 	})
 	
+	//   /*[[${res}]]*/ null;
+	
 	</script>
 
 </th:block>
@@ -39,21 +41,81 @@
 <div layout:fragment="content">
 
 	<div class="card shadow mb-4">
-		<div class="card-body">
-			<div class="card shadow mb-4 ">
-		    	<div class="card-header py-2">
-		            <p class="lead text-gray-100 mb-1" th:text="${res.code}">Code</p>
-		        </div>
-	        	<div class="card-body mb-4">
-		            <p class="text-gray-500 mb-0" th:text="${res.message}">Message</p>
-		        </div>
-	        	<div class="card-body">
-		            <a th:href="@{/}">&larr; Back to Home</a>
-		        </div>
-		    </div>
-		</div> <!-- card body -->
+		<th:block if="res != null">
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-bordered" id="DataTableResult" >
+						<caption>
+							추가된 [[${res.bcVo.name}]] 자료 
+						</caption>
+						<thead>
+				            <tr>
+				                <th>거래 일자</th>
+				            	<th>입출금</th>
+				                <th>거래 금액</th>
+				                <th>입금/출금 종류</th>
+				                <th>입금/출금 항목</th>
+				                <th>구분 키워드</th>
+				                <th>내용</th>
+				                <th>비고</th>
+				            </tr>
+				        </thead>
+				        <tbody>
+				            <tr th:each="data, status : ${res.addList}" >
+				                <td class="text-center" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd HH:mm')}"></td>
+				            	<td class="text-center" th:text="${data.io.dscr}"></td>
+				                <td class="text-right" th:text="${#numbers.formatDecimal(data.amount, 2, 'COMMA', 0, 'POINT')}"></td><!-- 거래 금액 -->
+				                <td class="text-right" th:text="${data.category.cType.dscr}"></td><!-- 입금/출금 종류 -->
+				                <td class="text-left" th:text="${data.category.name}"></td><!-- 입금/출금 항목 -->
+				                <td class="text-left" th:text="${data.store.name}"></td><!-- 구분 키워드 -->
+				                <td class="text-left" th:text="${data.store.store}"></td><!-- 사용처 -->
+				                <td th:text="${data.dscr}"></td><!-- 비고 -->
+				            </tr>
+				        </tbody>	
+					</table>
+				</div> <!-- table-responsive -->
+			</div> <!-- card body -->
+			<hr>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-bordered" id="DataTableResult" >
+						<caption>
+							중복된 [[${res.bcVo.name}]] 자료 
+						</caption>
+						<thead>
+				            <tr>
+				                <th>거래 일자</th>
+				            	<th>입출금</th>
+				                <th>거래 금액</th>
+				                <th>입금/출금 종류</th>
+				                <th>입금/출금 항목</th>
+				                <th>구분 키워드</th>
+				                <th>내용</th>
+				                <th>비고</th>
+				            </tr>
+				        </thead>
+				        <tbody>
+				            <tr th:each="data, status : ${res.exList}" >
+				                <td class="text-center" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd HH:mm')}"></td>
+				            	<td class="text-center" th:text="${data.io.dscr}"></td>
+				                <td class="text-right" th:text="${#numbers.formatDecimal(data.amount, 2, 'COMMA', 0, 'POINT')}"></td><!-- 거래 금액 -->
+				                <td class="text-right" th:text="${data.category.cType.dscr}"></td><!-- 입금/출금 종류 -->
+				                <td class="text-left" th:text="${data.category.name}"></td><!-- 입금/출금 항목 -->
+				                <td class="text-left" th:text="${data.store.name}"></td><!-- 구분 키워드 -->
+				                <td class="text-left" th:text="${data.store.store}"></td><!-- 사용처 -->
+				                <td th:text="${data.dscr}"></td><!-- 비고 -->
+				            </tr>
+				        </tbody>	
+					</table>
+				</div> <!-- table-responsive -->
+			</div> <!-- card body -->
+		</th:block>
 	</div>
 	
+	
+	<div class="card-body">
+        <a th:href="@{/Data/Home.html(bcNo=${res.bcVo.no}, begin=${res.begin}, end=${res.end})}">결과 메인</a>        
+    </div>
 </div>
 
 

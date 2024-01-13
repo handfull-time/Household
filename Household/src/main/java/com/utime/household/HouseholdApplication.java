@@ -21,6 +21,9 @@ import lombok.Data;
 
 @SpringBootApplication
 public class HouseholdApplication {
+	
+
+//Tabula: Tabula는 PDF 문서에서 테이블을 추출하는 데 특화된 오픈 소스 라이브러리입니다. Tabula는 사용자가 페이지 범위와 테이블 영역을 지정하면 해당 부분의 테이블 데이터를 CSV 혹은 Excel 형식으로 추출할 수 있습니다. Java API를 제공하기 때문에 Java 프로그램 내에서도 사용할 수 있습니다.
 
 	/**
 	 * 서비스 구동 정보 

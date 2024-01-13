@@ -125,6 +125,7 @@
     	if( storeSelectNo > -1 ){
         	currentRowData.store.no = parseInt(storeSelect.value, 10);
         	currentRowData.store.name = storeSelect.options[storeSelect.selectedIndex].text;
+        	currentRowData.store.categoryNo = currentRowData.category.no;
     	}else{
         	currentRowData.store.no = -1;
         	currentRowData.store.name = '';
@@ -151,7 +152,7 @@
     		const checkbox = cells[0].querySelector('input[type="checkbox"]');
     		checkbox.checked = true;
 
-    		cells[2].textContent = currentRowData.amount;
+    		cells[2].textContent = currentRowData.amount.toLocaleString();
             cells[3].textContent = currentRowData.included? '포함':'비포함';
 //    		cells[3].setAttribute('included', currentRowData.included);
 //    		cells[4].setAttribute('category.type', currentRowData.category.type);
@@ -302,7 +303,7 @@
 			
 			categorySelect.value = '';
 			editRegKeyword.classList.remove('hidden');
-			populateStoreSelect();
+			//populateStoreSelect(-1);
 		}
 		
 		const editInputDscr = editModal.elements['editInputDscr'];
@@ -429,7 +430,7 @@
 			        <tfoot>
 				        <tr>
 			                <td>Total</td>
-			                <td colspan="8" class="text-right" ></td>
+			                <td colspan="9" class="text-right" ></td>
 				        </tr>
 				    </tfoot>
 				</table>

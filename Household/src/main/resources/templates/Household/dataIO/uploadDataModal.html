@@ -50,10 +50,17 @@
 		const selectCategoryValue = selectCategory.value;
 		
 		if( selectCategoryValue ){
-			const categoryNo = parseInt(selectCategoryValue); 
+			const categoryNo = parseInt(selectCategoryValue);
 			
-			const storeSelect = document.getElementById('storeSelect');
+			populateStoreSelect(categoryNo);
+			
+			/* const storeSelect = document.getElementById('storeSelect');
 			storeSelect.innerHTML = '';
+
+			const optionUnSelected = document.createElement('option');
+			optionUnSelected.value = -1;
+			optionUnSelected.textContent = '미지정';
+            storeSelect.appendChild(optionUnSelected);
 			
 			storeData.forEach(function (store) {
 	            if (store.categoryNo === categoryNo) {
@@ -62,14 +69,14 @@
 	                option.textContent = store.name; // Store의 이름을 옵션 텍스트로 설정
 	                storeSelect.appendChild(option);
 	            }
-	        });
+	        }); */
 		} else {
-			populateStoreSelect();
+			populateStoreSelect(-1);
 		}
 	}
 	
 	// 초기 상태에서 모든 Store 데이터를 Store select에 추가하는 함수
-	function populateStoreSelect() {
+/* 	function populateStoreSelect() {
 		const storeSelect = document.getElementById('storeSelect');
 	    storeSelect.innerHTML = ''; // 초기화
 	
@@ -79,8 +86,43 @@
 	        option.textContent = store.name; // Store의 이름을 옵션 텍스트로 설정
 	        storeSelect.appendChild(option);
 	    });
+	} */
+	
+	function populateStoreSelect(categoryNo) {
+	    const storeSelect = document.getElementById('storeSelect');
+	    storeSelect.innerHTML = '';
+
+	    const optionUnSelected = document.createElement('option');
+	    optionUnSelected.value = -1;
+	    optionUnSelected.textContent = '미지정';
+	    storeSelect.appendChild(optionUnSelected);
+
+	    const filteredStores = storeData.filter(store => categoryNo === -1 || store.categoryNo === categoryNo);
+
+	    filteredStores.forEach(store => {
+	        const option = document.createElement('option');
+	     	// Store의 no 값을 value로 설정
+	        option.value = store.no;
+	     	// Store의 이름을 옵션 텍스트로 설정
+	        option.textContent = store.name;
+	        storeSelect.appendChild(option);
+	    });
+	    
+	    storeSelectChange( storeSelect );
 	}
 
+	function storeSelectChange(storeSelect){
+		
+		const editRegKeyword = document.getElementById('editRegKeyword');
+		
+		if( parseInt(storeSelect.value) === -1 ){
+			editRegKeyword.classList.remove('hidden');
+		}else{
+			editRegKeyword.classList.add('hidden');
+		}
+	}
+	
+	
 	function colorChange( inputEle ){
 		
 		const editDlgOriginStore = document.getElementById('editDlgOriginStore');
@@ -184,7 +226,7 @@
 			        }
 			    }
 				
-				minNo -= 1;
+				minNo -= 2;
 				
 				const addItem = new Object();
 				addItem.no = minNo;
@@ -286,7 +328,7 @@
 					                        <tr>
 					                            <th class="text-left" scope="row">구분 키워드</th>
 					                            <td class="text-right">
-					                                <select name="store.no" class="form-control" id="storeSelect">
+					                                <select name="store.no" class="form-control" id="storeSelect" onChange="storeSelectChange(this)">
 					                                </select>
 					                            </td>
 					                        </tr>

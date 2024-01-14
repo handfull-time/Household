@@ -81,7 +81,7 @@
 	</select>
 	
 	<!-- 추가 -->
-	<insert id="insertBankCard" parameterType="com.utime.household.environment.vo.BankCardVO">
+	<insert id="insertBankCard" parameterType="com.utime.household.environment.vo.BankCardVO" useGeneratedKeys="true" keyProperty="no">
 		INSERT INTO HH_BANK_CARD (
 			BC
 			, NAME

@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * 입출금 항목
+ * 대 분류
  */
 @Setter
 @Getter

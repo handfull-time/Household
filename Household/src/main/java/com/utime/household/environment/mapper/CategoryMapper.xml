@@ -4,7 +4,7 @@
 <mapper namespace="com.utime.household.environment.mapper.CategoryMapper">
 
 	<!-- 카테고리 생성 -->
-	<insert id="createCategory">
+	<insert id="createCategories">
 		CREATE TABLE HH_CATEGORY (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
 			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
@@ -13,10 +13,40 @@
 		)
 	</insert>
 	
-	<resultMap id="CategoryVoMap" type="com.utime.household.environment.vo.CategoryVO">
+	<insert id="createSubcategories">
+		CREATE TABLE HH_SUB_CATEGORY (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
+			, OWNER_NO INTEGER
+			, NAME TEXT(32) NOT NULL
+			, FOREIGN KEY(OWNER_NO) REFERENCES HH_CATEGORY(NO) 
+		)
+	</insert>
+
+	<resultMap id="CategoryMap" type="com.utime.household.environment.vo.CategoryVO">
 		<id column="NO" property="no" />
-		<id column="CT" property="cType" typeHandler="com.utime.household.environment.handler.ECategoryTypeTypeHandler" />
 		<id column="NAME" property="name" />
+		<id column="CT" property="cType" typeHandler="com.utime.household.environment.handler.ECategoryTypeTypeHandler" />
+	</resultMap>
+	
+	<resultMap id="CategoryOwnerMap" type="com.utime.household.environment.vo.CategoryOwnerVO">
+		<id column="NO" property="category.no" />
+		<id column="NAME" property="category.name" />
+		<id column="CT" property="category.cType" typeHandler="com.utime.household.environment.handler.ECategoryTypeTypeHandler" />
+		<association
+			column="NO"
+			property="subCategories"
+			javaType="com.utime.household.environment.vo.CategorySubVO"
+			select="getCategorySub" >
+			<id column="NO" property="ownerNo" />
+		</association>
+	</resultMap>
+	
+	
+	<resultMap id="CategorySubMap" type="com.utime.household.environment.vo.CategorySubVO">
+		<id column="NO" property="no" />
+		<id column="NAME" property="name" />
+		<id column="OWNER_NO" property="owner.no" />
 	</resultMap>
 	
 	<sql id="categoryCoulmns">
@@ -34,7 +64,7 @@
 	</select>
 
 	<!-- 카드 은행 목록 조회 -->
-	<select id="getCategoryList" parameterType="map" resultMap="CategoryVoMap">
+	<select id="getCategoryList" parameterType="map" resultMap="CategoryMap">
 		SELECT
 			<include refid="categoryCoulmns"/>
 		FROM HH_CATEGORY
@@ -44,6 +74,31 @@
 			AND CT = #{cType, typeHandler=com.utime.household.environment.handler.ECategoryTypeTypeHandler}
 		</if>
 		ORDER BY CT, NAME
+	</select>
+	
+	<!-- 전체 내역 조회 -->
+	<select id="getCategoryOwnerList" parameterType="map" resultMap="CategoryOwnerMap">
+		SELECT
+			<include refid="categoryCoulmns"/>
+		FROM HH_CATEGORY
+		WHERE 1=1
+			AND ENABLED = 'Y'
+		<if test="cType != null ">
+			AND CT = #{cType, typeHandler=com.utime.household.environment.handler.ECategoryTypeTypeHandler}
+		</if>
+		ORDER BY CT, NAME
+	</select>
+	
+	<select id="getCategorySub" parameterType="map" resultMap="CategorySubMap">
+		SELECT  (
+			NO
+			, OWNER_NO 
+			, NAME
+		FROM HH_SUB_CATEGORY
+		WHERE 1=1
+			AND ENABLED = 'Y'
+			AND OWNER_NO = #{ownerNo}
+		ORDER BY NAME
 	</select>
 	
 	<!-- 추가하기 전 동일 정보 체크 -->
@@ -60,7 +115,7 @@
 	</select>
 	
 	<!-- 추가 -->
-	<insert id="insertCategory" parameterType="com.utime.household.environment.vo.CategoryVO">
+	<insert id="insertCategory" parameterType="com.utime.household.environment.vo.CategoryVO" useGeneratedKeys="true" keyProperty="no">
 		INSERT INTO HH_CATEGORY (
 			CT
 			, NAME
@@ -79,7 +134,7 @@
 	</update>
 	
 	<!-- 이름으로 정보 조회 -->
-	<select id="getCategoryFromName" parameterType="map" resultMap="CategoryVoMap">
+	<select id="getCategoryFromName" parameterType="map" resultMap="CategoryMap">
 		SELECT
 			<include refid="categoryCoulmns"/>
 		FROM HH_CATEGORY
@@ -89,7 +144,7 @@
 	</select>
 	
 	<!-- 번호로 정보 조회 -->
-	<select id="getCategoryFromNo" parameterType="map" resultMap="CategoryVoMap">
+	<select id="getCategoryFromNo" parameterType="map" resultMap="CategoryMap">
 		SELECT
 			<include refid="categoryCoulmns"/>
 		FROM HH_CATEGORY

@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.utime.household.environment.vo.CategoryOwnerVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.ECategoryType;
 
@@ -15,10 +16,16 @@ import com.utime.household.environment.vo.ECategoryType;
 public interface CategoryMapper {
 	
 	/**
-	 * 카테고리 생성
+	 * 대분류 생성
 	 * @return
 	 */
-	public int createCategory();
+	public int createCategories();
+	
+	/**
+	 * 소분류 생성
+	 * @return
+	 */
+	public int createSubcategories();
 	
 	/**
 	 * 수량
@@ -27,10 +34,17 @@ public interface CategoryMapper {
 	int getCategoryCount();
 
 	/**
-	 * 카드 은행 목록 조회
+	 * 대분류만 목록 조회
 	 * @return
 	 */
 	List<CategoryVO> getCategoryList(@Param("cType") ECategoryType cType);
+	
+	
+	/**
+	 * 전체 내역 조회
+	 * @return
+	 */
+	List<CategoryOwnerVO> getCategoryOwnerList(@Param("cType") ECategoryType cType);
 	
 	
 	/**

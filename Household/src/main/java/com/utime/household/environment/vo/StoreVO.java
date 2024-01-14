@@ -12,8 +12,15 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class StoreVO extends BasicItemVO{
 
-	/** 카테고리 번호 */
+	/** 
+	 * 대분류 번호 
+	 */
 	long categoryNo = -1L;
+	
+	/**
+	 * 소분류 번호
+	 */
+	long categorySubNo = -1L;
 	
 	/** 내역에서 전달받은 실제 이름 */
 	String store;

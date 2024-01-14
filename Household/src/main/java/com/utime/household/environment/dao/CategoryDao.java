@@ -2,6 +2,7 @@ package com.utime.household.environment.dao;
 
 import java.util.List;
 
+import com.utime.household.environment.vo.CategoryOwnerVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.ECategoryType;
 
@@ -21,6 +22,12 @@ public interface CategoryDao {
 	 * @return
 	 */
 	List<CategoryVO> getCategoryList(ECategoryType cType);
+	
+	/**
+	 * 전체 내역 조회
+	 * @return
+	 */
+	List<CategoryOwnerVO> getCategoryOwnerList(ECategoryType cType);
 	
 	/**
 	 * 추가

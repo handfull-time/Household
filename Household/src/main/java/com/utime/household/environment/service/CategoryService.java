@@ -3,6 +3,7 @@ package com.utime.household.environment.service;
 import java.util.List;
 
 import com.utime.household.common.vo.ReturnBasic;
+import com.utime.household.environment.vo.CategoryOwnerVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.ECategoryType;
 
@@ -16,6 +17,12 @@ public interface CategoryService {
 	 * @return
 	 */
 	List<CategoryVO> getCategoryList();
+	
+	/**
+	 * 전체 내역 조회
+	 * @return
+	 */
+	List<CategoryOwnerVO> getCategoryOwnerList();
 	
 	/**
 	 * 내역 조회

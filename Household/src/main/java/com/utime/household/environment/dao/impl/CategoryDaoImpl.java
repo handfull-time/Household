@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.utime.household.common.mapper.CommonMapper;
 import com.utime.household.environment.dao.CategoryDao;
 import com.utime.household.environment.mapper.CategoryMapper;
+import com.utime.household.environment.vo.CategoryOwnerVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.ECategoryType;
 
@@ -30,7 +31,18 @@ class CategoryDaoImpl implements CategoryDao{
 			
 			if( ! common.existTable("HH_CATEGORY") ) {
 				log.info("CATEGORY 생성");
-				mapper.createCategory();
+				mapper.createCategories();
+			}
+
+		}catch (Exception e) {
+			log.error("", e);
+		}
+
+		try {
+			
+			if( ! common.existTable("HH_SUB_CATEGORY") ) {
+				log.info("HH_SUB_CATEGORY 생성");
+				mapper.createSubcategories();
 			}
 
 		}catch (Exception e) {
@@ -46,6 +58,11 @@ class CategoryDaoImpl implements CategoryDao{
 	@Override
 	public List<CategoryVO> getCategoryList(ECategoryType cType) {
 		return mapper.getCategoryList(cType);
+	}
+	
+	@Override
+	public List<CategoryOwnerVO> getCategoryOwnerList(ECategoryType cType) {
+		return mapper.getCategoryOwnerList(cType);
 	}
 
 	@Override

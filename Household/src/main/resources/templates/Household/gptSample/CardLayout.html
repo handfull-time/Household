@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Items Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Additional head content -->
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Items Management</h1>
+        <!-- Loop through main items -->
+        <div th:each="mainItem : ${mainItems}" class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title" th:text="${mainItem.mainName}">Main Item Name</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted" th:text="'Main No: ' + ${mainItem.mainNo}">Main No</h6>
+                <p class="card-text">Some additional information about the main item can go here.</p>
+                <button class="btn btn-primary">Edit Main Item</button>
+                <button class="btn btn-danger">Delete Main Item</button>
+                <hr>
+                <div>
+                    <strong>Sub Items:</strong>
+                    <ul>
+                        <!-- Loop through sub items -->
+                        <li th:each="subItem : ${mainItem.subItems}" th:text="${subItem.name}">Sub Item Name</li>
+                    </ul>
+                    <button class="btn btn-secondary btn-sm">Add Sub Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Additional scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

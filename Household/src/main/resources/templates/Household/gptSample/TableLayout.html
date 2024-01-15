@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Items Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Additional head content -->
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Items Management</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Main No</th>
+                    <th>Main Name</th>
+                    <th>Sub Items</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop through main items -->
+                <tr th:each="mainItem : ${mainItems}">
+                    <td th:text="${mainItem.mainNo}"></td>
+                    <td th:text="${mainItem.mainName}"></td>
+                    <td>
+                        <ul>
+                            <!-- Loop through sub items -->
+                            <li th:each="subItem : ${mainItem.subItems}" th:text="${subItem.name}"></li>
+                        </ul>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-sm">Edit</button>
+                        <button class="btn btn-danger btn-sm">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Additional scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

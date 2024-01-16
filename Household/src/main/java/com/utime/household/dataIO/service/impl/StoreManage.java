@@ -57,50 +57,61 @@ class StoreManage extends ArrayList<StoreVO>{
 		return null;
 	}
 	
-	public StoreVO getStore( String name ) {
-		StoreVO result;
+	/**
+	 * find -> store
+	 * @param find
+	 * @param store
+	 */
+	private void findToStore(StoreVO find, StoreVO store) {
+		store.setNo( find.getNo() );
+		store.setName( find.getName() );
+		store.setCategoryNo( find.getCategoryNo() );
+		store.setCategorySubNo( find.getCategorySubNo() );
+	}
+	
+	public void genericStore( StoreVO store ) {
+
+		if( store == null ) {
+			return;
+		}
+		
+		String name = store.getStore();
+		
 		if( name == null ) {
-			result = new StoreVO();
-			result.setStore(name);
-			return result;
+			return;
 		}
 		
 		name = name.trim();
+		store.setStore(name);
 		
 		if( name.length() < 1 ){
-			result = new StoreVO();
-			result.setStore(name);
-			return result;
+			return;
 		}
 		
-		result = this.findStoreName(name);
-		if( result != null ) {
-			result.setStore(name);
-			return result;
+		StoreVO find;
+		find = this.findStoreName(name);
+		if( find != null ) {
+			this.findToStore( find, store );
+			return;
 		}
 		
-		result = this.getSplit(name, " ");
-		if( result != null ) {
-			result.setStore(name);
-			return result;
+		find = this.getSplit(name, " ");
+		if( find != null ) {
+			this.findToStore( find, store );
+			return;
 		}
 		
-		result = this.getSplit(name, ",");
-		if( result != null ) {
-			result.setStore(name);
-			return result;
+		find = this.getSplit(name, ",");
+		if( find != null ) {
+			this.findToStore( find, store );
+			return;
 		}
 		
-		result = this.getSplit(name, "_");
-		if( result != null ) {
-			result.setStore(name);
-			return result;
+		find = this.getSplit(name, "_");
+		if( find != null ) {
+			this.findToStore( find, store );
+			return;
 		}
-
-		result = new StoreVO();
-		result.setStore(name);
-		
-		return result;
 	}
 
 }

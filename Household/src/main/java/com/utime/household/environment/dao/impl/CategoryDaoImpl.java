@@ -9,6 +9,7 @@ import com.utime.household.common.mapper.CommonMapper;
 import com.utime.household.environment.dao.CategoryDao;
 import com.utime.household.environment.mapper.CategoryMapper;
 import com.utime.household.environment.vo.CategoryOwnerVO;
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.ECategoryType;
 
@@ -67,7 +68,7 @@ class CategoryDaoImpl implements CategoryDao{
 
 	@Override
 	@Transactional( rollbackFor = Exception.class )
-	public int saveCategory(CategoryVO vo) throws Exception {
+	public int saveOwnerCategory(CategoryVO vo) throws Exception {
 		
 		int result;
 		if( vo.getNo() < 0L ) {
@@ -85,20 +86,44 @@ class CategoryDaoImpl implements CategoryDao{
 	}
 	
 	@Override
-	public CategoryVO getCategory(String name) {
+	public CategoryVO getOwnerCategory(String name) {
 		
 		return mapper.getCategoryFromName( name );
 	}
 	
 	@Override
-	public CategoryVO getCategory(long no) {
+	public CategoryVO getOwnerCategory(long no) {
 		
 		return mapper.getCategoryFromNo( no );
 	}
 	
 	@Override
 	@Transactional( rollbackFor = Exception.class )
-	public int deleteCategory(long no) throws Exception {
+	public int deleteOwnerCategory(long no) throws Exception {
 		return mapper.deleteCategory(no);
+	}
+
+	@Override
+	public List<CategorySubVO> getSubCategoryList(long ownerNo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CategorySubVO getSubCategory(long subNo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int saveSubCategory(CategorySubVO sub) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int deleteSubCategory(long subNo) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

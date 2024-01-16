@@ -3,6 +3,7 @@ package com.utime.household.environment.dao;
 import java.util.List;
 
 import com.utime.household.environment.vo.CategoryOwnerVO;
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.ECategoryType;
 
@@ -35,7 +36,7 @@ public interface CategoryDao {
 	 * @return
 	 * @throws Exception
 	 */
-	int saveCategory(CategoryVO vo)throws Exception;
+	int saveOwnerCategory(CategoryVO vo)throws Exception;
 	
 	
 	/**
@@ -43,21 +44,49 @@ public interface CategoryDao {
 	 * @param inputBC
 	 * @return
 	 */
-	CategoryVO getCategory( String name );
+	CategoryVO getOwnerCategory( String name );
 	
 	/**
 	 * 삭제
 	 * @param no
 	 * @return
 	 */
-	int deleteCategory( long no )throws Exception;
+	int deleteOwnerCategory( long no )throws Exception;
 
 	/**
 	 * 상세 정보 조회
 	 * @param no
 	 * @return
 	 */
-	CategoryVO getCategory(long no);
+	CategoryVO getOwnerCategory(long no);
+	
+	/**
+	 * 서브 카테고리 목록
+	 * @param ownerNo
+	 * @return
+	 */
+	List<CategorySubVO> getSubCategoryList(long ownerNo);
+	
+	/**
+	 * 서브 카테고리 상세 
+	 * @param subNo
+	 * @return
+	 */
+	CategorySubVO getSubCategory(long subNo);
+	
+	/**
+	 * 서브 카테고리 저장
+	 * @param sub
+	 * @return
+	 */
+	int saveSubCategory(CategorySubVO sub)throws Exception;
+	
+	/**
+	 * 서브 카테고리 삭제
+	 * @param subNo
+	 * @return
+	 */
+	int deleteSubCategory(long subNo )throws Exception;
 
 	
 	

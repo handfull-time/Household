@@ -30,12 +30,8 @@ public class StoreVO extends BasicItemVO{
 	}
 	
 	public StoreVO(String name) {
-		super(-1, name);
-	}
-	
-	public StoreVO(String name, long cn) {
-		super(-1, name);
-		this.categoryNo = cn;
+		super();
+		this.store = name;
 	}
 	
 	/**

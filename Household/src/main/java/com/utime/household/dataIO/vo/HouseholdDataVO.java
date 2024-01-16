@@ -3,6 +3,7 @@ package com.utime.household.dataIO.vo;
 import java.util.Date;
 
 import com.utime.household.environment.vo.BankCardVO;
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.StoreVO;
 
@@ -35,8 +36,11 @@ public class HouseholdDataVO {
 	/** 은행 카드 번호 */
 	BankCardVO bcVo;
 
-	/** 입출금 항목 */
-	CategoryVO category;
+	/** 입출금 대분류 항목 */
+	CategoryVO categoryOwner;
+	
+	/** 입출금 소분류 항목 */
+	CategorySubVO categorySub;
 	
 	/** 사용처 */
 	StoreVO store;
@@ -65,8 +69,10 @@ public class HouseholdDataVO {
 			builder.append("io=").append(io).append(", ");
 		if (bcVo != null)
 			builder.append("bcVo=").append(bcVo).append(", ");
-		if (category != null)
-			builder.append("category=").append(category).append(", ");
+		if (categoryOwner != null)
+			builder.append("categoryOwner=").append(categoryOwner).append(", ");
+		if (categorySub != null)
+			builder.append("categorySub=").append(categorySub).append(", ");
 		if (store != null)
 			builder.append("store=").append(store).append(", ");
 		if (dscr != null)

@@ -12,6 +12,7 @@ import com.utime.household.environment.dao.CategoryDao;
 import com.utime.household.environment.dao.StoreDao;
 import com.utime.household.environment.service.CategoryService;
 import com.utime.household.environment.vo.CategoryOwnerVO;
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.ECategoryType;
 
@@ -40,7 +41,7 @@ class CategoryServiceImpl implements CategoryService {
 		try {
 			{
 				final CategoryVO ownerCategory = new CategoryVO("입금", ECategoryType.Income );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "급여", "급여" );
 				insertSubAndStore( cateNo, "이체" );
@@ -53,7 +54,7 @@ class CategoryServiceImpl implements CategoryService {
 
 			{
 				final CategoryVO ownerCategory = new CategoryVO("지출", ECategoryType.Expense );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "이체" );
 				insertSubAndStore( cateNo, "현금" );
@@ -62,7 +63,7 @@ class CategoryServiceImpl implements CategoryService {
 
 			{
 				final CategoryVO ownerCategory = new CategoryVO("저축", ECategoryType.Saving );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "적금" );
 				insertSubAndStore( cateNo, "예금" );
@@ -71,7 +72,7 @@ class CategoryServiceImpl implements CategoryService {
 
 			{
 				final CategoryVO ownerCategory = new CategoryVO("식비", ECategoryType.Expense );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "마트", "마트", "홈플러스" );
 				insertSubAndStore( cateNo, "기타" );
@@ -79,7 +80,7 @@ class CategoryServiceImpl implements CategoryService {
 			
 			{
 				final CategoryVO ownerCategory = new CategoryVO("세금", ECategoryType.Expense );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "월세", "주택" );
 				insertSubAndStore( cateNo, "지방세", "지방세" );
@@ -89,7 +90,7 @@ class CategoryServiceImpl implements CategoryService {
 			
 			{
 				final CategoryVO ownerCategory = new CategoryVO("생활", ECategoryType.Expense );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "가구", "가구", "삼성전자" );
 				insertSubAndStore( cateNo, "가전", "삼성전자", "하이마트" );
@@ -100,7 +101,7 @@ class CategoryServiceImpl implements CategoryService {
 			
 			{
 				final CategoryVO ownerCategory = new CategoryVO("문화", ECategoryType.Expense );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "여행" );
 				insertSubAndStore( cateNo, "영화", "CGV", "롯데시네마", "메가박스" );
@@ -111,7 +112,7 @@ class CategoryServiceImpl implements CategoryService {
 
 			{
 				final CategoryVO ownerCategory = new CategoryVO("의류", ECategoryType.Expense );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "의복", "ABC", "나이키", "아울렛" );
 				insertSubAndStore( cateNo, "세탁", "세탁" );
@@ -120,7 +121,7 @@ class CategoryServiceImpl implements CategoryService {
 
 			{
 				final CategoryVO ownerCategory = new CategoryVO("교육", ECategoryType.Expense );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "학교", "학교" );
 				insertSubAndStore( cateNo, "도서", "문고", "서점" );
@@ -131,7 +132,7 @@ class CategoryServiceImpl implements CategoryService {
 			
 			{
 				final CategoryVO ownerCategory = new CategoryVO("의료", ECategoryType.Expense );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "병원", "병원", "의원", "의료원");
 				insertSubAndStore( cateNo, "약국", "약국", "메디팜");
@@ -141,7 +142,7 @@ class CategoryServiceImpl implements CategoryService {
 			
 			{
 				final CategoryVO ownerCategory = new CategoryVO("교통", ECategoryType.Expense );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "대중교통", "버스", "지하철");
 				insertSubAndStore( cateNo, "차량", "정유", "주유소",  "하이패스");
@@ -151,7 +152,7 @@ class CategoryServiceImpl implements CategoryService {
 
 			{
 				final CategoryVO ownerCategory = new CategoryVO("통신", ECategoryType.Expense );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "휴대폰", "SK", "KT", "LGU+");
 				insertSubAndStore( cateNo, "인터넷", "브로드밴드");
@@ -160,7 +161,7 @@ class CategoryServiceImpl implements CategoryService {
 
 			{
 				final CategoryVO ownerCategory = new CategoryVO("관리", ECategoryType.Income );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "관리비", "관리", "아파트");
 				insertSubAndStore( cateNo, "난방", "도시가스");
@@ -169,7 +170,7 @@ class CategoryServiceImpl implements CategoryService {
 			
 			{
 				final CategoryVO ownerCategory = new CategoryVO("경조사", ECategoryType.Income );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "부모님");
 				insertSubAndStore( cateNo, "축의금");
@@ -181,7 +182,7 @@ class CategoryServiceImpl implements CategoryService {
 
 			{
 				final CategoryVO ownerCategory = new CategoryVO("용돈", ECategoryType.Income );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "도토리1");
 				insertSubAndStore( cateNo, "도토리2");
@@ -190,7 +191,7 @@ class CategoryServiceImpl implements CategoryService {
 			
 			{
 				final CategoryVO ownerCategory = new CategoryVO("보험", ECategoryType.Income );
-				dao.saveCategory(ownerCategory);
+				dao.saveOwnerCategory(ownerCategory);
 				final long cateNo = ownerCategory.getNo();
 				insertSubAndStore( cateNo, "실비", "화재");
 				insertSubAndStore( cateNo, "자동차", "Carrot");
@@ -202,8 +203,14 @@ class CategoryServiceImpl implements CategoryService {
 
 	}
 	
+	/**
+	 * 서브 카테고리와 키워드 추가.
+	 * @param cateNo
+	 * @param string
+	 * @param stores
+	 */
 	private void insertSubAndStore(long cateNo, String string,  String ... stores) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
@@ -236,7 +243,7 @@ class CategoryServiceImpl implements CategoryService {
 		vo.setName( vo.getName().trim() );
 		
 		try {
-			this.dao.saveCategory(vo);
+			this.dao.saveOwnerCategory(vo);
 		} catch (Exception e) {
 			log.error("", e);
 			result.setCodeMessage("ECS0U2", e.getMessage());
@@ -249,7 +256,7 @@ class CategoryServiceImpl implements CategoryService {
 	public ReturnBasic deleteCategory(long no) {
 		final ReturnBasic result = new ReturnBasic();
 		try {
-			this.dao.deleteCategory(no);
+			this.dao.deleteOwnerCategory(no);
 		} catch (Exception e) {
 			result.setCodeMessage("ECS0P1", e.getMessage());
 		}
@@ -265,9 +272,67 @@ class CategoryServiceImpl implements CategoryService {
 			result.setNo( no );
 			result.setCType(ECategoryType.Expense);
 		}else {
-			result = this.dao.getCategory(no);
+			result = this.dao.getOwnerCategory(no);
 		}
 		
 		return result;
 	}
+
+	@Override
+	public List<CategorySubVO> getSubCategoryList(long ownerNo) {
+		return dao.getSubCategoryList(ownerNo);
+	}
+
+	@Override
+	public CategorySubVO getSubCategory(long subNo) {
+		final CategorySubVO result;
+		
+		if( subNo < 0L ) {
+			result = new CategorySubVO();
+			result.setNo( subNo );
+		}else {
+			result = this.dao.getSubCategory(subNo);
+		}
+		
+		return result;
+	}
+
+	@Override
+	public ReturnBasic saveSubCategory(CategorySubVO sub) {
+		final ReturnBasic result = new ReturnBasic();
+		
+		if( HouseholdUtils.isEmpty( sub.getName() )) {
+			result.setCodeMessage("ECS0D1", "이름은 필수");
+			return result;
+		}
+		
+		if( sub.getOwner() == null || sub.getOwner().getNo() < -1L ) {
+			result.setCodeMessage("ECS0D2", "대분류 선택은 필수");
+			return result;
+		}
+		
+		sub.setName( sub.getName().trim() );
+		
+		try {
+			this.dao.saveSubCategory(sub);
+		} catch (Exception e) {
+			log.error("", e);
+			result.setCodeMessage("ECS0D3", e.getMessage());
+		}
+		
+		return result;
+	}
+
+	@Override
+	public ReturnBasic deleteSubCategory(long subNo) {
+		final ReturnBasic result = new ReturnBasic();
+		try {
+			this.dao.deleteSubCategory(subNo);
+		} catch (Exception e) {
+			result.setCodeMessage("ECS0W1", e.getMessage());
+		}
+		return result;
+	}
+	
+	
 }

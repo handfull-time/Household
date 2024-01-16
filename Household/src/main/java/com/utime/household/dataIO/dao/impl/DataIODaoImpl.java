@@ -73,11 +73,11 @@ class DataIODaoImpl implements DataIODao{
 			}else {
 				item.getStore().setName("");
 			}
-			final CategoryVO category = cMap.get( item.getCategory().getNo() );
+			final CategoryVO category = cMap.get( item.getCategoryOwner().getNo() );
 			if( category != null ) {
-				item.setCategory(category);
+				item.setCategoryOwner(category);
 			}else {
-				item.setCategory(category);
+				//item.setCategory(category);
 			}
 		}
 	}

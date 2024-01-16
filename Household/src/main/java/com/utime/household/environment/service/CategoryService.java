@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.environment.vo.CategoryOwnerVO;
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.ECategoryType;
 
@@ -50,4 +51,32 @@ public interface CategoryService {
 	 * @return
 	 */
 	CategoryVO getCategory(long no);
+	
+	/**
+	 * 서브 카테고리 목록
+	 * @param ownerNo
+	 * @return
+	 */
+	List<CategorySubVO> getSubCategoryList(long ownerNo);
+	
+	/**
+	 * 서브 카테고리 상세 
+	 * @param subNo
+	 * @return
+	 */
+	CategorySubVO getSubCategory(long subNo);
+	
+	/**
+	 * 서브 카테고리 저장
+	 * @param sub
+	 * @return
+	 */
+	ReturnBasic saveSubCategory(CategorySubVO sub);
+	
+	/**
+	 * 서브 카테고리 삭제
+	 * @param subNo
+	 * @return
+	 */
+	ReturnBasic deleteSubCategory(long subNo );
 }

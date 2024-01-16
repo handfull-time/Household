@@ -2,10 +2,8 @@ package com.utime.household.dataIO.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -22,10 +20,7 @@ import com.utime.household.dataIO.vo.EInOut;
 import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 import com.utime.household.dataIO.vo.HouseholdDataVO;
 import com.utime.household.dataIO.vo.InputBankCardDefine;
-import com.utime.household.environment.dao.CategoryDao;
-import com.utime.household.environment.dao.StoreDao;
 import com.utime.household.environment.vo.BankCardVO;
-import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.StoreVO;
 
 import lombok.RequiredArgsConstructor;
@@ -35,9 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service(InputBankCardDefine.NameSamsung)
 class BankCardExtractSamsungDataService implements BankCardExtractDataService{
-
-	private final StoreDao storeDao;
-	private final CategoryDao ctDao;
 	
 	@Override
 	public HouseholdDataListResVO extractData(BankCardVO bcVo, MultipartFile file) throws Exception {
@@ -63,14 +55,7 @@ class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 	    	result.setCodeMessage("EFX001","엑셀파일만 업로드 해주세요");
 	    	return result;
 		}
-	    
-	    final List<CategoryVO> ctList = ctDao.getCategoryList(null);
-		final Map<Long, CategoryVO> ctMap = new HashMap<>();
-		for( CategoryVO vo : ctList ){
-			ctMap.put(vo.getNo(), vo);
-		}
-		
-	    final StoreManage storeMgr = new StoreManage( storeDao.getStoreList() );
+
 	    
 	    final List<HouseholdDataVO> list = new ArrayList<>();
 	    result.setList(list);
@@ -100,9 +85,7 @@ class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 	    			try {
 	    				addItem.setDealDate( sdf.parse(dealDate) );
 	    				final String storeName = PoiUtil.getStringCellValue( row.getCell(2) );
-	    				final StoreVO store = storeMgr.getStore(storeName);
-	    				addItem.setStore( store );
-	    				addItem.setCategory( ctMap.get( store.getCategoryNo() ) );
+	    				addItem.setStore( new StoreVO(storeName) );
 	    				addItem.setAmount( PoiUtil.getIntegerCellValue(row.getCell(3)) - PoiUtil.getIntegerCellValue(row.getCell(6)) );
 	    				final String dscr = PoiUtil.getStringCellValue( row.getCell(5) );
 	    				final String installmentMonth  = PoiUtil.getStringCellValue( row.getCell(7) );

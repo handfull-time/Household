@@ -14,7 +14,8 @@
 			, INCLUDED CHAR(1) NOT NULL CHECK(INCLUDED IN ('T', 'F'))  <!--  포함 여부 T:포함, F:미포함 -->
 			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O')) <!-- 입/출금 I 입금, O 출금 -->
 			, BANK_CARD_NO INTEGER NOT NULL <!-- 입금 출금 구분 -->
-			, CATEGORY_NO INTEGER NOT NULL <!-- 사용처 타입 고유 번호 -->
+			, CATEGORY_NO INTEGER NOT NULL <!-- 대분류 사용처 고유 번호 -->
+			, SUB_CATEGORY_NO INTEGER NOT NULL <!-- 소분류 사용처 고유 번호 -->
 			, STORE_NO INTEGER DEFAULT -1 <!-- 사용처 고유 번호-->
 			, CONTENT TEXT(128) DEFAULT NULL <!-- 사용처 -->
 			, DESCRIPTION TEXT(256) DEFAULT NULL <!-- 비고 -->
@@ -22,6 +23,7 @@
 			, OWNER_RECORD_NO INTEGER DEFAULT -1 <!-- 원 출처 번호 -->
 			, FOREIGN KEY(BANK_CARD_NO) REFERENCES HH_BANK_CARD(NO)
     		, FOREIGN KEY(CATEGORY_NO) REFERENCES HH_CATEGORY(NO)
+    		, FOREIGN KEY(SUB_CATEGORY_NO) REFERENCES HH_SUB_CATEGORY(NO)
     		, FOREIGN KEY(STORE_NO) REFERENCES HH_USAGE_STORE(NO)
 		)
 	</insert>
@@ -36,6 +38,7 @@
 			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O'))
 			, BANK_CARD_NO INTEGER NOT NULL
 			, CATEGORY_NO INTEGER NOT NULL
+			, SUB_CATEGORY_NO INTEGER NOT NULL
 			, STORE_NO INTEGER DEFAULT -1
 			, CONTENT TEXT(128) DEFAULT NULL
 			, DESCRIPTION TEXT(256) DEFAULT NULL
@@ -57,6 +60,7 @@
 			, IN_OUT
 			, BANK_CARD_NO 
 			, CATEGORY_NO
+			, SUB_CATEGORY_NO
 			, STORE_NO
 			, CONTENT
 			<if test="dscr != null and dscr != '' ">
@@ -69,7 +73,8 @@
 			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
 			, #{bcVo.no}
-			, #{category.no}
+			, #{categoryOwner.no}
+			, #{categorySub.no}
 			, #{store.no}
 			, #{store.store}
 			<if test="dscr != null and dscr != '' ">
@@ -86,6 +91,7 @@
 		, ${Header}IN_OUT
 		, ${Header}BANK_CARD_NO
 		, ${Header}CATEGORY_NO
+		, ${Header}SUB_CATEGORY_NO
 		, ${Header}STORE_NO
 		, ${Header}CONTENT
 		, ${Header}DESCRIPTION
@@ -166,7 +172,8 @@
 			, INCLUDED<!--  포함 여부 T:포함, F:미포함 -->
 			, IN_OUT <!-- 입/출금 I 입금, O 출금 -->
 			, BANK_CARD_NO <!-- 입금 출금 구분 -->
-			, CATEGORY_NO <!-- 사용처 타입 -->
+			, CATEGORY_NO <!-- 대분류 사용처 타입 -->
+			, SUB_CATEGORY_NO <!-- 소분류 사용처 타입 -->
 			, STORE_NO
 			, CONTENT
 			<if test="dscr != null and dscr != '' ">
@@ -179,7 +186,8 @@
 			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
 			, #{bcVo.no}
-			, #{category.no}
+			, #{categoryOwner.no}
+			, #{categorySub.no}
 			, #{store.no}
 			, #{store.store}
 			<if test="dscr != null and dscr != '' ">
@@ -200,9 +208,13 @@
 		<id column="BC" property="bcVo.bc" typeHandler="com.utime.household.environment.handler.BankCardTypeHandler" />
 		<id column="BC_NAME" property="bcVo.name" />
 
-		<id column="CATEGORY_NO" property="category.no" />
-		<id column="CT" property="category.cType" typeHandler="com.utime.household.environment.handler.ECategoryTypeTypeHandler" />
-		<id column="CATEGORY_NAME" property="category.name" />
+		<id column="CATEGORY_NO" property="categoryOwner.no" />
+		<id column="CT" property="categoryOwnercType" typeHandler="com.utime.household.environment.handler.ECategoryTypeTypeHandler" />
+		<id column="CATEGORY_NAME" property="categoryOwner.name" />
+		
+		<id column="SUB_CATEGORY_NO" property="categorySub.no" />
+		<id column="SUB_CATEGORY_NAME" property="categorySub.name" />
+		<id column="CATEGORY_NO" property="categorySub.owner.no" />
 		
 		<id column="STORE_NO" property="store.no" />
 		<id column="STORE" property="store.name" />
@@ -227,6 +239,8 @@
 			,HR.CATEGORY_NO
 			,HC.CT 
 			,HC.NAME AS CATEGORY_NAME
+			,HR.SUB_CATEGORY_NO
+			,HSB.NAME AS SUB_CATEGORY_NAME
 			,HR.STORE_NO
 			,HUS.STORE 
 			,HR.CONTENT
@@ -236,6 +250,7 @@
 			HH_RECORD HR
 			INNER JOIN HH_BANK_CARD HBC ON HR.BANK_CARD_NO = HBC.NO
 			INNER JOIN HH_CATEGORY HC ON HR.CATEGORY_NO = HC.NO
+			INNER JOIN HH_SUB_CATEGORY HSB ON HR.SUB_CATEGORY_NO = HSB.NO
 			LEFT OUTER JOIN HH_USAGE_STORE HUS ON HR.STORE_NO = HUS.NO AND HUS.CATEGORY_NO = HC.NO 
 		WHERE 1=1
 			AND HR.ENABLED = 'Y'

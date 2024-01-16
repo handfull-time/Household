@@ -27,7 +27,7 @@
                     </td>
                 </tr>
                 <!-- Hidden row for sub items -->
-                <tr class="sub-item-row d-none" th:each="mainItem : ${mainItems}" th:data-index="${iterStat.index}">
+                <tr class="sub-item-row d-none" th:each="mainItem, iterStat : ${mainItems}" th:data-index="${iterStat.index}">
                     <td colspan="3">
                         <ul>
                             <!-- Loop through sub items -->

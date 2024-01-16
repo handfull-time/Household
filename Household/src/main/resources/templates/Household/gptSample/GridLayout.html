@@ -10,7 +10,7 @@
         <h1>Items Management</h1>
         <div class="row">
             <!-- Loop through main items -->
-            <div th:each="mainItem : ${mainItems}" class="col-md-4 mb-4">
+            <div th:each="mainItem : ${mainItems}" class="col-md-3 mb-2">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title" th:text="${mainItem.mainName}">Main Item Name</h5>

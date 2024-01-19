@@ -44,6 +44,8 @@ class CategoryDaoImpl implements CategoryDao{
 			if( ! common.existTable("HH_SUB_CATEGORY") ) {
 				log.info("HH_SUB_CATEGORY 생성");
 				mapper.createSubcategories();
+				
+				common.createIndex("HH_SUB_CATEGORY_OWNER_NO_INDX", "HH_SUB_CATEGORY", "OWNER_NO");
 			}
 
 		}catch (Exception e) {

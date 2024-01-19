@@ -23,7 +23,7 @@ public interface StoreMapper {
 	 * 카드 은행 목록 조회
 	 * @return
 	 */
-	List<StoreVO> getStoreList(@Param("categoryNo") long categoryNo);
+	List<StoreVO> getStoreList(@Param("categoryNo") long categoryNo, @Param("categorySubNo") long categorySubNo);
 	
 	
 	/**

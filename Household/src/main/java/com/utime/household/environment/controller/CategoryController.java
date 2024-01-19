@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.environment.service.CategoryService;
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.ECategoryType;
 
@@ -50,7 +51,7 @@ public class CategoryController {
 //	}
 	
 	@GetMapping(value="Home.html")
-	public String bankCardMain(ModelMap model) {
+	public String CategoryMain(ModelMap model) {
 		
 		model.addAttribute("cTypes",  ECategoryType.values() );
 		
@@ -58,16 +59,16 @@ public class CategoryController {
 	}
 	
 	@PostMapping(value="List.list")
-	public String listBankCard(ModelMap model, @RequestParam(value = "cType", required = false) ECategoryType cType) {
+	public String listCategory(ModelMap model, @RequestParam(value = "cType", required = false) ECategoryType cType) {
 		
-		model.addAttribute("list",  service.getCategoryList(cType) );
+		model.addAttribute("list",  service.getCategoryOwnerList(cType) );
 
 		return "Environment/category/categoryList";
 	}
 	
 	
 	@PostMapping(value="Detail.layer")
-	public String DetailBankCardLayer(ModelMap model, @RequestParam(value = "no") long no) {
+	public String DetailCategoryLayer(ModelMap model, @RequestParam(value = "no") long no) {
 		
 		model.addAttribute("cTypes",  ECategoryType.values() );
 		model.addAttribute("data",  service.getCategory(no) );
@@ -78,7 +79,7 @@ public class CategoryController {
 	
 	@ResponseBody
 	@PostMapping(value="Save.json")
-	public ReturnBasic saveBankCard(CategoryVO vo) {
+	public ReturnBasic saveCategory(CategoryVO vo) {
 		
 		final ReturnBasic res = service.saveCategory(vo);
 
@@ -87,9 +88,37 @@ public class CategoryController {
 	
 	@ResponseBody
 	@PostMapping(value="Remove.json")
-	public ReturnBasic categoryRemove(@RequestParam(value = "no") long no) {
+	public ReturnBasic removeCategory(@RequestParam(value = "no") long no) {
 		
 		final ReturnBasic res = service.deleteCategory(no);
+
+		return res;
+	}
+	
+	
+	@PostMapping(value="SubDetail.layer")
+	public String DetailSubCategoryLayer(ModelMap model, @RequestParam(value = "no") long no) {
+		
+		model.addAttribute("data",  service.getSubCategory(no) );
+
+		return "Environment/category/categoryItem";
+	}
+	
+	
+	@ResponseBody
+	@PostMapping(value="SubSave.json")
+	public ReturnBasic saveSubCategory(CategorySubVO vo) {
+		
+		final ReturnBasic res = service.saveSubCategory(vo);
+
+		return res;
+	}
+	
+	@ResponseBody
+	@PostMapping(value="SubRemove.json")
+	public ReturnBasic removeSubCategory(@RequestParam(value = "no") long no) {
+		
+		final ReturnBasic res = service.deleteSubCategory(no);
 
 		return res;
 	}

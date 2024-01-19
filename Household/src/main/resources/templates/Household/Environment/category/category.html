@@ -29,22 +29,22 @@
 		doSearchList(/*[[@{/Env/Category/List.list}]]*/null, sendData, 'listResult' );
 	}
 	
-	function onShowDetail(no){
+	function onShowOwnerDetail(no){
 		
 		const sendObj = { no: no};
 		
 		onShowModalLayer( /*[[@{/Env/Category/Detail.layer}]]*/null, sendObj, 'editCategoryModal' );
 	}
 
-	function onDelete(no, name) {
+	function onOwnerDelete(no, name) {
 	    
 	    toastConfirm('삭제', name
 				+ ' 삭제하시겠습니까?', function() {
-	    	_onDelete( no, name );	
+	    	_onOwnerDelete( no, name );	
 		});
 	}
 	
-	function _onDelete( no, name ){
+	function _onOwnerDelete( no, name ){
 		
 		onJsonAction( /*[[@{/Env/Category/Remove.json}]]*/ null, { no: no }, function(json){
 			if (json.code === '0') {
@@ -56,7 +56,7 @@
 		});
 	}
 	
-	function modalSuccessClick(){
+	function modalOwnerSuccessClick(){
 		const data = getFormObject( 'editForm' );
 		const isAdd = data.no < 0;
 		
@@ -64,11 +64,11 @@
 		const message = data.name + ' ' + title + '하시겠습니까?';
 		
 		toastConfirm(title, message, function() {
-			_onSave(title, data);
+			_onOwnerSave(title, data);
 		});
 	}
 	
-	function _onSave(title, data){
+	function _onOwnerSave(title, data){
 		onJsonAction( /*[[@{/Env/Category/Save.json}]]*/ null, data, function(json){
 			if (json.code === '0') {
 				onHideModalLayer('editCategoryModal');

@@ -65,7 +65,11 @@ class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 	    final int sheetCount = workbook.getNumberOfSheets();
 	    for( int i=0 ; i<sheetCount ; i++ ) {
 	    	final String sheetName = workbook.getSheetName(i);
+	    	
+	    	// sheet 이름
 	    	if( "일시불".equals(sheetName) || "연회비-기타수수료".equals(sheetName) ) {
+	    		
+	    		// sheet 구성 내용
 //	    		이용일	이용구분	가맹점	이용금액	총할부금액	이용혜택	혜택금액	개월	회차	원금	이자/수수료	포인트명	적립금액	입금후잔액
 	    		final Sheet sheet = workbook.getSheet(sheetName);
 	    		
@@ -86,7 +90,8 @@ class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 	    				addItem.setDealDate( sdf.parse(dealDate) );
 	    				final String storeName = PoiUtil.getStringCellValue( row.getCell(2) );
 	    				addItem.setStore( new StoreVO(storeName) );
-	    				addItem.setAmount( PoiUtil.getIntegerCellValue(row.getCell(3)) - PoiUtil.getIntegerCellValue(row.getCell(6)) );
+	    				final int amount = PoiUtil.getIntegerCellValue(row.getCell(3)) - PoiUtil.getIntegerCellValue(row.getCell(6));
+	    				addItem.setAmount( amount );
 	    				final String dscr = PoiUtil.getStringCellValue( row.getCell(5) );
 	    				final String installmentMonth  = PoiUtil.getStringCellValue( row.getCell(7) );
 	    				final String installmentCount  = PoiUtil.getStringCellValue( row.getCell(8) );

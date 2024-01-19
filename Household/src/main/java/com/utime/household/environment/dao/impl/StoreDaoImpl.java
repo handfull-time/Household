@@ -31,6 +31,9 @@ class StoreDaoImpl implements StoreDao{
 			if( ! common.existTable("HH_USAGE_STORE") ) {
 				log.info("USAGE_STORE 생성");
 				mapper.createMatchUsageStore();
+				
+				common.createIndex("HH_USAGE_STORE_CATEGORY_NO_INDX", "HH_USAGE_STORE", "CATEGORY_NO");
+				common.createIndex("HH_USAGE_STORE_SUB_CATEGORY_NO_INDX", "HH_USAGE_STORE", "SUB_CATEGORY_NO");
 			}
 
 		}catch (Exception e) {

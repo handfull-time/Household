@@ -20,10 +20,9 @@
 	<resultMap id="StoreVoMap" type="com.utime.household.environment.vo.StoreVO">
 		<id column="NO" property="no" />
 		<id column="NAME" property="name" />
-		<id column="CATEGORY_NAME" property="store" />
 		<id column="CATEGORY_NO" property="categoryNo" />
+		<id column="CATEGORY_NAME" property="store" />
 		<id column="SUB_CATEGORY_NO" property="categorySubNo" />
-		
 	</resultMap>
 
 	<!-- 사용처 목록 조회 -->
@@ -33,13 +32,19 @@
 			, ST.STORE AS NAME
 			, ST.CATEGORY_NO
 			, CT.NAME AS CATEGORY_NAME
+			, ST.SUB_CATEGORY_NO
 		FROM HH_USAGE_STORE ST
 			INNER JOIN HH_CATEGORY CT
 				ON ST.CATEGORY_NO = CT.NO
+			INNER JOIN HH_SUB_CATEGORY SB
+				ON ST.SUB_CATEGORY_NO = SB.NO
 		WHERE 1=1
 			AND ST.ENABLED = 'Y'
 			<if test="categoryNo > -1">
 			AND ST.CATEGORY_NO = #{categoryNo}
+			</if>
+			<if test="categorySubNo > -1">
+			AND ST.SUB_CATEGORY_NO = #{categorySubNo}
 			</if>
 		ORDER BY ST.CATEGORY_NO, ST.STORE
 	</select>
@@ -61,9 +66,11 @@
 	<insert id="insertStore" parameterType="com.utime.household.environment.vo.StoreVO" useGeneratedKeys="true" keyProperty="no">
 		INSERT INTO HH_USAGE_STORE (
 			CATEGORY_NO
+			,SUB_CATEGORY_NO
 			,STORE
 		) VALUES (
 			#{categoryNo}
+			,#{categorySubNo}
 			,#{name}
 		)
 	</insert>
@@ -72,6 +79,7 @@
 	<update id="updateStore" parameterType="com.utime.household.environment.vo.StoreVO">
 		UPDATE HH_USAGE_STORE SET
 			CATEGORY_NO = #{categoryNo}
+			,SUB_CATEGORY_NO = #{categorySubNo}
 			,STORE = #{name}
 		WHERE NO = #{no}
 	</update>
@@ -82,6 +90,7 @@
 			NO
 			, STORE AS NAME
 			, CATEGORY_NO
+			, SUB_CATEGORY_NO
 		FROM HH_USAGE_STORE 
 		WHERE 1=1
 			AND ENABLED = 'Y'

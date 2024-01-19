@@ -59,7 +59,7 @@ public class StoreController {
 //	}
 	
 	@GetMapping(value="Home.html")
-	public String bankCardMain(ModelMap model) {
+	public String storeMain(ModelMap model) {
 		
 		model.addAttribute("listCategory",  service.getCategoryList() );
 		
@@ -67,7 +67,7 @@ public class StoreController {
 	}
 	
 	@PostMapping(value="List.list")
-	public String listBankCard(ModelMap model, @RequestParam(value = "categoryNo", defaultValue = "-1") long categoryNo) {
+	public String listStore(ModelMap model, @RequestParam(value = "categoryNo", defaultValue = "-1") long categoryNo) {
 		
 		model.addAttribute("listStore",  service.getStoreList(categoryNo) );
 
@@ -76,7 +76,7 @@ public class StoreController {
 	
 	
 	@PostMapping(value="Detail.layer")
-	public String DetailBankCardLayer(ModelMap model, @RequestParam(value = "no") long no) {
+	public String detailStore(ModelMap model, @RequestParam(value = "no") long no) {
 		
 		model.addAttribute("listCategory",  service.getCategoryList() );
 		model.addAttribute("data",  service.getStore(no) );
@@ -87,7 +87,7 @@ public class StoreController {
 	
 	@ResponseBody
 	@PostMapping(value="Save.json")
-	public ReturnBasic saveBankCard(StoreVO vo) {
+	public ReturnBasic saveStore(StoreVO vo) {
 		
 		final ReturnBasic res = service.saveStore(vo);
 
@@ -96,7 +96,7 @@ public class StoreController {
 	
 	@ResponseBody
 	@PostMapping(value="Remove.json")
-	public ReturnBasic storeRemove(@RequestParam(value = "no") long no) {
+	public ReturnBasic removeStore(@RequestParam(value = "no") long no) {
 		
 		final ReturnBasic res = service.deleteStore(no);
 

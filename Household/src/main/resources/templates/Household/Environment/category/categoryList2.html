@@ -17,20 +17,18 @@
 			<thead>
 				<tr>
 					<th>종류</th>
-					<th>대분류</th>
-					<th>소분류</th>
+					<th>이름</th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr th:each="data : ${list}" >
 					<td class="text-center" th:text="${data.cType.dscr}"></td>
 					<td class="text-center" >
-						<a th:href="'javascript:onShowOwnerDetail(' + ${data.no} + ')'"  th:text="${data.name}"></a>
+						<a th:href="'javascript:onShowDetail(' + ${data.no} + ')'"  th:text="${data.name}"></a>
 					</td>
-					<td class="text-center" >
-						<ul>
-                            <li th:each="subItem : ${data.subCategories}" th:text="${subItem.name}" th:attr="onclick=|handleClick(${subItem.no})|">></li>
-                        </ul>
+					<td class="text-center">
+					    <button type="button" class="btn btn-danger btn-sm" th:onclick="onDelete([[${data.no}]], '[[${data.name}]]'	">삭제</button>
 					</td>
 				</tr>
 			</tbody>

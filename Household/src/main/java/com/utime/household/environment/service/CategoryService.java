@@ -26,6 +26,13 @@ public interface CategoryService {
 	List<CategoryOwnerVO> getCategoryOwnerList();
 	
 	/**
+	 * 전체 내역 조회
+	 * @param cType
+	 * @return
+	 */
+	List<CategoryOwnerVO> getCategoryOwnerList(ECategoryType cType);
+	
+	/**
 	 * 내역 조회
 	 * @return
 	 */

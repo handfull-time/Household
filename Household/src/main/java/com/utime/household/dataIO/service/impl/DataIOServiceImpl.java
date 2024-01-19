@@ -24,7 +24,6 @@ import com.utime.household.environment.dao.CategoryDao;
 import com.utime.household.environment.dao.StoreDao;
 import com.utime.household.environment.vo.BankCardVO;
 import com.utime.household.environment.vo.CategoryVO;
-import com.utime.household.environment.vo.StoreVO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -28,25 +28,38 @@
 		<id column="CT" property="cType" typeHandler="com.utime.household.environment.handler.ECategoryTypeTypeHandler" />
 	</resultMap>
 	
-	<resultMap id="CategoryOwnerMap" type="com.utime.household.environment.vo.CategoryOwnerVO">
-		<id column="NO" property="category.no" />
-		<id column="NAME" property="category.name" />
-		<id column="CT" property="category.cType" typeHandler="com.utime.household.environment.handler.ECategoryTypeTypeHandler" />
+	<resultMap id="CategoryOwnerMap" extends="CategoryMap" type="com.utime.household.environment.vo.CategoryOwnerVO">
 		<association
 			column="NO"
 			property="subCategories"
 			javaType="java.util.List"
-			select="getSubCategoryList" >
+			select="getSubCategoryStoreList" >
 			<id column="NO" property="ownerNo" />
 		</association>
 	</resultMap>
-	
 	
 	<resultMap id="CategorySubMap" type="com.utime.household.environment.vo.CategorySubVO">
 		<id column="NO" property="no" />
 		<id column="NAME" property="name" />
 		<id column="OWNER_NO" property="owner.no" />
 	</resultMap>
+
+	<resultMap id="CategorySubStoreMap" extends="CategorySubMap"  type="com.utime.household.environment.vo.CategorySubStoreVO">
+	</resultMap>
+	
+	<select id="getSubCategoryStoreList" parameterType="map" resultMap="CategorySubStoreMap">
+		SELECT
+			NO
+			, OWNER_NO 
+			, NAME
+		FROM HH_SUB_CATEGORY
+		WHERE 1=1
+			AND ENABLED = 'Y'
+			AND OWNER_NO = #{ownerNo}
+		ORDER BY 
+			CASE WHEN NAME = '기타' THEN 1 ELSE 0 END, 
+    		NAME;
+	</select>
 	
 	<sql id="categoryCoulmns">
 		NO

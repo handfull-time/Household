@@ -19,17 +19,20 @@
 					<th>종류</th>
 					<th>대분류</th>
 					<th>소분류</th>
+					<th>키워드</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr th:each="data : ${list}" >
-					<td class="text-center" th:text="${data.category.cType.dscr}"></td>
+					<td class="text-center" th:text="${data.cType.dscr}"></td>
 					<td class="text-center" >
-						<a th:href="'javascript:onShowOwnerDetail(' + ${data.category.no} + ')'"  th:text="${data.category.name}"></a>
+						<a th:href="'javascript:onShowOwnerDetail(' + ${data.no} + ')'"  th:text="${data.name}"></a>
 					</td>
 					<td class="text-center" >
 						<ul>
-                            <li th:each="subItem : ${data.subCategories}" th:text="${subItem.name}" th:attr="onclick=|handleClick(${subItem.no})|">></li>
+                            <li  >
+                            	<a th:each="subItem : ${data.subCategories}" th:text="${subItem.name}" th:href="'javascript:handleClick(' + ${subItem.no} + ')'"> </a>
+                            </li>
                         </ul>
 					</td>
 				</tr>

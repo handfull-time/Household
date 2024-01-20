@@ -1,7 +1,11 @@
 package com.utime.household.environment.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.catalina.Store;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -12,6 +16,7 @@ import com.utime.household.environment.dao.CategoryDao;
 import com.utime.household.environment.dao.StoreDao;
 import com.utime.household.environment.service.CategoryService;
 import com.utime.household.environment.vo.CategoryOwnerVO;
+import com.utime.household.environment.vo.CategorySubStoreVO;
 import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.ECategoryType;
@@ -230,12 +235,45 @@ class CategoryServiceImpl implements CategoryService {
 	
 	@Override
 	public List<CategoryOwnerVO> getCategoryOwnerList() {
-		return dao.getCategoryOwnerList(null);
+		
+		return this.getCategoryOwnerList(null);
 	}
 	
 	@Override
 	public List<CategoryOwnerVO> getCategoryOwnerList(ECategoryType cType) {
-		return dao.getCategoryOwnerList(cType);
+
+		final List<CategoryOwnerVO> result = dao.getCategoryOwnerList(cType);
+		
+		final Map<Long, List<StoreVO>> storeMap = new HashMap<>();
+		{
+			final List<StoreVO> storeList = sd.getStoreList();
+			storeList.forEach( item -> {
+				final long subNo = item.getCategorySubNo();
+				
+				final List<StoreVO> lst;
+				if( storeMap.containsKey(subNo) ) {
+					lst = storeMap.get(subNo);
+				}else {
+					lst = new ArrayList<>();
+					storeMap.put(subNo, lst);
+				}
+				
+				lst.add(item);
+			}); 
+		}
+		
+		result.forEach( ownerItem -> {
+			final List<CategorySubStoreVO> subCategories = ownerItem.getSubCategories();
+			if( subCategories != null && subCategories.size() > 0 ) {
+				
+				subCategories.forEach( subItem -> {
+					subItem.setList( storeMap.get(subItem.getNo()) );
+				});
+				
+			}
+		});
+		
+		return result; 
 	}
 
 	@Override

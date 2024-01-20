@@ -6,13 +6,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * 소분류
+ */
 @Setter
 @Getter
-@ToString
-public class CategoryOwnerVO extends CategoryVO {
-	
-	/**
-	 * 소분류
-	 */
-	List<CategorySubStoreVO> subCategories;
+@ToString(callSuper = true)
+public class CategorySubStoreVO extends CategorySubVO{
+	List<StoreVO> list;	
 }

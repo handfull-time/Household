@@ -23,9 +23,9 @@
 			</thead>
 			<tbody>
 				<tr th:each="data : ${list}" >
-					<td class="text-center" th:text="${data.cType.dscr}"></td>
+					<td class="text-center" th:text="${data.category.cType.dscr}"></td>
 					<td class="text-center" >
-						<a th:href="'javascript:onShowOwnerDetail(' + ${data.no} + ')'"  th:text="${data.name}"></a>
+						<a th:href="'javascript:onShowOwnerDetail(' + ${data.category.no} + ')'"  th:text="${data.category.name}"></a>
 					</td>
 					<td class="text-center" >
 						<ul>

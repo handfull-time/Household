@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.utime.household.environment.vo.CategoryOwnerVO;
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.ECategoryType;
 
@@ -88,6 +89,42 @@ public interface CategoryMapper {
 	 * @return
 	 */
 	int deleteCategory( @Param("no") long no );
+	
+	/**
+	 * 소분류 목록
+	 * @param ownerNo
+	 * @return
+	 */
+	public List<CategorySubVO> getSubCategoryList(@Param("ownerNo") long ownerNo);
+
+	/**
+	 * 소분류 상세
+	 * @param subNo
+	 * @return
+	 */
+	public CategorySubVO getSubCategory(@Param("subNo") long subNo);
+
+	/**
+	 * 소분류 추가
+	 * @param vo
+	 * @return
+	 */
+	int insertSubCategory( CategorySubVO vo );
+	
+	/**
+	 * 소분류 수정
+	 * @param vo
+	 * @return
+	 */
+	int updateSubCategory( CategorySubVO vo );
+	
+	/**
+	 * 소분류 삭제
+	 * @param subNo
+	 * @return
+	 */
+	int deleteSubCategory( @Param("subNo") long subNo );
+
 
 	
 }

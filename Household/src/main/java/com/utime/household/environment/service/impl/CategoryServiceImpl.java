@@ -86,10 +86,10 @@ class CategoryServiceImpl implements CategoryService {
 			{
 				final CategoryVO ownerCategory = new CategoryVO("생활", ECategoryType.Expense );
 				dao.saveOwnerCategory(ownerCategory);
-				insertSubAndStore( ownerCategory, "가구", "가구", "삼성전자" );
-				insertSubAndStore( ownerCategory, "가전", "삼성전자", "하이마트" );
-				insertSubAndStore( ownerCategory, "생활", "쿠팡", "네이버" );
-				insertSubAndStore( ownerCategory, "장난감", "쿠팡", "네이버" );
+				insertSubAndStore( ownerCategory, "가구", "가구" );
+				insertSubAndStore( ownerCategory, "가전", "하이마트", "베스트샵" );
+				insertSubAndStore( ownerCategory, "생활", "쿠팡", "네이버", "11번가", "인터파크" );
+				insertSubAndStore( ownerCategory, "장난감", "장난감" );
 				insertSubAndStore( ownerCategory, "기타" );
 			}
 			
@@ -115,7 +115,6 @@ class CategoryServiceImpl implements CategoryService {
 				final CategoryVO ownerCategory = new CategoryVO("교육", ECategoryType.Expense );
 				dao.saveOwnerCategory(ownerCategory);
 				insertSubAndStore( ownerCategory, "학교", "학교" );
-				insertSubAndStore( ownerCategory, "도서", "문고", "서점" );
 				insertSubAndStore( ownerCategory, "학원", "태권도", "학원" );
 				insertSubAndStore( ownerCategory, "강의", "도서관" );
 				insertSubAndStore( ownerCategory, "기타" );

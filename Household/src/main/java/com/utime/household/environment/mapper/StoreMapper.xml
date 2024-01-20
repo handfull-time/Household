@@ -46,7 +46,8 @@
 			<if test="categorySubNo > -1">
 			AND ST.SUB_CATEGORY_NO = #{categorySubNo}
 			</if>
-		ORDER BY ST.CATEGORY_NO, ST.STORE
+		ORDER BY 
+			ST.CATEGORY_NO, ST.STORE
 	</select>
 	
 	<!-- 추가하기 전 동일 정보 체크 -->

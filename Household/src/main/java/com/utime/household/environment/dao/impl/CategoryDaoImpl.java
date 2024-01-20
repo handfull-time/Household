@@ -107,25 +107,30 @@ class CategoryDaoImpl implements CategoryDao{
 
 	@Override
 	public List<CategorySubVO> getSubCategoryList(long ownerNo) {
-		// TODO Auto-generated method stub
-		return null;
+		return mapper.getSubCategoryList(ownerNo);
 	}
 
 	@Override
 	public CategorySubVO getSubCategory(long subNo) {
-		// TODO Auto-generated method stub
-		return null;
+		return mapper.getSubCategory(subNo);
 	}
 
 	@Override
+	@Transactional( rollbackFor = Exception.class )
 	public int saveSubCategory(CategorySubVO sub) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		int result;
+		if( sub.getNo() < 0L ) {
+			result = mapper.insertSubCategory(sub);
+		}else {
+			result = mapper.updateSubCategory(sub);
+		}
+		
+		return result;
 	}
 
 	@Override
+	@Transactional( rollbackFor = Exception.class )
 	public int deleteSubCategory(long subNo) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		return mapper.deleteSubCategory(subNo);
 	}
 }

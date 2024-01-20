@@ -43,12 +43,12 @@ class StoreDaoImpl implements StoreDao{
 
 	@Override
 	public List<StoreVO> getStoreList(long categoryNo) {
-		return mapper.getStoreList(categoryNo);
+		return mapper.getStoreList(categoryNo, -1L);
 	}
 
 	@Override
 	public List<StoreVO> getStoreList() {
-		return mapper.getStoreList(-1L);
+		return mapper.getStoreList(-1L, -1L);
 	}
 
 	@Override

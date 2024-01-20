@@ -136,23 +136,23 @@ class DataIODaoImpl implements DataIODao{
 		// 임시 테이블 클리어.
 		mapper.deleteRecordTemp();
 		
-		final Map<Long, CategoryVO> cMap = new HashMap<>();
-		final Map<Long, StoreVO> sMap = new HashMap<>();
+		final Map<Long, CategoryVO> categoryMap = new HashMap<>();
+		final Map<Long, StoreVO> storeMap = new HashMap<>();
 		{
 			final List<CategoryVO> cList = categoryMapper.getCategoryList(null);
 			for( CategoryVO item : cList ) {
-				cMap.put(item.getNo(), item);
+				categoryMap.put(item.getNo(), item);
 			}
 			
-			final List<StoreVO> sList = storeMapper.getStoreList(-1L);
+			final List<StoreVO> sList = storeMapper.getStoreList(-1L, -1L);
 			for( StoreVO item : sList ) {
-				sMap.put(item.getNo(), item);
+				storeMap.put(item.getNo(), item);
 			}
 		}
 		
-		this.genericHouseList(cMap, sMap, sameList);
+		this.genericHouseList(categoryMap, storeMap, sameList);
 		
-		this.genericHouseList(cMap, sMap, deferentList);
+		this.genericHouseList(categoryMap, storeMap, deferentList);
 
 		return result;
 	}

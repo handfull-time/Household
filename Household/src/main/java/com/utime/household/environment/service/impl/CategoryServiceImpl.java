@@ -15,6 +15,7 @@ import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.environment.dao.CategoryDao;
 import com.utime.household.environment.dao.StoreDao;
 import com.utime.household.environment.service.CategoryService;
+import com.utime.household.environment.vo.CategoryOwnerList;
 import com.utime.household.environment.vo.CategoryOwnerVO;
 import com.utime.household.environment.vo.CategorySubStoreVO;
 import com.utime.household.environment.vo.CategorySubVO;
@@ -274,6 +275,52 @@ class CategoryServiceImpl implements CategoryService {
 		});
 		
 		return result; 
+	}
+	
+	@Override
+	public CategoryOwnerList getCategoryOwnerListOfList(ECategoryType cType) {
+//		final List<CategoryVO> categoryOwerList = dao.getCategoryList(cType);
+		final List<CategoryOwnerVO> list = dao.getCategoryOwnerList(cType);
+		final CategoryOwnerList result = new CategoryOwnerList();
+		final List<CategoryVO> ownerList = new ArrayList<>();
+		final List<List<CategorySubVO>> subList = new ArrayList<>();
+		
+		result.setOwnerList(ownerList);
+		result.setSubList(subList);
+		
+		int max = -1;
+		for( CategoryOwnerVO owner : list ) {
+			ownerList.add(owner);
+			if( max < owner.getSubCategories().size() ) {
+				max = owner.getSubCategories().size();
+			}
+		}
+
+		for( int i=0 ; i<max ; i++ ) {
+			subList.add(new ArrayList<>());
+		}
+
+		
+		final CategorySubVO empty = new CategorySubVO();
+		empty.setNo(-1L);
+		empty.setName("");
+		empty.setOwner(null);
+		
+		for( int i=0 ; i<max ; i++ ) {
+			final List<CategorySubVO> addList = subList.get(i);
+			
+			for( CategoryOwnerVO owner : list ) {
+				
+				if( i < owner.getSubCategories().size() ) {
+					final CategorySubStoreVO sub = owner.getSubCategories().get(i);
+					addList.add(sub);
+				}else {
+					addList.add(empty);
+				}
+			}
+		}
+		
+		return result;
 	}
 
 	@Override

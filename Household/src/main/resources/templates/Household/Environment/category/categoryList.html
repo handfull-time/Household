@@ -16,24 +16,17 @@
 		<table class="table table-bordered" id="DataTableCategory">
 			<thead>
 				<tr>
-					<th>종류</th>
-					<th>대분류</th>
-					<th>소분류</th>
-					<th>키워드</th>
+					<th class="text-left" th:each="owner : ${list.ownerList}">
+						<a th:href="'javascript:onShowOwnerDetail(' + ${owner.no} + ')'"  th:text="${owner.name}"></a>
+					</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="data : ${list}" >
-					<td class="text-center" th:text="${data.cType.dscr}"></td>
-					<td class="text-center" >
-						<a th:href="'javascript:onShowOwnerDetail(' + ${data.no} + ')'"  th:text="${data.name}"></a>
-					</td>
-					<td class="text-center" >
-						<ul>
-                            <li  >
-                            	<a th:each="subItem : ${data.subCategories}" th:text="${subItem.name}" th:href="'javascript:handleClick(' + ${subItem.no} + ')'"> </a>
-                            </li>
-                        </ul>
+				<tr th:each="subList : ${list.subList}" >
+					<td class="text-left" th:each="sub : ${subList}" >
+						<th:block th:if="${sub.no ne -1}">
+							<a th:href="'javascript:onShowSubDetail(' + ${sub.no} + ')'"  th:text="${sub.name}"></a>
+						</th:block>
 					</td>
 				</tr>
 			</tbody>

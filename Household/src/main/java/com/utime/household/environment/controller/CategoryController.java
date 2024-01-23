@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.environment.service.CategoryService;
+import com.utime.household.environment.vo.CategoryOwnerList;
 import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.ECategoryType;
@@ -61,10 +62,11 @@ public class CategoryController {
 	@PostMapping(value="List.list")
 	public String listCategory(ModelMap model, @RequestParam(value = "cType", required = false) ECategoryType cType) {
 		
-		model.addAttribute("list",  service.getCategoryOwnerList(cType) );
+//		model.addAttribute("list",  service.getCategoryOwnerList(cType) );
+		model.addAttribute("list",  service.getCategoryOwnerListOfList(cType) );
 
-//		return "Environment/category/categoryList";
-		return "Environment/category/categoryTree";
+		return "Environment/category/categoryList";
+//		return "Environment/category/categoryTree";
 	}
 	
 	
@@ -123,5 +125,13 @@ public class CategoryController {
 
 		return res;
 	}
+	
+	@ResponseBody
+	@GetMapping(value="Test.json")
+	public CategoryOwnerList saveSubCategory() {
+		
+		return service.getCategoryOwnerListOfList(null);
+	}
+	
 	
 }

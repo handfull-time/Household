@@ -62,11 +62,9 @@ public class CategoryController {
 	@PostMapping(value="List.list")
 	public String listCategory(ModelMap model, @RequestParam(value = "cType", required = false) ECategoryType cType) {
 		
-//		model.addAttribute("list",  service.getCategoryOwnerList(cType) );
 		model.addAttribute("list",  service.getCategoryOwnerListOfList(cType) );
 
 		return "Environment/category/categoryList";
-//		return "Environment/category/categoryTree";
 	}
 	
 	

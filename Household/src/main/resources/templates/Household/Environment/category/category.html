@@ -8,9 +8,9 @@
 <!-- index.html 고유 CSS 추가 -->
 <th:block layout:fragment="css">
 	<style>
-	.custom-width-input {
-	    width: auto; /* 또는 필요한 너비로 조절 */
-	}
+		.custom-width-input {
+		    width: auto; /* 또는 필요한 너비로 조절 */
+		}
 	</style>
 </th:block>
 
@@ -36,8 +36,7 @@
 
 	function onOwnerDelete(no, name) {
 	    
-	    toastConfirm('삭제', name
-				+ ' 삭제하시겠습니까?', function() {
+	    toastConfirm('삭제', name + ' 삭제하시겠습니까?', function() {
 	    	_onOwnerDelete( no, name );	
 		});
 	}
@@ -139,13 +138,12 @@
 
 <div layout:fragment="content">
     <div class="card shadow mb-4">
-           <form id="FormCategory">
-			<div class="row  border-bottom-success shadow">
-			
+    	<div class="row border-bottom-success shadow">
+    		<form class="form-inline" id="FormCategory">
 				<div class="card-body">
 					<div class="form-group">
 						<label for="selectCategoryType">종류</label>
-						<select name="cType" class="form-control custom-width-input" id="selectCategoryType" onchange="doSearch()">
+						<select name="cType" class="form-control" id="selectCategoryType" onchange="doSearch()">
 							<option value="">모두</option>
 							<option 
 								th:each="item : ${cTypes}" 
@@ -160,8 +158,8 @@
 		                <button type="button" class="btn btn-primary" onclick="onShowDetail(-1)">추가</button>
 					</div>
 				</div>
-			</div>
-        </form>
+        	</form>
+		</div>
         
 		<div id="listResult"></div>
     </div>

@@ -16,7 +16,7 @@
 		<table class="table table-bordered" id="DataTableCategory">
 			<thead>
 				<tr>
-					<th class="text-left" th:each="owner : ${list.ownerList}">
+					<th class="text-center" th:each="owner : ${list.ownerList}">
 						<a th:href="'javascript:onShowOwnerDetail(' + ${owner.no} + ')'"  th:text="${owner.name}"></a>
 					</th>
 				</tr>

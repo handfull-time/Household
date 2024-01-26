@@ -8,6 +8,11 @@
 <!-- index.html 고유 CSS 추가 -->
 <th:block layout:fragment="css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css" integrity="sha512-34s5cpvaNG3BknEWSuOncX28vz97bRI59UnVtEEpFX536A7BtZSJHsDyFoCl8S7Dt2TPzcrCEoHBGeM4SUBDBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<style>
+		.custom-width-input {
+		    width: auto; /* 또는 필요한 너비로 조절 */
+		}
+	</style>
 </th:block>
 
 <!-- index.html 고유 스크립트 추가 -->
@@ -31,64 +36,64 @@
 </th:block>
 
 <div layout:fragment="content">
-
-	<div class="card shadow mb-4">
-	    <div class="card-body">
-	        <form id="dataForm" th:action="@{/Data/Home.html}" method="GET">
-	            <div class="form-row row">
-	                <div class="form-group row col-md-3">
-	                    <input type="text" name="begin" class="form-control datepicker col-md-3" placeholder="시작일" th:value="${reqVo.begin}"> ~
-	                    <input type="text" name="end" class="form-control datepicker col-md-3" placeholder="종료일" th:value="${reqVo.end}">
-	                </div>
-	                <div class="form-group row">
-	                    <label for="selectBankCard" class="col-md-6">은행/카드 선택</label>
-	                    <div class="col-md-9">
-		                    <select name="bcNo" class="form-control" id="selectBankCard">
-		                    	<option value="-1"  selected="selected">전체</option>
-		                        <option th:each="item : ${bankCards}" th:value="${item.no}" th:text="${item.name}"></option>
-		                    </select>
-	                    </div>
-	                </div>
-	                <div class="form-group ">
-	                    <label for="selectCategory">입출금 항목</label>
-	                    <select name="categoryNo" class="form-control" id="selectCategory">
-	                    	<option value="-1"  selected="selected">전체</option>
-	                        <option th:each="item : ${categories}" th:value="${item.no}" th:text="${item.name}"></option>
-	                    </select>
-	                </div>
-	                <div class="form-group row">
-					    <label for="selectStore" class="col-md-4 col-form-label">사용처 선택</label>
-					    <div class="col-md-9">
-					        <select name="storeNo" class="form-control" id="selectStore">
-					        	<option value="-1" selected="selected">전체</option>
-					            <option th:each="item : ${stores}" th:value="${item.no}" th:text="${item.name}"></option>
-					        </select>
-					    </div>
+    <div class="card shadow mb-4">
+    	<div class="row border-bottom-success shadow">
+    		<form class="form-inline" id="dataForm" th:action="@{/Data/Home.html}" method="GET">
+    		
+    			<div class="col-md-3">
+                    <input type="text" name="begin" class="form-control datepicker col-md-3" placeholder="시작일" th:value="${reqVo.begin}"> ~
+                    <input type="text" name="end" class="form-control datepicker col-md-3" placeholder="종료일" th:value="${reqVo.end}">
+				</div>
+    			<div class="col-md-3">
+                    <label for="selectBankCard" class="col-md-6">은행/카드 선택</label>
+                    <select name="bcNo" class="form-control custom-width-input" id="selectBankCard">
+                    	<option value="-1"  selected="selected">전체</option>
+                        <option th:each="item : ${bankCards}" th:value="${item.no}" th:text="${item.name}"></option>
+                    </select>
+				</div>
+				<div class="col-md-3">
+					<label for="selectCategory">입출금 항목</label>
+                    <select name="categoryNo" class="form-control custom-width-input" id="selectCategory">
+                    	<option value="-1"  selected="selected">전체</option>
+                        <option th:each="item : ${categories}" th:value="${item.no}" th:text="${item.name}"></option>
+                    </select>
+				</div>
+				<div class="col-md-3">
+					<label for="selectCategory">입출금 항목</label>
+                    <select name="categoryNo" class="form-control custom-width-input" id="selectCategory">
+                    	<option value="-1"  selected="selected">전체</option>
+                        <option th:each="item : ${categories}" th:value="${item.no}" th:text="${item.name}"></option>
+                    </select>
+				</div>
+				<div class="col-md-3">
+					<label for="selectStore" class="col-md-4 col-form-label">사용처 선택</label>
+			        <select name="storeNo" class="form-control" id="selectStore">
+			        	<option value="-1" selected="selected">전체</option>
+			            <option th:each="item : ${stores}" th:value="${item.no}" th:text="${item.name}"></option>
+			        </select>
+				</div>
+				<div class="col-md-4">
+					<label for="inputAmount">금액</label>
+                    <input type="text" class="form-control border-1" maxlength="8" id="inputAmount" name="amount" th:value="${reqVo.amount}">
+				</div>
+				<div class="col-md-2">
+					<div class="form-check">
+					  <input class="form-check-input" type="radio" name="amountThan" id="amountThanUp"  th:checked="${reqVo.amountThan}">
+					  <label class="form-check-label" for="amountThanUp">이상</label>
 					</div>
-	                <div class="form-group ">
-	                    <label for="inputAmount">금액</label>
-	                    <input type="text" class="form-control border-1" maxlength="8" id="inputAmount" name="amount" th:value="${reqVo.amount}">
-	                    <div class="form-check">
-						  <input class="form-check-input" type="radio" name="amountThan" id="amountThanUp"  th:checked="${reqVo.amountThan}">
-						  <label class="form-check-label" for="amountThanUp">
-						    이상
-						  </label>
-						</div>
-						<div class="form-check">
-						  <input class="form-check-input" type="radio" name="amountThan" id="amountThanDown" th:checked="${! reqVo.amountThan}">
-						  <label class="form-check-label" for="amountThanDown">
-						    이하
-						  </label>
-						</div>
-	                </div>
-	                <div class="form-group ">
-	                    <label for="inputContent">내용</label>
-	                    <input type="text" class="form-control border-1" maxlength="128" id="inputContent" name="content" th:value="${reqVo.content}">
-	                </div>
-	                <div class="form-group ">
-	                    <button type="submit" class="btn btn-primary">조회</button>
-	                </div>
-	            </div>
+					<div class="form-check">
+					  <input class="form-check-input" type="radio" name="amountThan" id="amountThanDown" th:checked="${! reqVo.amountThan}">
+					  <label class="form-check-label" for="amountThanDown">이하</label>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<label for="inputContent">내용</label>
+                    <input type="text" class="form-control border-1" maxlength="128" id="inputContent" name="content" th:value="${reqVo.content}">
+				</div>
+				<div class="col-md-1">
+					<button type="submit" class="btn btn-primary">조회</button>
+				</div>
+				
 	        </form>
 	    </div>
         

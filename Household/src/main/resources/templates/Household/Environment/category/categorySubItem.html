@@ -12,12 +12,11 @@
 	
 	<script type="text/javascript" th:inline="javascript">
 	
-	$(document).ready(function () {
-        $("#editCategoryModal").draggable({
-            handle: ".modal-header"
-        });
-        
-    });
+		$(document).ready(function () {
+	        $("#editCategoryModal").draggable({
+	            handle: ".modal-header"
+	        });
+	    });
 
 	</script>
 	
@@ -26,7 +25,7 @@
             <div class="modal-content">
             	
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">[[${data.no > -1? '수정':'추가'}]]</h5>
+                    <h5 class="modal-title">[[${data.no > -1? '수정':'추가'}]]</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true"><i class="fas fa-times"></i></span>
                     </button>
@@ -53,7 +52,7 @@
 					</div>
                 </form>
                 <div class="modal-footer">
-                	<a class="btn btn-success btn-icon-split" th:onclick="'onSubDelete(' + ${data.no} + ', \'' + ${data.name} + '\')'">
+                	<a class="btn btn-danger btn-icon-split" th:onclick="onSubDelete([[${data.no}]] , [[${data.name}]])">
                         <span class="icon text-white-50">
                             <i class="fas fa-trash"></i>
                         </span>

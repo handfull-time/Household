@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.catalina.Store;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -279,7 +278,7 @@ class CategoryServiceImpl implements CategoryService {
 	
 	@Override
 	public CategoryOwnerList getCategoryOwnerListOfList(ECategoryType cType) {
-//		final List<CategoryVO> categoryOwerList = dao.getCategoryList(cType);
+
 		final List<CategoryOwnerVO> list = dao.getCategoryOwnerList(cType);
 		final CategoryOwnerList result = new CategoryOwnerList();
 		final List<CategoryVO> ownerList = new ArrayList<>();
@@ -296,7 +295,7 @@ class CategoryServiceImpl implements CategoryService {
 			}
 		}
 
-		for( int i=0 ; i<max ; i++ ) {
+		for( int i=0 ; i<=max ; i++ ) {
 			subList.add(new ArrayList<>());
 		}
 

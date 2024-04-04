@@ -25,13 +25,13 @@
             <div class="modal-content">
             	
                 <div class="modal-header">
-                    <h5 class="modal-title">[[${data.no > -1? '수정':'추가'}]]</h5>
+                    <h5 class="modal-title">[[${subData.no > -1? '수정':'추가'}]]</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true"><i class="fas fa-times"></i></span>
                     </button>
                 </div>
                 <form id="editForm">
-                	<input type="hidden" name="no" th:value="${data.no}">
+                	<input type="hidden" name="no" th:value="${subData.no}">
 	                <div class="modal-body">
 					    <div class="card">
 					        <div class="card-body">
@@ -41,7 +41,15 @@
 					                        <tr>
 					                            <th class="text-left" scope="row">이름</th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="32" name="name" th:value="${data.name}" required>
+					                                <input type="text" class="form-control border-1" maxlength="32" name="name" th:value="${subData.name}" required>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">구분 단어</th>
+					                            <td class="text-left">
+					                                <th:block th:each="item, status : ${storeDataList}">
+					                                    <span class="text" th:text="${item.name}"></span><th:block th:if="${!status.last}">,</th:block>
+					                                </th:block>
 					                            </td>
 					                        </tr>
 					                    </tbody>
@@ -52,7 +60,7 @@
 					</div>
                 </form>
                 <div class="modal-footer">
-                	<a class="btn btn-danger btn-icon-split" th:onclick="onSubDelete([[${data.no}]] , [[${data.name}]])">
+                	<a class="btn btn-danger btn-icon-split" th:onclick="onSubDelete([[${subData.no}]] , [[${subData.name}]])">
                         <span class="icon text-white-50">
                             <i class="fas fa-trash"></i>
                         </span>
@@ -62,7 +70,7 @@
                         <span class="icon text-white-50">
                             <i class="fas fa-check-circle"></i>
                         </span>
-                        <span class="text">[[${data.no > -1? '수정':'추가'}]]</span>
+                        <span class="text">[[${subData.no > -1? '수정':'추가'}]]</span>
                     </a>
 
                 	<a class="btn btn-secondary btn-icon-split" data-dismiss="modal">

@@ -21,8 +21,9 @@
 		<id column="NO" property="no" />
 		<id column="NAME" property="name" />
 		<id column="CATEGORY_NO" property="categoryNo" />
-		<id column="CATEGORY_NAME" property="store" />
+		<id column="CATEGORY_NAME" property="categoryName" />
 		<id column="SUB_CATEGORY_NO" property="categorySubNo" />
+		<id column="SUB_CATEGORY_NAME" property="categorySubName" />
 	</resultMap>
 
 	<!-- 사용처 목록 조회 -->
@@ -33,6 +34,7 @@
 			, ST.CATEGORY_NO
 			, CT.NAME AS CATEGORY_NAME
 			, ST.SUB_CATEGORY_NO
+			, SB.NAME AS SUB_CATEGORY_NAME
 		FROM HH_USAGE_STORE ST
 			INNER JOIN HH_CATEGORY CT
 				ON ST.CATEGORY_NO = CT.NO

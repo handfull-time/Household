@@ -6,10 +6,9 @@ import org.springframework.stereotype.Service;
 
 import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.common.vo.ReturnBasic;
-import com.utime.household.environment.dao.CategoryDao;
 import com.utime.household.environment.dao.StoreDao;
 import com.utime.household.environment.service.StoreService;
-import com.utime.household.environment.vo.CategoryVO;
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.StoreVO;
 
 import lombok.RequiredArgsConstructor;
@@ -19,8 +18,6 @@ import lombok.RequiredArgsConstructor;
 class StoreServiceImpl implements StoreService {
 
 	private final StoreDao dao;
-	
-	private final CategoryDao cd;
 	
 	@Override
 	public List<StoreVO> getStoreList() {
@@ -34,9 +31,8 @@ class StoreServiceImpl implements StoreService {
 	}
 	
 	@Override
-	public List<CategoryVO> getCategoryList() {
-		
-		return cd.getCategoryList(null);
+	public List<StoreVO> getStoreList(CategorySubVO category) {
+		return dao.getStoreList(category);
 	}
 
 	@Override

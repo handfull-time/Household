@@ -176,8 +176,17 @@ function onShowModalLayer(urlAddress, sendData, modalId){
 		data : sendData,
 		dataType : 'html',
 		success:function(data){ 
-			$('#DetailLayer').empty().html(data).show();
-			$('#' + modalId).modal('show');
+			const DetailLayer = $('#DetailLayer');
+			
+			DetailLayer.empty();
+			DetailLayer.reset();
+			DetailLayer.html(data).show();
+			const modal = $('#' + modalId);
+			modal.on('hidden.bs.modal', function () {
+				console.info('모달 내부의 HTML 비우기');
+				$('#DetailLayer').empty();
+			});
+			modal.modal('show');
 		},
 		error: _ajaxError,
 	});

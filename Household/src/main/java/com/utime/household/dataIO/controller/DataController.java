@@ -14,6 +14,7 @@ import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.dataIO.service.DataIOService;
 import com.utime.household.dataIO.vo.OuputReqVO;
 import com.utime.household.environment.service.BankCardService;
+import com.utime.household.environment.service.CategoryService;
 import com.utime.household.environment.service.StoreService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,8 @@ public class DataController {
 	private final BankCardService bcService;
 	
 	private final StoreService stService;
+	
+	private final CategoryService ctService;
 	
 	@GetMapping(value = {"", "/"})
 	public String goMain() {
@@ -56,7 +59,7 @@ public class DataController {
 		
 		model.addAttribute("reqVo", reqVo);
 		model.addAttribute("bankCards", bcService.getBankCardList());
-		model.addAttribute("categories", stService.getCategoryList());
+		model.addAttribute("categories", ctService.getCategoryList());
 		model.addAttribute("stores", stService.getStoreList());
 		model.addAttribute("result", dataService.getHouseholdDataList(reqVo));
 		

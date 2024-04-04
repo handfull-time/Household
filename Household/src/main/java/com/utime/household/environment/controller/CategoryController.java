@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.environment.service.CategoryService;
+import com.utime.household.environment.service.StoreService;
 import com.utime.household.environment.vo.CategoryOwnerList;
 import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.CategoryVO;
@@ -22,7 +23,10 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("Env/Category")
 public class CategoryController {
 	
-	private final CategoryService service;
+	private final CategoryService categoryService;
+	
+	private final StoreService storeService;
+	
 	
 	@GetMapping(value = {"", "/"})
 	public String goMain() {
@@ -62,7 +66,7 @@ public class CategoryController {
 	@PostMapping(value="List.list")
 	public String listCategory(ModelMap model, @RequestParam(value = "cType", required = false) ECategoryType cType) {
 		
-		model.addAttribute("list",  service.getCategoryOwnerListOfList(cType) );
+		model.addAttribute("list",  categoryService.getCategoryOwnerListOfList(cType) );
 
 		return "Environment/category/categoryList";
 	}
@@ -72,7 +76,7 @@ public class CategoryController {
 	public String DetailCategoryLayer(ModelMap model, @RequestParam(value = "no") long no) {
 		
 		model.addAttribute("cTypes",  ECategoryType.values() );
-		model.addAttribute("data",  service.getCategory(no) );
+		model.addAttribute("categoryData", categoryService.getCategory(no) );
 
 		return "Environment/category/categoryItem";
 	}
@@ -82,7 +86,7 @@ public class CategoryController {
 	@PostMapping(value="Save.json")
 	public ReturnBasic saveCategory(CategoryVO vo) {
 		
-		final ReturnBasic res = service.saveCategory(vo);
+		final ReturnBasic res = categoryService.saveCategory(vo);
 
 		return res;
 	}
@@ -91,7 +95,7 @@ public class CategoryController {
 	@PostMapping(value="Remove.json")
 	public ReturnBasic removeCategory(@RequestParam(value = "no") long no) {
 		
-		final ReturnBasic res = service.deleteCategory(no);
+		final ReturnBasic res = categoryService.deleteCategory(no);
 
 		return res;
 	}
@@ -100,7 +104,10 @@ public class CategoryController {
 	@PostMapping(value="SubDetail.layer")
 	public String DetailSubCategoryLayer(ModelMap model, @RequestParam(value = "no") long no) {
 		
-		model.addAttribute("data",  service.getSubCategory(no) );
+		final CategorySubVO category = categoryService.getSubCategory(no);
+		
+		model.addAttribute("subData",  categoryService.getSubCategory(no) );
+		model.addAttribute("storeDataList",  storeService.getStoreList(category) );
 
 		return "Environment/category/categorySubItem";
 	}
@@ -110,7 +117,7 @@ public class CategoryController {
 	@PostMapping(value="SubSave.json")
 	public ReturnBasic saveSubCategory(CategorySubVO vo) {
 		
-		final ReturnBasic res = service.saveSubCategory(vo);
+		final ReturnBasic res = categoryService.saveSubCategory(vo);
 
 		return res;
 	}
@@ -119,7 +126,7 @@ public class CategoryController {
 	@PostMapping(value="SubRemove.json")
 	public ReturnBasic removeSubCategory(@RequestParam(value = "no") long no) {
 		
-		final ReturnBasic res = service.deleteSubCategory(no);
+		final ReturnBasic res = categoryService.deleteSubCategory(no);
 
 		return res;
 	}
@@ -128,7 +135,7 @@ public class CategoryController {
 	@GetMapping(value="Test.json")
 	public CategoryOwnerList saveSubCategory() {
 		
-		return service.getCategoryOwnerListOfList(null);
+		return categoryService.getCategoryOwnerListOfList(null);
 	}
 	
 	

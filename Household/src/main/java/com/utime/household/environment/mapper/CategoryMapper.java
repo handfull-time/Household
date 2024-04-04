@@ -47,7 +47,6 @@ public interface CategoryMapper {
 	 */
 	List<CategoryOwnerVO> getCategoryOwnerList(@Param("cType") ECategoryType cType);
 	
-	
 	/**
 	 * 이름으로 정보 조회
 	 * @param inputBC

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.utime.household.common.vo.ReturnBasic;
+import com.utime.household.environment.service.CategoryService;
 import com.utime.household.environment.service.StoreService;
 import com.utime.household.environment.vo.StoreVO;
 
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("Env/Store")
 public class StoreController {
 	
+	private final CategoryService categoryService;
 	private final StoreService service;
 	
 	@GetMapping(value = {"", "/"})
@@ -61,7 +63,7 @@ public class StoreController {
 	@GetMapping(value="Home.html")
 	public String storeMain(ModelMap model) {
 		
-		model.addAttribute("listCategory",  service.getCategoryList() );
+		model.addAttribute("listCategory",  categoryService.getCategoryList() );
 		
 		return "Environment/store/store";
 	}
@@ -78,7 +80,8 @@ public class StoreController {
 	@PostMapping(value="Detail.layer")
 	public String detailStore(ModelMap model, @RequestParam(value = "no") long no) {
 		
-		model.addAttribute("listCategory",  service.getCategoryList() );
+		model.addAttribute("listCategory",  categoryService.getCategoryList() );
+		model.addAttribute("listSubCategory",  categoryService.getSubCategoryList(-1L) );
 		model.addAttribute("data",  service.getStore(no) );
 
 		return "Environment/store/storeItem";

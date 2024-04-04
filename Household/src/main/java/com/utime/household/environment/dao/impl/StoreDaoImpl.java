@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.utime.household.common.mapper.CommonMapper;
 import com.utime.household.environment.dao.StoreDao;
 import com.utime.household.environment.mapper.StoreMapper;
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.StoreVO;
 
 import jakarta.annotation.PostConstruct;
@@ -49,6 +50,12 @@ class StoreDaoImpl implements StoreDao{
 	@Override
 	public List<StoreVO> getStoreList() {
 		return mapper.getStoreList(-1L, -1L);
+	}
+	
+	@Override
+	public List<StoreVO> getStoreList(CategorySubVO category) {
+		
+		return mapper.getStoreList(category.getOwner().getNo(), category.getNo());
 	}
 
 	@Override

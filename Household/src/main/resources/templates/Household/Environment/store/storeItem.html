@@ -12,12 +12,52 @@
 	
 	<script type="text/javascript" th:inline="javascript">
 	
+	
+	
+	
+	
 	$(document).ready(function () {
         $("#editStoreModal").draggable({
             handle: ".modal-header"
         });
         
+        const no = /*[[${data.categoryNo}]]*/ -1;
+        
+        populateCategorySelect( {value: no} );
     });
+	
+	function populateCategorySelect(category) {
+		const categoryNo = category.value;
+		console.info( "categoryNo", categoryNo );
+		
+	    const categorySubSelect = document.getElementById('selectCategorySub');
+	    categorySubSelect.innerHTML = '';
+
+	    const optionUnSelected = document.createElement('option');
+	    optionUnSelected.value = -1;
+	    optionUnSelected.textContent = '미지정';
+	    categorySubSelect.appendChild(optionUnSelected);
+
+	    const listSubCategory = /*[[${listSubCategory}]]*/ null;
+	    const SubCategoryNo = /*[[${data.categorySubNo}]]*/ -1;
+	    console.info( "SubCategoryNo", SubCategoryNo);
+	    
+	    const filteredSubCategory = listSubCategory.filter(categorySub => categoryNo === -1 || categorySub.owner.no === categoryNo);
+
+	    
+	    filteredSubCategory.forEach(categorySub => {
+	    	
+		    console.info( JSON.stringify(categorySub) );
+
+		    const option = document.createElement('option');
+	        option.value = categorySub.no;
+	        option.textContent = categorySub.name;
+	        console.info( "SubCategoryNo", SubCategoryNo, "categorySub.no === SubCategoryNo", categorySub.no === SubCategoryNo );
+	        option.selected = categorySub.no === SubCategoryNo;
+	        
+	    	categorySubSelect.appendChild(option);
+	    });
+	}
 
 	</script>
 	
@@ -40,15 +80,23 @@
 					                <table class="table table-borderless">
 					                    <tbody>
 					                        <tr>
-					                            <th class="text-left" scope="row">입출금 항목</th>
+					                            <th class="text-left" scope="row">대분류 항목</th>
 					                            <td class="text-right">
-					                            	<select name="categoryNo" class="form-control" >
+					                            	<select name="categoryNo" class="form-control" onChange="populateCategorySelect(this)" >
 														<option 
 															th:each="item : ${listCategory}" 
 															th:value="${item.no}" 
 															th:text="${item.name}"
 															th:selected="${item.no} == ${data.categoryNo}"
 															></option>
+													</select>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">소분류 항목</th>
+					                            <td class="text-right">
+					                            	<select name="categorySubNo" id="selectCategorySub" class="form-control" >
+					                            		<option value="-1">미지정</option>
 													</select>
 					                            </td>
 					                        </tr>

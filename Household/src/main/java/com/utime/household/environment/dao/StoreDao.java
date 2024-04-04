@@ -2,6 +2,7 @@ package com.utime.household.environment.dao;
 
 import java.util.List;
 
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.StoreVO;
 
 public interface StoreDao {
@@ -17,6 +18,9 @@ public interface StoreDao {
 	 * @return
 	 */
 	List<StoreVO> getStoreList();
+	
+	
+	List<StoreVO> getStoreList(CategorySubVO category);
 
 	/**
 	 * 추가
@@ -40,6 +44,8 @@ public interface StoreDao {
 	 * @throws Exception
 	 */
 	int deleteStore(long no)throws Exception;
+
+	
 
 	
 }

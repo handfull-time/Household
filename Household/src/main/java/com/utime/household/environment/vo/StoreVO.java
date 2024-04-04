@@ -24,6 +24,12 @@ public class StoreVO extends BasicItemVO{
 	
 	/** 내역에서 전달받은 실제 이름 */
 	String store;
+	
+	/** 카테고리 상위 이름 */
+	String categoryName;
+	
+	/** 카테고리 하위 이름 */
+	String categorySubName;
 
 	public StoreVO() {
 		super();

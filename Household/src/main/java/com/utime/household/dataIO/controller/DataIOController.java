@@ -29,6 +29,7 @@ import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 import com.utime.household.dataIO.vo.HouseholdReqDataVO;
 import com.utime.household.dataIO.vo.HouseholdResDataVO;
 import com.utime.household.environment.service.BankCardService;
+import com.utime.household.environment.service.CategoryService;
 import com.utime.household.environment.service.StoreService;
 import com.utime.household.environment.vo.ECategoryType;
 
@@ -42,6 +43,7 @@ public class DataIOController {
 	private final DataIOService service;
 	private final StoreService stService;
 	private final BankCardService bcService;
+	private final CategoryService ctService;
 	
 	@GetMapping(value = {"Upload.html"})
 	public String rootUploadShow(ModelMap model) {
@@ -68,7 +70,7 @@ public class DataIOController {
 		model.addAttribute("list", res.getList());
 		model.addAttribute("bankCard", res.getBcVo());
 		model.addAttribute("listCategoryType", ECategoryType.values() );
-		model.addAttribute("listCategory", stService.getCategoryList());
+		model.addAttribute("listCategory", ctService.getCategoryList());
 		model.addAttribute("listStore", stService.getStoreList());
 		
 		return "dataIO/uploadResult";

@@ -17,14 +17,16 @@
 		<table class="table table-bordered" id="DataTableStore">
 			<thead>
 				<tr>
-					<th>구분</th>
+					<th>대분류</th>
+					<th>소분류</th>
 					<th>이름</th>
 					<th></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr th:each="data : ${listStore}" >
-					<td class="text-center" th:text="${data.store}"></td>
+					<td class="text-center" th:text="${data.categoryName}"></td>
+					<td class="text-center" th:text="${data.categorySubName}"></td>
 					<td class="text-center" >
 						<a th:href="'javascript:onShowDetail(' + ${data.no} + ')'"  th:text="${data.name}"></a>
 					</td>

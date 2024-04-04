@@ -55,7 +55,9 @@
 		FROM HH_SUB_CATEGORY
 		WHERE 1=1
 			AND ENABLED = 'Y'
+			<if test="ownerNo > -1">
 			AND OWNER_NO = #{ownerNo}
+			</if>
 		ORDER BY 
 			CASE WHEN NAME = '기타' THEN 1 ELSE 0 END, 
     		NAME;
@@ -110,7 +112,9 @@
 		FROM HH_SUB_CATEGORY
 		WHERE 1=1
 			AND ENABLED = 'Y'
+			<if test="ownerNo > -1">
 			AND OWNER_NO = #{ownerNo}
+			</if>
 		ORDER BY 
 			CASE WHEN NAME = '기타' THEN 1 ELSE 0 END, 
     		NAME;

@@ -3,7 +3,7 @@ package com.utime.household.environment.service;
 import java.util.List;
 
 import com.utime.household.common.vo.ReturnBasic;
-import com.utime.household.environment.vo.CategoryVO;
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.StoreVO;
 
 public interface StoreService {
@@ -13,7 +13,7 @@ public interface StoreService {
 	
 	List<StoreVO> getStoreList(long categoryNo);
 
-	List<CategoryVO> getCategoryList();
+	List<StoreVO> getStoreList(CategorySubVO category);
 
 	/**
 	 * 저장
@@ -35,4 +35,5 @@ public interface StoreService {
 	 * @return
 	 */
 	StoreVO getStore(long no);
+
 }

@@ -11,7 +11,11 @@ public class InputBankCardDefine {
 	
 	public static final String NameKbBank = "KbBankService";
 	
-	public static final String NameShinhan = "ShinhanService";
+	public static final String NameWooriBank = "WooriBankService";
+	
+	public static final String NameKakaoBank = "KakaoBankService";
+	
+	public static final String NameShinhanCard = "ShinhanService";
 	
 	public static final String NameIncheonEum = "IncheonEumService";
 	

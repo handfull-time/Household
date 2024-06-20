@@ -1,18 +1,18 @@
 package com.utime.household.environment.vo;
 
-import java.util.Date;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * 은행 정보
+ * 카드 정보
  */
 @Setter
 @Getter
 @ToString
-public class BankVO {
+public class CardVO{
 	
 	/** 고유 번호 */
 	long no;
@@ -24,30 +24,23 @@ public class BankVO {
 	 * 상위 번호
 	 */
 	long bankCardNo;
-
-	/**
-	 * 은행 종류
-	 */
-	BasicItemVO bankKind;
+	
+	/** 카드 업체 */
+	BasicItemVO cardCompany;
 	
 	/**
-	 * 계좌 종류
+	 * 출금 은행 정보
 	 */
-	EAccountType accountType;
+	BankCardVO bank;
 	
 	/**
-	 * 계좌 번호
+	 * 매월 출금일자.
 	 */
-	String accountNumber;
+	int withdrawalDate;
 	
 	/**
-	 * . 예금/적금 일 경우.
+	 * 관련 카드 목록
 	 */
-	Date maturity;
-	
-	/**
-	 * 이율. 예금/적금 일 경우.
-	 */
-	float rate;
+	List<CardItemVO> cards;
 	
 }

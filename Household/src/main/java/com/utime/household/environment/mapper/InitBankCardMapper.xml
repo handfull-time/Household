@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!--//네임스페이스에는 mapper 가 있는 풀 패키지명과 매퍼명을 등록 한다. -->
+<mapper namespace="com.utime.household.environment.mapper.InitBankCardMapper">
+
+	<!-- 은행 카드 테이블 생성 -->
+	<insert id="createBankCard">
+		CREATE TABLE HH_BANK_CARD (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
+			, BC CHAR(1) CHECK(BC IN ('B', 'C', 'O')) <!-- 카드 은행 구분 B:은행, C:카드, O:기타 -->
+			, NAME TEXT(32) NOT NULL <!-- 소유자 이름 -->
+			, DSCR TEXT(128) DEFAULT NULL <!-- 설명 -->
+		)
+	</insert>
+
+	<!-- 은행 종류 -->	
+	<insert id="createBankKind">
+		CREATE TABLE HH_BANK_KIND (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, NAME TEXT(32) NOT NULL <!-- 은행 사 이름 -->
+			, BEAN_NAME TEXT(32) DEFAULT NULL <!-- BEAN 이름 -->
+		)
+	</insert>
+	
+	<!-- 카드 종류 -->
+	<insert id="createCardKind">
+		CREATE TABLE HH_CARD_KIND (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, NAME TEXT(32) NOT NULL <!-- 카드 사 이름 -->
+			, BEAN_NAME TEXT(32) DEFAULT NULL <!-- BEAN 이름 -->
+		)
+	</insert>
+
+	<!-- 은행 정보 생성 -->
+	<insert id="createBank">
+		CREATE TABLE HH_BANK (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, CARD_BANK_CARD_NO INTEGER DEFAULT -1 <!-- 상위 은행 번호 -->
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
+			, BANK_KIND NUMBER DEFAULT NULL <!-- 은행 종류 -->
+			, BANK_ACCOUNT_TYPE CHAR(1) DEFAULT NULL CHECK (BANK_ACCOUNT_TYPE IN ('O', 'T', 'R', 'F')) <!-- 은행 계좌 종류 -->
+			, BANK_ACCOUNT_NUMBER TEXT(16) DEFAULT NULL <!-- 은행 계좌 번호 -->
+			, MATURITY DATE DEFAULT NULL <!-- 만기 일자 -->
+			, RATE REAL DEFAULT NULL <!-- 이율 -->
+			, FOREIGN KEY(CARD_BANK_CARD_NO) REFERENCES HH_BANK_CARD(NO) 
+			, FOREIGN KEY(BANK_KIND) REFERENCES HH_BANK_KIND(NO) 
+		)
+	</insert>
+
+	<!-- 카드 정보 생성 -->
+	<insert id="createCard">
+		CREATE TABLE HH_CARD (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, CARD_BANK_CARD_NO INTEGER DEFAULT -1 <!-- 상위 은행 번호 -->
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
+			, CARD_KIND TEXT(16) DEFAULT NULL <!-- 카드 회사 -->
+			, CARD_WITHDRAWAL_DATE INTEGER DEFAULT 0 <!-- 매월 출금일자. -->
+			, CARD_WITHDRAWAL_BANK_CARD_NO INTEGER DEFAULT 0 <!-- 출금 은행 번호 -->
+			, FOREIGN KEY(CARD_BANK_CARD_NO) REFERENCES HH_BANK_CARD(NO)
+			, FOREIGN KEY(CARD_WITHDRAWAL_BANK_CARD_NO) REFERENCES HH_BANK_CARD(NO) 
+			, FOREIGN KEY(CARD_KIND) REFERENCES HH_CARD_KIND(NO) 
+		)
+	</insert>
+
+	<!-- 카드는 한 사람이 하나만 만들 수 있기 때문에 -->
+	<insert id="createCardItem">
+		CREATE TABLE HH_CARD_ITEM (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, CARD_NO INTEGER NOT NULL <!-- HH_CARD - NO -->
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
+			, NAME TEXT(64) NOT NULL <!-- 카드 이름 -->
+			, CARD_NUMBER TEXT(64) DEFAULT NULL <!-- 카드 번호 -->
+			, CARD_TYPE CHAR(1) DEFAULT NULL CHECK (CARD_TYPE IN ('C', 'H', 'P', 'G', 'I', 'O')) <!-- 카드 종류 -->
+			, DSCR TEXT(128) DEFAULT NULL <!-- 설명 -->
+			, FILE_CARD_NAME TEXT(32) DEFAULT NULL <!-- 청구서 기록용 카드 이름 -->
+			, FILE_CARD_NUMBER TEXT(32) DEFAULT NULL <!-- 청구서 기록용 카드 번호 -->
+			, FOREIGN KEY(CARD_NO) REFERENCES HH_CARD(NO) 
+		)
+	</insert>
+	
+</mapper>

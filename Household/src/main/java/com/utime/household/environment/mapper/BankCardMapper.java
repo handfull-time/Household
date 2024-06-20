@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.utime.household.environment.vo.BankCardVO;
+import com.utime.household.environment.vo.BasicItemVO;
 import com.utime.household.environment.vo.EBankCard;
 
 /**
@@ -16,10 +17,35 @@ public interface BankCardMapper {
 	
 	
 	/**
-	 * 은행/카드 정보 생성
+	 * 은행 사 추가
+	 * @param name
+	 * @param bean
 	 * @return
 	 */
-	public int createBankCard();
+	public int insertBankKind( @Param("name") String name, @Param("bean") String bean );
+	
+	/**
+	 * 카드 사 추가
+	 * @param name
+	 * @param bean
+	 * @return
+	 */
+	public int insertCardKind( @Param("name") String name, @Param("bean") String bean );
+	
+	/**
+	 * 은행 사 조회
+	 * @param name
+	 * @return
+	 */
+	public List<BasicItemVO> selectBankKind();
+	
+	/**
+	 * 카드 사 조회
+	 * @param name
+	 * @return
+	 */
+	public List<BasicItemVO> selectCardKind();
+	
 
 	/**
 	 * 카드 은행 목록 조회

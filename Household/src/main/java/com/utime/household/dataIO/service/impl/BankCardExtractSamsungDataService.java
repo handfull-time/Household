@@ -21,6 +21,7 @@ import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 import com.utime.household.dataIO.vo.HouseholdDataVO;
 import com.utime.household.dataIO.vo.InputBankCardDefine;
 import com.utime.household.environment.vo.BankCardVO;
+import com.utime.household.environment.vo.CardItemVO;
 import com.utime.household.environment.vo.StoreVO;
 
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,38 @@ class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 	    	result.setCodeMessage("EFX001","엑셀파일만 업로드 해주세요");
 	    	return result;
 		}
+	    
+	    {
+	    	final String sheetName = workbook.getSheetName(0);
+	    	if( ! "청구요약".equals(sheetName) ) {
+	    		log.error("sheetName 다름 - " + sheetName);
+		    	result.setCodeMessage("EFX002", "청구요약 Sheet가 없습니다.");
+		    	return result;
+	    	}
+	    	
+	    	final Sheet sheet = workbook.getSheetAt(0);
+	    	final int lastRowNum = sheet.getLastRowNum();
+    		for( int rowNum = 3 ; rowNum < lastRowNum ; rowNum ++ ) {
+    			final Row row = sheet.getRow(rowNum);
+    			log.info(PoiUtil.toString(row));
+    			
+    			// 이용자 ex) 본 인
+    			final String user = PoiUtil.getStringCellValue( row.getCell(0) );
+    			// 카드번호/대출번호 ex) ****-****-****-*118
+    			final String number = PoiUtil.getStringCellValue( row.getCell(1) );
+    			// 상품명 ex) 엠베스트 엘리하이 삼성카드
+    			final String name = PoiUtil.getStringCellValue( row.getCell(2) );
+    			// 이용구분 ex) 본 인 445
+    			final String userDif = user + " " + number.substring(number.lastIndexOf('*')+1);
+    			
+    			final CardItemVO cardItem = new CardItemVO();
+    			cardItem.setName(name);
+    			cardItem.setInnerFileCardName(name);
+    			
+    			
+    			bcVo.getCard().getCards().add( cardItem );
+    		}
+	    }
 
 	    
 	    final List<HouseholdDataVO> list = new ArrayList<>();
@@ -63,8 +96,11 @@ class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 	    final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.KOREAN);
 	    
 	    final int sheetCount = workbook.getNumberOfSheets();
-	    for( int i=0 ; i<sheetCount ; i++ ) {
+	    for( int i=1 ; i<sheetCount ; i++ ) {
 	    	final String sheetName = workbook.getSheetName(i);
+	    	
+	    	
+	    	
 	    	
 	    	// sheet 이름
 	    	if( "일시불".equals(sheetName) || "연회비-기타수수료".equals(sheetName) ) {

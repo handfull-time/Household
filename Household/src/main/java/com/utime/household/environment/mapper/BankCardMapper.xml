@@ -3,48 +3,141 @@
 <!--//네임스페이스에는 mapper 가 있는 풀 패키지명과 매퍼명을 등록 한다. -->
 <mapper namespace="com.utime.household.environment.mapper.BankCardMapper">
 
-	<!-- 은행 카드 테이블 생성 -->
-	<insert id="createBankCard">
-		CREATE TABLE HH_BANK_CARD (
-			NO INTEGER PRIMARY KEY AUTOINCREMENT
-			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
-			, BC CHAR(1) CHECK(BC IN ('B', 'C', 'O')) <!-- 카드 은행 구분 B:은행, C:카드, O:기타 -->
-			, NAME TEXT(32) NOT NULL <!-- 이름 -->
-			, BANK_KIND TEXT(16) DEFAULT NULL <!-- 은행 종류 -->
-			, BANK_ACCOUNT_TYPE CHAR(1) DEFAULT NULL CHECK (BANK_ACCOUNT_TYPE IN ('O', 'T', 'R', 'F')) <!-- 은행 계좌 종류 -->
-			, BANK_ACCOUNT_NUMBER TEXT(16) DEFAULT NULL <!-- 은행 계좌 번호 -->
-			, BANK_ACCOUNT_HOLDER TEXT(16) DEFAULT NULL <!-- 은행 계좌 예금 주 -->
-			, CARD_COMPANY TEXT(16) DEFAULT NULL <!-- 카드 종류 -->
-			, CARD_TYPE CHAR(1) DEFAULT NULL CHECK (CARD_TYPE IN ('C', 'H', 'P', 'G', 'I', 'O')) <!-- 카드 종류 -->
-			, CARD_BANK_CARD_NO INTEGER DEFAULT -1 <!-- 연계 은행 번호 -->
-			, CARD_WITHDRAWAL_DATE INTEGER DEFAULT 0 <!-- 매월 출금일자. -->
-			, DSCR TEXT(128) DEFAULT NULL <!-- 설명 -->
-		)
-	</insert>
+	<resultMap id="BankVOMap" type="com.utime.household.environment.vo.BankVO">
+		<id column="NO" property="no" />
+		<result column="ENABLED" property="enabled" />
+		<result column="CARD_BANK_CARD_NO" property="bankCardNo" />
+		
+		<result column="BANK_ACCOUNT_TYPE" property="accountType"  typeHandler="com.utime.household.environment.handler.AccountTypeTypeHandler" />
+		<result column="BANK_ACCOUNT_NUMBER" property="accountNumber" />
+		<result column="MATURITY" property="maturity" />
+		<result column="RATE" property="rate" />
+		
+		<association property="bankKind" javaType="com.utime.household.environment.vo.BasicItemVO">
+       		<id column="NO" property="no" />
+        	<result column="NAME" property="name" />
+    	</association>
+    	
+	</resultMap>
+	
+	<resultMap id="CardVOMap" type="com.utime.household.environment.vo.CardVO">
+		<id column="NO" property="no" />
+		<result column="ENABLED" property="enabled" />
+		<result column="CARD_BANK_CARD_NO" property="bankCardNo" />
+		<result column="CARD_WITHDRAWAL_DATE" property="card.withdrawalDate"/>
+		
+		<collection
+			column="NO"
+			property="cards"
+			javaType="com.utime.household.environment.vo.CardItemVO"
+			select="getBankCard" />
+	</resultMap>
 	
 	<resultMap id="BankCardVoMap" type="com.utime.household.environment.vo.BankCardVO">
 		<id column="NO" property="no" />
-		<id column="BC" property="bc" typeHandler="com.utime.household.environment.handler.BankCardTypeHandler" />
-		<id column="NAME" property="name" />
+		<result column="BC" property="bc" typeHandler="com.utime.household.environment.handler.BankCardTypeHandler" />
+		<result column="NAME" property="name" />
+		<result column="DSCR" property="dscr"/>
 
-		<id column="BANK_KIND" property="bank.bankKind"/>
-		<id column="BANK_ACCOUNT_TYPE" property="bank.accountType" typeHandler="com.utime.household.environment.handler.AccountTypeTypeHandler"/>
-		<id column="BANK_ACCOUNT_NUMBER" property="bank.accountNumber"/>
-		<id column="BANK_ACCOUNT_HOLDER" property="bank.accountHolder"/>
 		
-		<id column="CARD_COMPANY" property="card.cardCompany"/>
-		<id column="CARD_TYPE" property="card.cardType" typeHandler="com.utime.household.environment.handler.CardTypeTypeHandler"/>
-		<id column="CARD_WITHDRAWAL_DATE" property="card.withdrawalDate"/>
+		<result column="BANK_KIND" property="bank.bankKind"/>
+		<result column="BANK_ACCOUNT_TYPE" property="bank.accountType" typeHandler="com.utime.household.environment.handler.AccountTypeTypeHandler"/>
+		<result column="BANK_ACCOUNT_NUMBER" property="bank.accountNumber"/>
+		<result column="BANK_ACCOUNT_HOLDER" property="bank.accountHolder"/>
 		
-		<id column="DSCR" property="dscr"/>
-		<association
+		<result column="CARD_COMPANY" property="card.cardCompany"/>
+		<result column="CARD_TYPE" property="card.cardType" typeHandler="com.utime.household.environment.handler.CardTypeTypeHandler"/>
+		
+		<collection
 			column="CARD_BANK_CARD_NO"
 			property="card.bank"
 			javaType="com.utime.household.environment.vo.BankCardVO"
 			select="getBankCard" >
 			<id column="CARD_BANK_CARD_NO" property="no" />
-		</association>
+		</collection>
 	</resultMap>
+	
+	<resultMap id="BasicItemVOMap" type="com.utime.household.environment.vo.BasicItemVO">
+		<id column="NO" property="no" />
+		<result column="NAME" property="name" />
+	</resultMap>
+	
+	<!--은행 사 추가-->
+	<insert id="insertBankKind" parameterType="map">
+		INSERT HH_BANK_KIND (
+			NAME
+				<if test="bean != null and bean != '' ">
+					, BEAN
+				</if>
+			) VALUSE (
+				#{name} 
+				<if test="bean != null and bean != '' ">
+					, #{bean}
+				</if>
+			) 
+	</insert>
+	
+	<!--카드 사 추가-->
+	<insert id="insertCardKind" parameterType="map">
+		INSERT HH_CARD_KIND (
+			NAME
+				<if test="bean != null and bean != '' ">
+					, BEAN
+				</if>
+			) VALUSE (
+				#{name} 
+				<if test="bean != null and bean != '' ">
+					, #{bean}
+				</if>
+			)
+	</insert>
+	
+	<!--은행 사 조회-->
+	<select id="selectBankKind" parameterType="map" resultMap="BasicItemVOMap">
+		SELECT 
+			NO
+			, NAME 
+		FROM HH_BANK_KIND 
+		WHERE 1=1
+			<if test="no != null">
+				AND NO = #{no}
+			</if>
+		ORDER BY NAME
+	</select>
+	
+	<!--카드 사 조회-->
+	<select id="selectCardKind" parameterType="map" resultMap="BasicItemVOMap">
+		SELECT 
+			NO
+			, NAME 
+		FROM HH_CARD_KIND 
+		WHERE 1=1
+			<if test="no != null">
+				AND NO = #{no}
+			</if>
+		ORDER BY NAME
+	</select>
+	
+	
+	<select id="selectBank" resultMap="BankCardVoMap">
+		SELECT
+			NO
+			, BC
+			, NAME
+			, BANK_KIND
+			, BANK_ACCOUNT_TYPE
+			, CARD_COMPANY
+			, CARD_TYPE
+			, DSCR
+		FROM HH_BANK_CARD
+		WHERE 1=1
+			AND ENABLED = 'Y'
+			<if test="bc != null ">
+			AND BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
+			</if>
+		ORDER BY NAME
+	</select>
+	
 
 	<!-- 카드 은행 목록 조회 -->
 	<select id="getBankCardList" resultMap="BankCardVoMap">

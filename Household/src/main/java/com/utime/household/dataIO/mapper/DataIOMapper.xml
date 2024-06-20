@@ -13,7 +13,8 @@
 			, AMOUNT INTEGER(12) NOT NULL <!-- 금액 -->
 			, INCLUDED CHAR(1) NOT NULL CHECK(INCLUDED IN ('T', 'F'))  <!--  포함 여부 T:포함, F:미포함 -->
 			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O')) <!-- 입/출금 I 입금, O 출금 -->
-			, BANK_CARD_NO INTEGER NOT NULL <!-- 입금 출금 구분 -->
+			, BANK_CARD_NO INTEGER NOT NULL <!-- 입출금 은행/카드 번호 -->
+			, BANK_CARD_SUB_NO INTEGER NOT NULL <!-- 입출금 은행/카드 하위 번호 -->
 			, CATEGORY_NO INTEGER NOT NULL <!-- 대분류 사용처 고유 번호 -->
 			, SUB_CATEGORY_NO INTEGER NOT NULL <!-- 소분류 사용처 고유 번호 -->
 			, STORE_NO INTEGER DEFAULT -1 <!-- 사용처 고유 번호-->
@@ -37,6 +38,7 @@
 			, INCLUDED CHAR(1) NOT NULL CHECK(INCLUDED IN ('T', 'F'))
 			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O'))
 			, BANK_CARD_NO INTEGER NOT NULL
+			, BANK_CARD_SUB_NO INTEGER NOT NULL
 			, CATEGORY_NO INTEGER NOT NULL
 			, SUB_CATEGORY_NO INTEGER NOT NULL
 			, STORE_NO INTEGER DEFAULT -1
@@ -59,6 +61,7 @@
 			, INCLUDED
 			, IN_OUT
 			, BANK_CARD_NO 
+			, BANK_CARD_SUB_NO
 			, CATEGORY_NO
 			, SUB_CATEGORY_NO
 			, STORE_NO
@@ -73,6 +76,10 @@
 			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
 			, #{bcVo.no}
+			,  <choose>
+				<when test="bcVo.bc.code = 'C' "> #{bcVo.card.no} </when>
+				<otherwise> #{bcVo.bank.no} </otherwise>
+			</choose>
 			, #{categoryOwner.no}
 			, #{categorySub.no}
 			, #{store.no}
@@ -90,6 +97,7 @@
 		, ${Header}INCLUDED
 		, ${Header}IN_OUT
 		, ${Header}BANK_CARD_NO
+		, ${Header}BANK_CARD_SUB_NO
 		, ${Header}CATEGORY_NO
 		, ${Header}SUB_CATEGORY_NO
 		, ${Header}STORE_NO
@@ -171,7 +179,8 @@
 			, AMOUNT <!-- 금액 -->
 			, INCLUDED<!--  포함 여부 T:포함, F:미포함 -->
 			, IN_OUT <!-- 입/출금 I 입금, O 출금 -->
-			, BANK_CARD_NO <!-- 입금 출금 구분 -->
+			, BANK_CARD_NO <!-- 입출금 은행/카드 번호 -->
+			, BANK_CARD_SUB_NO <!-- 입출금 은행/카드 하위 번호 -->
 			, CATEGORY_NO <!-- 대분류 사용처 타입 -->
 			, SUB_CATEGORY_NO <!-- 소분류 사용처 타입 -->
 			, STORE_NO
@@ -186,6 +195,10 @@
 			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
 			, #{bcVo.no}
+			, <choose>
+				<when test="bcVo.bc.code = 'C' "> #{bcVo.card.no} </when>
+				<otherwise> #{bcVo.bank.no} </otherwise>
+			</choose>
 			, #{categoryOwner.no}
 			, #{categorySub.no}
 			, #{store.no}

@@ -77,11 +77,11 @@ public class BankCardController {
 		final BankCardVO item = service.getBankCard(no);
 		
 		if( item.getBc() == EBankCard.Bank ) {
-			model.addAttribute("BankKinds", EBankKind.values() );
+			model.addAttribute("BankKinds", service.getBankKind() );
 			model.addAttribute("BankCards", EBankCard.values() );
 			model.addAttribute("AccountTypes", EAccountType.values() );
 		}else {
-			model.addAttribute("CardCompanies", ECardCompany.values() );
+			model.addAttribute("CardCompanies", service.getCardCompany() );
 			model.addAttribute("CardTypes", ECardType.values() );
 			model.addAttribute("Banks", service.getBankCardList(EBankCard.Bank) );
 		}

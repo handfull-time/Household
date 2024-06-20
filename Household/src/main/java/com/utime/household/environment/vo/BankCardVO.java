@@ -22,7 +22,12 @@ public class BankCardVO extends BasicItemVO{
 	/**
 	 * 카드 정보
 	 */
-	CardInforVO card;
+	CardVO card;
+	
+	/**
+	 * 소유자 성명
+	 */
+	String ownerName;
 	
 	/**
 	 * 비고

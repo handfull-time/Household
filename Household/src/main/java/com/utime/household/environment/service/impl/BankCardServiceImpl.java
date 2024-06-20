@@ -9,7 +9,7 @@ import com.utime.household.environment.dao.BankCardDao;
 import com.utime.household.environment.service.BankCardService;
 import com.utime.household.environment.vo.BankCardVO;
 import com.utime.household.environment.vo.BankVO;
-import com.utime.household.environment.vo.CardInforVO;
+import com.utime.household.environment.vo.CardVO;
 import com.utime.household.environment.vo.EAccountType;
 import com.utime.household.environment.vo.EBankCard;
 import com.utime.household.environment.vo.EBankKind;
@@ -77,9 +77,8 @@ class BankCardServiceImpl implements BankCardService {
 			}else {
 				// 카드 추가.
 				result.setBc(EBankCard.Card);
-				final CardInforVO card = new CardInforVO();
+				final CardVO card = new CardVO();
 				result.setCard(card);
-				card.setCardType(ECardType.Credit);
 				final BankCardVO b = new BankCardVO();
 				b.setNo(-1);
 				card.setBank(b);

@@ -179,7 +179,6 @@ function onShowModalLayer(urlAddress, sendData, modalId){
 			const DetailLayer = $('#DetailLayer');
 			
 			DetailLayer.empty();
-			DetailLayer.reset();
 			DetailLayer.html(data).show();
 			const modal = $('#' + modalId);
 			modal.on('hidden.bs.modal', function () {
@@ -198,6 +197,9 @@ function onHideModalLayer( modalId ){
 	$('#DetailLayer').empty().html('').hide();
 }
 
+/**
+ * ajax 전송
+ */
 function onJsonAction(urlAddress, sendData, resultAction){
 	$.ajax({
         type: 'POST',
@@ -211,6 +213,9 @@ function onJsonAction(urlAddress, sendData, resultAction){
     });
 }
 
+/**
+ * Form을 Object로 변환한다.
+ */
 function getFormObject(formId) {
 
     const form = document.getElementById(formId);

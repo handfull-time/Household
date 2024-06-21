@@ -3,65 +3,174 @@
 <!--//네임스페이스에는 mapper 가 있는 풀 패키지명과 매퍼명을 등록 한다. -->
 <mapper namespace="com.utime.household.environment.mapper.BankCardMapper">
 
-	<resultMap id="BankVOMap" type="com.utime.household.environment.vo.BankVO">
-		<id column="NO" property="no" />
-		<result column="ENABLED" property="enabled" />
-		<result column="CARD_BANK_CARD_NO" property="bankCardNo" />
-		
-		<result column="BANK_ACCOUNT_TYPE" property="accountType"  typeHandler="com.utime.household.environment.handler.AccountTypeTypeHandler" />
-		<result column="BANK_ACCOUNT_NUMBER" property="accountNumber" />
-		<result column="MATURITY" property="maturity" />
-		<result column="RATE" property="rate" />
-		
-		<association property="bankKind" javaType="com.utime.household.environment.vo.BasicItemVO">
-       		<id column="NO" property="no" />
-        	<result column="NAME" property="name" />
-    	</association>
-    	
-	</resultMap>
-	
-	<resultMap id="CardVOMap" type="com.utime.household.environment.vo.CardVO">
-		<id column="NO" property="no" />
-		<result column="ENABLED" property="enabled" />
-		<result column="CARD_BANK_CARD_NO" property="bankCardNo" />
-		<result column="CARD_WITHDRAWAL_DATE" property="card.withdrawalDate"/>
-		
-		<collection
-			column="NO"
-			property="cards"
-			javaType="com.utime.household.environment.vo.CardItemVO"
-			select="getBankCard" />
-	</resultMap>
-	
-	<resultMap id="BankCardVoMap" type="com.utime.household.environment.vo.BankCardVO">
-		<id column="NO" property="no" />
-		<result column="BC" property="bc" typeHandler="com.utime.household.environment.handler.BankCardTypeHandler" />
-		<result column="NAME" property="name" />
-		<result column="DSCR" property="dscr"/>
-
-		
-		<result column="BANK_KIND" property="bank.bankKind"/>
-		<result column="BANK_ACCOUNT_TYPE" property="bank.accountType" typeHandler="com.utime.household.environment.handler.AccountTypeTypeHandler"/>
-		<result column="BANK_ACCOUNT_NUMBER" property="bank.accountNumber"/>
-		<result column="BANK_ACCOUNT_HOLDER" property="bank.accountHolder"/>
-		
-		<result column="CARD_COMPANY" property="card.cardCompany"/>
-		<result column="CARD_TYPE" property="card.cardType" typeHandler="com.utime.household.environment.handler.CardTypeTypeHandler"/>
-		
-		<collection
-			column="CARD_BANK_CARD_NO"
-			property="card.bank"
-			javaType="com.utime.household.environment.vo.BankCardVO"
-			select="getBankCard" >
-			<id column="CARD_BANK_CARD_NO" property="no" />
-		</collection>
-	</resultMap>
-	
 	<resultMap id="BasicItemVOMap" type="com.utime.household.environment.vo.BasicItemVO">
 		<id column="NO" property="no" />
 		<result column="NAME" property="name" />
+		<result column="ENABLED" property="enabled" typeHandler="com.utime.household.common.handler.BooleanTypeHandler" />
+	</resultMap>
+
+	<!--
+		resultMap에서 이렇게도 사용 할 수 있다. 
+		
+		<association property="address" javaType="com.example.Address" column="{address_id=address_id,city_id=city_id}" select="selectAddressByIdAndCityId" />
+   
+		<association property="address" column="address_id" javaType="com.example.Address" select="selectAddressById" /> 
+	-->
+	
+	<resultMap id="BankCardVoMap" extends="BasicItemVOMap" type="com.utime.household.environment.vo.BankCardVO">
+		<result column="BC" property="bc" typeHandler="com.utime.household.environment.handler.BankCardTypeHandler" />
+		<result column="DSCR" property="dscr"/>
+		
+		<association 
+			column="CARD_NO" 
+			property="card" 
+			javaType="com.utime.household.environment.vo.CardVO"
+			select="selectCard" />
+
+		<association 
+			column="BANK_NO"
+			property="bank" 
+			javaType="com.utime.household.environment.vo.BankVO"
+			select="selectBank"
+			/>
 	</resultMap>
 	
+	<resultMap id="CardVoMap" type="com.utime.household.environment.vo.CardVO">
+		<id column="NO" property="no"/>
+		<result column="CARD_WITHDRAWAL_DATE"  property="withdrawalDate"/>
+
+		<association 
+			column="CARD_COMPANY" 
+			property="cardCompany" 
+			javaType="com.utime.household.environment.vo.CompanyVO"
+			select="selectCardCompany"
+			/>
+	
+		<association 
+			column="CARD_WITHDRAWAL_BANK_CARD_NO" 
+			property="bank" 
+			javaType="com.utime.household.environment.vo.BankVO"
+			select="selectBank"
+			/>
+			
+		<collection
+			column="CARD_WITHDRAWAL_BANK_CARD_NO" 
+			property="cards" 
+			javaType="java.util.ArrayList"
+			ofType="com.utime.household.environment.vo.CardItemVO" 
+			select="selectCardItem"
+			/>
+	</resultMap>
+	
+	<resultMap id="CardItemVoMap" extends="BasicItemVOMap" type="com.utime.household.environment.vo.CardItemVO">
+		<result column="CARD_NO" property="cardNo" />
+		<result column="CARD_NUMBER" property="cardNumber" />
+		<result column="CARD_TYPE" property="cardType" typeHandler="com.utime.household.environment.handler.CardTypeTypeHandler" />
+		<result column="DSCR" property="dscr" />
+		<result column="FILE_CARD_NAME" property="innerFileCardName" />
+		<result column="FILE_CARD_NUMBER" property="innerFileCardNumber" />
+	</resultMap>
+	
+	<resultMap id="BankVoMap" type="com.utime.household.environment.vo.BankVO">
+		<result column="NO" property="no" />
+		<result column="BANK_ACCOUNT_TYPE" property="accountType" typeHandler="com.utime.household.environment.handler.CardTypeTypeHandler" />
+		<result column="BANK_ACCOUNT_NUMBER" property="accountNumber" />
+		<result column="MATURITY" property="maturity" />
+		<result column="RATE" property="rate" />
+		<result column="TAXABLE" property="taxable" typeHandler="com.utime.household.common.handler.BooleanTypeHandler"/>
+		
+		<association 
+			column="BANK_COMPANY" 
+			property="bankCompay" 
+			javaType="com.utime.household.environment.vo.CompanyVO"
+			select="selectBankCompany"
+			/>
+		
+	</resultMap>
+	
+	
+	<resultMap id="CompanyVoMap" extends="BasicItemVOMap" type="com.utime.household.environment.vo.CompanyVO">
+		<result column="BEAN_NAME" property="beanName" />
+	</resultMap>
+	
+	
+	<select id="selectCard" parameterType="map" resultMap="CardVoMap">
+		SELECT
+			NO
+			, CARD_COMPANY 
+			, CARD_WITHDRAWAL_DATE 
+			, CARD_WITHDRAWAL_BANK_CARD_NO
+		FROM HH_CARD
+		WHERE 1=1
+			AND NO = #{cardNo}
+			AND ENABLED = 'Y'
+	</select>
+	
+	<select id="selectCardItem" parameterType="map" resultMap="CardVoMap">
+		SELECT 
+			NO
+			, CARD_NO
+			, NAME
+			, CARD_NUMBER 
+			, CARD_TYPE
+			, DSCR 
+			, FILE_CARD_NAME 
+			, FILE_CARD_NUMBER 
+		FROM HH_CARD_ITEM
+		WHERE 1=1
+			AND CARD_NO = #{cardNo}
+			AND ENABLED = 'Y'
+		ORDER BY NAME
+	</select>
+
+	<select id="selectBank" parameterType="map" resultMap="BankVoMap">
+		SELECT 
+			NO
+			, BANK_COMPANY 
+			, BANK_ACCOUNT_TYPE  
+			, BANK_ACCOUNT_NUMBER
+			, MATURITY 
+			, RATE 
+			, TAXABLE
+		FROM HH_BANK
+		WHERE 1=1
+			AND NO = #{bankNo}
+			AND ENABLED = 'Y'
+	</select>
+	
+	<select id="selectBankCompany" parameterType="map" resultMap="CompanyVoMap">
+		SELECT
+			NO 
+			, NAME 
+			, BEAN_NAME
+		FROM HH_BANK_COMPANY
+		WHERE 1=1
+			AND NO = #{bankNo}
+			AND ENABLED = 'Y'
+	</select>
+
+	<select id="selectCardCompany" parameterType="map" resultMap="CompanyVoMap">
+		SELECT
+			NO 
+			, NAME 
+			, BEAN_NAME
+		FROM HH_CARD_COMPANY
+		WHERE 1=1
+			AND NO = #{cardNo}
+			AND ENABLED = 'Y'
+	</select>
+	
+
+
+
+
+
+
+
+
+
+
+
 	<!--은행 사 추가-->
 	<insert id="insertBankKind" parameterType="map">
 		INSERT HH_BANK_KIND (
@@ -97,7 +206,8 @@
 		SELECT 
 			NO
 			, NAME 
-		FROM HH_BANK_KIND 
+			, BEAN
+		FROM HH_BANK_COMPANY 
 		WHERE 1=1
 			<if test="no != null">
 				AND NO = #{no}
@@ -109,8 +219,9 @@
 	<select id="selectCardKind" parameterType="map" resultMap="BasicItemVOMap">
 		SELECT 
 			NO
-			, NAME 
-		FROM HH_CARD_KIND 
+			, NAME
+			, BEAN 
+		FROM HH_CARD_COMPANY 
 		WHERE 1=1
 			<if test="no != null">
 				AND NO = #{no}
@@ -124,10 +235,8 @@
 			NO
 			, BC
 			, NAME
-			, BANK_KIND
-			, BANK_ACCOUNT_TYPE
-			, CARD_COMPANY
-			, CARD_TYPE
+			, BANK_NO 
+			, CARD_NO
 			, DSCR
 		FROM HH_BANK_CARD
 		WHERE 1=1
@@ -145,10 +254,8 @@
 			NO
 			, BC
 			, NAME
-			, BANK_KIND
-			, BANK_ACCOUNT_TYPE
-			, CARD_COMPANY
-			, CARD_TYPE
+			, BANK_NO 
+			, CARD_NO
 			, DSCR
 		FROM HH_BANK_CARD
 		WHERE 1=1

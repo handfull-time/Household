@@ -12,8 +12,7 @@ import com.utime.household.environment.vo.BankVO;
 import com.utime.household.environment.vo.CardVO;
 import com.utime.household.environment.vo.EAccountType;
 import com.utime.household.environment.vo.EBankCard;
-import com.utime.household.environment.vo.EBankKind;
-import com.utime.household.environment.vo.ECardType;
+import com.utime.household.environment.vo.CompanyVO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -71,7 +70,7 @@ class BankCardServiceImpl implements BankCardService {
 				final BankVO bank = new BankVO();
 				result.setBank(bank);
 				
-				bank.setBankKind(EBankKind.KB);
+//				bank.setBankKind(EBankKind.KB);
 				bank.setAccountType(EAccountType.Ordinary);
 				
 			}else {
@@ -89,6 +88,16 @@ class BankCardServiceImpl implements BankCardService {
 		}
 		
 		return result;
+	}
+	
+	@Override
+	public List<CompanyVO> getBankKind() {
+		return this.dao.getBankKind();
+	}
+	
+	@Override
+	public List<CompanyVO> getCardCompany() {
+		return this.dao.getCardKind();
 	}
 	
 }

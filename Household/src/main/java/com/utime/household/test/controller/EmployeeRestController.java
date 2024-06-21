@@ -3,7 +3,6 @@ package com.utime.household.test.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +17,13 @@ import com.utime.household.test.model.paging.PagingRequest;
 import com.utime.household.test.service.EmployeeService;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 
 @Controller
 @RequestMapping("DataTable")
+@RequiredArgsConstructor
 public class EmployeeRestController {
 
 	@Setter
@@ -53,11 +54,6 @@ public class EmployeeRestController {
 	}
 
 	private final EmployeeService employeeService;
-    
-    @Autowired
-    public EmployeeRestController(EmployeeService employeeService) {
-        this.employeeService = employeeService;
-    }
     
     private List<MainItem> getMainItems(){
     	List<MainItem> result = new ArrayList<>();

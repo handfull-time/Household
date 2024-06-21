@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!--//네임스페이스에는 mapper 가 있는 풀 패키지명과 매퍼명을 등록 한다. -->
+<mapper namespace="com.utime.household.environment.mapper.SequenceMapper">
+
+	<!--  시퀀스 생성 -->
+	<insert id="createSequence">
+		CREATE TABLE SEQUENCE_TABLE (
+		    SEQUENCE_NAME TEXT(32) PRIMARY KEY,
+		    CURRENT_VALUE INTEGER
+		);
+	</insert> 
+	
+	<!-- 시퀀스 등록 -->
+	<insert id="registSequence"  parameterType="map">
+		INSERT INTO SEQUENCE_TABLE (
+		    SEQUENCE_NAME 
+		    , CURRENT_VALUE
+		) VALUES (
+			#{sequenceName}
+			, #{startValue}
+		)
+	</insert> 
+	
+	<!-- Sequence 값을 가져오는 쿼리 
+    <select id="getNextValue" parameterType="string" resultType="int">
+        현재 값을 가져온다 
+        SELECT CURRENT_VALUE FROM SEQUENCE_TABLE WHERE SEQUENCE_NAME = #{sequenceName}
+        FOR UPDATE;
+        
+         sequence 값을 1 증가시킨다
+        UPDATE SEQUENCE_TABLE SET CURRENT_VALUE = CURRENT_VALUE + 1 WHERE SEQUENCE_NAME = #{sequenceName};
+    </select>
+    -->
+
+    <!-- Sequence 값을 업데이트 -->
+    <update id="updateIncrementValue" parameterType="map">
+        UPDATE SEQUENCE_TABLE SET 
+        	CURRENT_VALUE = CURRENT_VALUE + 1 
+        WHERE SEQUENCE_NAME = #{sequenceName}
+    </update>
+
+	<!-- 현재 값 조회 -->
+    <select id="selectCurrentValue" parameterType="map" resultType="long">
+        SELECT 
+        	CURRENT_VALUE 
+        FROM SEQUENCE_TABLE 
+        WHERE SEQUENCE_NAME = #{sequenceName}
+    </select>
+
+</mapper>

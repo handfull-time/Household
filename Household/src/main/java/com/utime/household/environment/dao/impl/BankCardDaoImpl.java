@@ -10,8 +10,10 @@ import com.utime.household.dataIO.vo.InputBankCardDefine;
 import com.utime.household.environment.dao.BankCardDao;
 import com.utime.household.environment.mapper.BankCardMapper;
 import com.utime.household.environment.mapper.InitBankCardMapper;
+import com.utime.household.environment.mapper.SequenceMapper;
 import com.utime.household.environment.vo.BankCardVO;
-import com.utime.household.environment.vo.BasicItemVO;
+import com.utime.household.environment.vo.BankVO;
+import com.utime.household.environment.vo.CompanyVO;
 import com.utime.household.environment.vo.EBankCard;
 
 import jakarta.annotation.PostConstruct;
@@ -29,10 +31,28 @@ class BankCardDaoImpl implements BankCardDao{
 	
 	private final InitBankCardMapper initMapper;
 	
+	private final SequenceMapper sequenceMapper;
+	
+	private final String KeyBankCardSeq = "BankCardNo";
+
+	
+	private synchronized long getNextValueSequence() {
+		sequenceMapper.updateIncrementValue(KeyBankCardSeq);
+		
+		return sequenceMapper.selectCurrentValue(KeyBankCardSeq);
+	}
+	
 	@PostConstruct
 	private void construct() {
 		
 		try {
+			
+			if( ! common.existTable("SEQUENCE_TABLE") ) {
+				log.info("SEQUENCE_TABLE 생성");
+				sequenceMapper.createSequence();
+				sequenceMapper.registSequence(KeyBankCardSeq, 0L);
+			}
+			
 			
 			if( ! common.existTable("HH_BANK_KIND") ) {
 				log.info("HH_BANK_KIND 생성");
@@ -137,24 +157,15 @@ class BankCardDaoImpl implements BankCardDao{
 	}
 	
 	@Override
-	public int insertBankKind(String name) {
-		return mapper.insertBankKind(name);
+	public List<CompanyVO> getBankKind(){
+		return this.mapper.selectBankKind();
 	}
 	
 	@Override
-	public int insertCardKind(String name) {
-		return mapper.insertCardKind(name);
+	public List<CompanyVO> getCardKind(){
+		return this.mapper.selectCardKind();
 	}
 	
-	@Override
-	public List<BasicItemVO> selectBankKind() {
-		return mapper.selectBankKind();
-	}
-	
-	@Override
-	public List<BasicItemVO> selectCardKind() {
-		return mapper.selectCardKind();
-	}
 
 	@Override
 	public List<BankCardVO> getBankCardList(EBankCard bc) {
@@ -173,8 +184,32 @@ class BankCardDaoImpl implements BankCardDao{
 			}
 			
 			result = mapper.insertBankCard(vo);
+			
+			long seq = this.getNextValueSequence();
+
+			if( result > 0 && vo.getNo() > 0L ) {
+				if( vo.getBc() == EBankCard.Bank ) {
+					final BankVO bvo = vo.getBank();
+					bvo.setNo(seq);
+					result += mapper.insertBank(bvo);
+				}else if( vo.getBc() == EBankCard.Card ) {
+					final CardVO cvo = vo.getCard();
+					cvo.setNo(seq);
+					result += mapper.insertCard(cvo);
+				}else {
+					
+				}
+			}
+			
 		}else {
 			result = mapper.updateBankCard(vo);
+			if( vo.getBc() == EBankCard.Bank ) {
+				result += mapper.updateBank(vo.getBank());
+			}else if( vo.getBc() == EBankCard.Card ) {
+				result += mapper.updateCard(vo.getCard());
+			}else {
+				
+			}
 		}
 		
 		return result;

@@ -12,9 +12,6 @@ import lombok.ToString;
 @ToString
 public class CardItemVO extends BasicItemVO{
 	
-	/** 사용 여부 */
-	boolean enabled;
-	
 	/**
 	 * 상위 부모 번호
 	 */
@@ -37,4 +34,9 @@ public class CardItemVO extends BasicItemVO{
 	 * 청구서에 기록되는 카드 번호
 	 */
 	String innerFileCardNumber;
+	
+	/**
+	 * 비고
+	 */
+	String dscr;
 }

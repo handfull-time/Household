@@ -7,17 +7,22 @@
 	<insert id="createBankCard">
 		CREATE TABLE HH_BANK_CARD (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
-			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))  <!--  사용 여부 Y:사용, N:미사용 --> 
 			, BC CHAR(1) CHECK(BC IN ('B', 'C', 'O')) <!-- 카드 은행 구분 B:은행, C:카드, O:기타 -->
 			, NAME TEXT(32) NOT NULL <!-- 소유자 이름 -->
 			, DSCR TEXT(128) DEFAULT NULL <!-- 설명 -->
+			, BANK_NO INTEGER DEFAULT 0 <!-- HH_BANK OR HH_CARD의 번호 -->
+			, CARD_NO INTEGER DEFAULT 0 <!-- HH_BANK OR HH_CARD의 번호 -->
+			, FOREIGN KEY(BANK_NO) REFERENCES HH_BANK(NO) 
+			, FOREIGN KEY(CARD_NO) REFERENCES HH_CARD(NO) 
 		)
 	</insert>
-
+	
 	<!-- 은행 종류 -->	
 	<insert id="createBankKind">
-		CREATE TABLE HH_BANK_KIND (
+		CREATE TABLE HH_BANK_COMPANY (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
 			, NAME TEXT(32) NOT NULL <!-- 은행 사 이름 -->
 			, BEAN_NAME TEXT(32) DEFAULT NULL <!-- BEAN 이름 -->
 		)
@@ -25,8 +30,9 @@
 	
 	<!-- 카드 종류 -->
 	<insert id="createCardKind">
-		CREATE TABLE HH_CARD_KIND (
+		CREATE TABLE HH_CARD_COMPANY (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
 			, NAME TEXT(32) NOT NULL <!-- 카드 사 이름 -->
 			, BEAN_NAME TEXT(32) DEFAULT NULL <!-- BEAN 이름 -->
 		)
@@ -35,31 +41,26 @@
 	<!-- 은행 정보 생성 -->
 	<insert id="createBank">
 		CREATE TABLE HH_BANK (
-			NO INTEGER PRIMARY KEY AUTOINCREMENT
-			, CARD_BANK_CARD_NO INTEGER DEFAULT -1 <!-- 상위 은행 번호 -->
-			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
-			, BANK_KIND NUMBER DEFAULT NULL <!-- 은행 종류 -->
-			, BANK_ACCOUNT_TYPE CHAR(1) DEFAULT NULL CHECK (BANK_ACCOUNT_TYPE IN ('O', 'T', 'R', 'F')) <!-- 은행 계좌 종류 -->
-			, BANK_ACCOUNT_NUMBER TEXT(16) DEFAULT NULL <!-- 은행 계좌 번호 -->
-			, MATURITY DATE DEFAULT NULL <!-- 만기 일자 -->
-			, RATE REAL DEFAULT NULL <!-- 이율 -->
-			, FOREIGN KEY(CARD_BANK_CARD_NO) REFERENCES HH_BANK_CARD(NO) 
-			, FOREIGN KEY(BANK_KIND) REFERENCES HH_BANK_KIND(NO) 
+			NO INTEGER PRIMARY KEY <!-- BankCardNo 의 고유 번호를 따름 -->
+			, BANK_COMPANY NUMBER DEFAULT NULL <!-- 은행 종류  -->
+			, BANK_ACCOUNT_TYPE CHAR(1) DEFAULT NULL CHECK (BANK_ACCOUNT_TYPE IN ('O', 'T', 'R', 'F')) <!-- 은행 계좌 종류 --> 
+			, BANK_ACCOUNT_NUMBER TEXT(16) DEFAULT NULL <!-- 은행 계좌 번호  -->
+			, MATURITY DATE DEFAULT NULL <!-- 만기 일자  -->
+			, RATE REAL DEFAULT NULL <!-- 이율  -->
+			, TAXABLE CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))   <!--  과세 여부 Y:세금냄, N:비과세 -->
+			, FOREIGN KEY(BANK_COMPANY) REFERENCES HH_BANK_COMPANY(NO) 
 		)
 	</insert>
 
 	<!-- 카드 정보 생성 -->
 	<insert id="createCard">
 		CREATE TABLE HH_CARD (
-			NO INTEGER PRIMARY KEY AUTOINCREMENT
-			, CARD_BANK_CARD_NO INTEGER DEFAULT -1 <!-- 상위 은행 번호 -->
-			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
-			, CARD_KIND TEXT(16) DEFAULT NULL <!-- 카드 회사 -->
-			, CARD_WITHDRAWAL_DATE INTEGER DEFAULT 0 <!-- 매월 출금일자. -->
-			, CARD_WITHDRAWAL_BANK_CARD_NO INTEGER DEFAULT 0 <!-- 출금 은행 번호 -->
-			, FOREIGN KEY(CARD_BANK_CARD_NO) REFERENCES HH_BANK_CARD(NO)
+			NO INTEGER PRIMARY KEY  <!-- BankCardNo 의 고유 번호를 따름 -->
+			, CARD_COMPANY INTEGER DEFAULT NULL <!-- 카드 회사  -->
+			, CARD_WITHDRAWAL_DATE INTEGER DEFAULT 0 <!-- 매월 출금일자. --> 
+			, CARD_WITHDRAWAL_BANK_CARD_NO INTEGER DEFAULT 0 <!-- 출금 은행 번호 --> 
+			, FOREIGN KEY(CARD_COMPANY) REFERENCES HH_CARD_COMPANY(NO)
 			, FOREIGN KEY(CARD_WITHDRAWAL_BANK_CARD_NO) REFERENCES HH_BANK_CARD(NO) 
-			, FOREIGN KEY(CARD_KIND) REFERENCES HH_CARD_KIND(NO) 
 		)
 	</insert>
 

@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.utime.household.environment.vo.BankCardVO;
 import com.utime.household.environment.vo.BasicItemVO;
 import com.utime.household.environment.vo.EBankCard;
+import com.utime.household.environment.vo.CompanyVO;
 
 /**
  * 카드 은행 Mapper
@@ -31,20 +32,20 @@ public interface BankCardMapper {
 	 * @return
 	 */
 	public int insertCardKind( @Param("name") String name, @Param("bean") String bean );
-	
+
 	/**
 	 * 은행 사 조회
 	 * @param name
 	 * @return
 	 */
-	public List<BasicItemVO> selectBankKind();
+	public List<CompanyVO> selectBankKind();
 	
 	/**
 	 * 카드 사 조회
 	 * @param name
 	 * @return
 	 */
-	public List<BasicItemVO> selectCardKind();
+	public List<CompanyVO> selectCardKind();
 	
 
 	/**

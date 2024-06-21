@@ -25,11 +25,6 @@ public class BankCardVO extends BasicItemVO{
 	CardVO card;
 	
 	/**
-	 * 소유자 성명
-	 */
-	String ownerName;
-	
-	/**
 	 * 비고
 	 */
 	String dscr;

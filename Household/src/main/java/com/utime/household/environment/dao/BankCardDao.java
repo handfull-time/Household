@@ -5,6 +5,7 @@ import java.util.List;
 import com.utime.household.environment.vo.BankCardVO;
 import com.utime.household.environment.vo.BasicItemVO;
 import com.utime.household.environment.vo.EBankCard;
+import com.utime.household.environment.vo.CompanyVO;
 
 public interface BankCardDao {
 	
@@ -13,14 +14,14 @@ public interface BankCardDao {
 	 * @param name
 	 * @return
 	 */
-	public List<BasicItemVO> selectBankKind();
+	public List<CompanyVO> getBankKind();
 	
 	/**
 	 * 카드 사 조회
 	 * @param name
 	 * @return
 	 */
-	public List<BasicItemVO> selectCardKind();
+	public List<CompanyVO> getCardKind();
 
 	/**
 	 * 목록 조회
@@ -57,6 +58,5 @@ public interface BankCardDao {
 	 * @throws Exception
 	 */
 	int deleteBankCard(long no)throws Exception;
-
 }
 

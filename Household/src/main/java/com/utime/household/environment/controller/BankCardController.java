@@ -14,8 +14,6 @@ import com.utime.household.environment.service.BankCardService;
 import com.utime.household.environment.vo.BankCardVO;
 import com.utime.household.environment.vo.EAccountType;
 import com.utime.household.environment.vo.EBankCard;
-import com.utime.household.environment.vo.EBankKind;
-import com.utime.household.environment.vo.ECardCompany;
 import com.utime.household.environment.vo.ECardType;
 
 import lombok.RequiredArgsConstructor;

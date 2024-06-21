@@ -15,12 +15,20 @@ public class BasicItemVO {
 	/** 이름 */
 	protected String name;
 	
+	/** 사용 여부 */
+	boolean enabled;
+	
 	public BasicItemVO() {
-		this(-1L, null);
+		this(-1L, null, false);
 	}
 	
 	public BasicItemVO(long no, String name) {
+		this(no, name, false);
+	}
+	
+	public BasicItemVO(long no, String name, boolean enabled) {
 		this.no = no;
 		this.name = name;
+		this.enabled = enabled;
 	}
 }

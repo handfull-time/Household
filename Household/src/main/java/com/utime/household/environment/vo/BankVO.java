@@ -17,18 +17,10 @@ public class BankVO {
 	/** 고유 번호 */
 	long no;
 	
-	/** 사용 여부 */
-	boolean enabled;
-	
-	/**
-	 * 상위 번호
-	 */
-	long bankCardNo;
-
 	/**
 	 * 은행 종류
 	 */
-	BasicItemVO bankKind;
+	CompanyVO bankCompay;
 	
 	/**
 	 * 계좌 종류
@@ -49,5 +41,10 @@ public class BankVO {
 	 * 이율. 예금/적금 일 경우.
 	 */
 	float rate;
+	
+	/**
+	 * 과세 여부. false:비과세
+	 */
+	boolean taxable;
 	
 }

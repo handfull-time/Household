@@ -17,16 +17,8 @@ public class CardVO{
 	/** 고유 번호 */
 	long no;
 	
-	/** 사용 여부 */
-	boolean enabled;
-	
-	/**
-	 * 상위 번호
-	 */
-	long bankCardNo;
-	
 	/** 카드 업체 */
-	BasicItemVO cardCompany;
+	CompanyVO cardCompany;
 	
 	/**
 	 * 출금 은행 정보

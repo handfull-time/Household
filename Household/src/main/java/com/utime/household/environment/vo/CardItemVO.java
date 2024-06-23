@@ -1,5 +1,7 @@
 package com.utime.household.environment.vo;
 
+import com.utime.household.common.util.HouseholdUtils;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -39,4 +41,28 @@ public class CardItemVO extends BasicItemVO{
 	 * 비고
 	 */
 	String dscr;
+	
+	@Override
+	public boolean equals(Object obj) {
+		final CardItemVO src = (CardItemVO)obj;
+		if( src.no != this.no)
+			return false;
+		if( ! HouseholdUtils.StringEquals(src.name, this.name) )
+			return false;
+		if( src.enabled != this.enabled)
+			return false;
+		if( src.cardNo != this.cardNo)
+			return false;
+		if( src.cardType != this.cardType)
+			return false;
+		if( ! HouseholdUtils.StringEquals(src.cardNumber, this.cardNumber) )
+			return false;
+		if( ! HouseholdUtils.StringEquals(src.innerFileCardName, this.innerFileCardName) )
+			return false;
+		if( ! HouseholdUtils.StringEquals(src.innerFileCardNumber, this.innerFileCardNumber) )
+			return false;
+		if( ! HouseholdUtils.StringEquals(src.dscr, this.dscr) )
+			return false;
+		return true;
+	}
 }

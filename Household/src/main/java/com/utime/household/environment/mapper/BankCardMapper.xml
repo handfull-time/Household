@@ -160,17 +160,6 @@
 			AND ENABLED = 'Y'
 	</select>
 	
-
-
-
-
-
-
-
-
-
-
-
 	<!--은행 사 추가-->
 	<insert id="insertBankKind" parameterType="map">
 		INSERT HH_BANK_KIND (
@@ -285,41 +274,130 @@
 		INSERT INTO HH_BANK_CARD (
 			BC
 			, NAME
-			<if test=" bc.name() == 'Bank' ">
-			, BANK_KIND
-			, BANK_ACCOUNT_TYPE
-			, BANK_ACCOUNT_NUMBER
-			, BANK_ACCOUNT_HOLDER
-			</if>
-			<if test=" bc.name() == 'Card' ">
-			, CARD_COMPANY
-			, CARD_TYPE
-			, CARD_BANK_CARD_NO
-			, CARD_WITHDRAWAL_DATE
-			</if>
 			<if test=" null != dscr and '' != dscr ">
 			, DSCR
 			</if>
+			<choose>
+				<when test="bc.code() == 'B' ">
+					, BANK_NO
+				</when>
+				<when test="bc.code() == 'C' ">
+					, CARD_NO
+				</when>
+				<otherwise></otherwise>
+			</choose>
 		) VALUES (
 			#{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
 			, #{name}
-			<if test=" bc.name() == 'Bank' ">
-			, #{bank.bankKind}
-			, #{bank.accountType, typeHandler=com.utime.household.environment.handler.AccountTypeTypeHandler}
-			, #{bank.accountNumber}
-			, #{bank.accountHolder}
-			</if>
-			<if test=" bc.name() == 'Card' ">
-			, #{card.cardCompany}
-			, #{card.cardType, typeHandler=com.utime.household.environment.handler.CardTypeTypeHandler}
-			, #{card.bank.no}
-			, #{card.withdrawalDate}
-			</if>
 			<if test=" null != dscr and '' != dscr ">
+			, #{dscr}
+			</if>
+			<choose>
+				<when test="bc.code() == 'B' ">
+					, #{bank.no}
+				</when>
+				<when test="bc.code() == 'C' ">
+					, #{card.no}
+				</when>
+				<otherwise></otherwise>
+			</choose>
+		)
+	</insert>
+	
+	<!--은행 추가-->
+	<insert id="insertBank" parameterType="com.utime.household.environment.vo.BankVO">
+		INSERT INTO HH_BANK (
+			NO
+			, BANK_COMPANY 
+			, BANK_ACCOUNT_TYPE  
+			<if test=" null != accountNumber and '' != accountNumber ">
+			, BANK_ACCOUNT_NUMBER 
+			</if>
+			<if test=" null != maturity ">
+			, MATURITY 
+			</if>
+			, RATE 
+			, TAXABLE
+		) VALUES (
+			#{no}
+			, #{bankCompay.no} 
+			, #{accountType, typeHandler=com.utime.household.environment.handler.AccountTypeTypeHandler}}
+			<if test=" null != accountNumber and '' != accountNumber ">  
+			, #{accountNumber} 
+			</if>
+			<if test=" null != maturity ">
+			, #{maturity} 
+			</if>
+			, #{rate} 
+			, #{taxable, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
+		)
+	</insert>
+	
+	<!--카드 추가-->
+	<insert id="insertCard" parameterType="com.utime.household.environment.vo.CardVO">
+		INSERT INTO HH_CARD (
+			NO
+			, CARD_COMPANY
+			, CARD_WITHDRAWAL_DATE  
+			<if test=" null != bank ">
+			, CARD_WITHDRAWAL_BANK_CARD_NO
+			</if>
+		) VALUES (
+			#{no}
+			, #{cardCompany.no}
+			, #{withdrawalDate}
+			<if test=" null != bank ">
+			, #{bank.no}
+			</if>
+		)
+	</insert> 
+	
+	<!--카드 아이템 추가 -->
+	<insert id="insertCardItem" parameterType="com.utime.household.environment.vo.CardItemVO"  useGeneratedKeys="true" keyProperty="no">
+		INSERT INTO HH_CARD_ITEM (
+			CARD_NO
+			, NAME  
+			<if test=" null != cardNumber and '' != cardNumber "> 
+			, CARD_NUMBER
+			</if>
+			, CARD_TYPE
+			<if test=" null != dscr and '' != dscr ">  
+			, DSCR
+			</if>
+		) VALUES (
+			#{cardNo}
+			, #{name}
+			<if test=" null != cardNumber and '' != cardNumber "> 
+			, #{cardType, typeHandler=com.utime.household.environment.handler.CardTypeTypeHandler}
+			</if>
+			, #{name}
+			<if test=" null != dscr and '' != dscr ">  
 			, #{dscr}
 			</if>
 		)
 	</insert>
+	
+	<!--카드 아이템 삭제--> 
+	<update id="removeCardItem"  parameterType="com.utime.household.environment.vo.CardItemVO">
+		
+	</update>
+	
+	<!--카드 아이템 수정-->
+	<update id="updateCardItem"  parameterType="com.utime.household.environment.vo.CardItemVO">
+		
+	</update>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	<!-- 수정 -->
 	<update id="updateBankCard" parameterType="com.utime.household.environment.vo.BankCardVO">

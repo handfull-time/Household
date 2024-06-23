@@ -73,4 +73,18 @@ public class HouseholdUtils {
 		}
 	    return sb.toString().toUpperCase();
 	}
+    
+    public static boolean StringEquals( String src1, String src2 ) {
+    	if( src1 == null && src2 == null )
+    		return true;
+    	
+    	if( src1 != null && src2 == null )
+    		return false;
+    	
+    	if( src1 == null && src2 != null ) {
+    		return false;
+    	}
+    	
+    	return src1.equals(src2);
+    }
 }

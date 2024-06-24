@@ -92,12 +92,12 @@ class BankCardServiceImpl implements BankCardService {
 	
 	@Override
 	public List<CompanyVO> getBankKind() {
-		return this.dao.getBankKind();
+		return this.dao.getBankCompanyList();
 	}
 	
 	@Override
 	public List<CompanyVO> getCardCompany() {
-		return this.dao.getCardKind();
+		return this.dao.getCardCompanyList();
 	}
 	
 }

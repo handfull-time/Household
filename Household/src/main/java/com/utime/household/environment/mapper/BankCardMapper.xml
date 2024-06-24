@@ -58,7 +58,7 @@
 			property="cards" 
 			javaType="java.util.ArrayList"
 			ofType="com.utime.household.environment.vo.CardItemVO" 
-			select="selectCardItem"
+			select="selectCardItemList"
 			/>
 	</resultMap>
 	
@@ -93,49 +93,50 @@
 		<result column="BEAN_NAME" property="beanName" />
 	</resultMap>
 	
+
+	<!--은행 사 추가-->
+	<insert id="insertBankCompany" parameterType="map">
+		INSERT HH_BANK_COMPANY (
+				NAME
+				<if test="bean != null and bean != '' ">
+					, BEAN
+				</if>
+			) VALUSE (
+				#{name} 
+				<if test="bean != null and bean != '' ">
+					, #{bean}
+				</if>
+			) 
+	</insert>
 	
-	<select id="selectCard" parameterType="map" resultMap="CardVoMap">
-		SELECT
-			NO
-			, CARD_COMPANY 
-			, CARD_WITHDRAWAL_DATE 
-			, CARD_WITHDRAWAL_BANK_CARD_NO
-		FROM HH_CARD
-		WHERE 1=1
-			AND NO = #{cardNo}
-			AND ENABLED = 'Y'
-	</select>
+	<!--카드 사 추가-->
+	<insert id="insertCardCompany" parameterType="map">
+		INSERT HH_CARD_COMPANY (
+				NAME
+				<if test="bean != null and bean != '' ">
+					, BEAN
+				</if>
+			) VALUSE (
+				#{name} 
+				<if test="bean != null and bean != '' ">
+					, #{bean}
+				</if>
+			)
+	</insert>
 	
-	<select id="selectCardItem" parameterType="map" resultMap="CardVoMap">
+	<!--은행 사 조회-->
+	<select id="selectBankCompanyList" parameterType="map" resultMap="BasicItemVOMap">
 		SELECT 
 			NO
-			, CARD_NO
-			, NAME
-			, CARD_NUMBER 
-			, CARD_TYPE
-			, DSCR 
-			, FILE_CARD_NAME 
-			, FILE_CARD_NUMBER 
-		FROM HH_CARD_ITEM
+			, NAME 
+			, BEAN
+		FROM HH_BANK_COMPANY 
 		WHERE 1=1
-			AND CARD_NO = #{cardNo}
+			<if test="no != null">
+				AND NO = #{no}
+			</if>
 			AND ENABLED = 'Y'
 		ORDER BY NAME
-	</select>
-
-	<select id="selectBank" parameterType="map" resultMap="BankVoMap">
-		SELECT 
-			NO
-			, BANK_COMPANY 
-			, BANK_ACCOUNT_TYPE  
-			, BANK_ACCOUNT_NUMBER
-			, MATURITY 
-			, RATE 
-			, TAXABLE
-		FROM HH_BANK
-		WHERE 1=1
-			AND NO = #{bankNo}
-			AND ENABLED = 'Y'
 	</select>
 	
 	<select id="selectBankCompany" parameterType="map" resultMap="CompanyVoMap">
@@ -149,6 +150,21 @@
 			AND ENABLED = 'Y'
 	</select>
 
+	<!--카드 사 조회-->
+	<select id="selectCardCompanyList" parameterType="map" resultMap="BasicItemVOMap">
+		SELECT 
+			NO
+			, NAME
+			, BEAN 
+		FROM HH_CARD_COMPANY 
+		WHERE 1=1
+			<if test="no != null">
+				AND NO = #{no}
+			</if>
+			AND ENABLED = 'Y'
+		ORDER BY NAME
+	</select>
+	
 	<select id="selectCardCompany" parameterType="map" resultMap="CompanyVoMap">
 		SELECT
 			NO 
@@ -160,85 +176,11 @@
 			AND ENABLED = 'Y'
 	</select>
 	
-	<!--은행 사 추가-->
-	<insert id="insertBankKind" parameterType="map">
-		INSERT HH_BANK_KIND (
-			NAME
-				<if test="bean != null and bean != '' ">
-					, BEAN
-				</if>
-			) VALUSE (
-				#{name} 
-				<if test="bean != null and bean != '' ">
-					, #{bean}
-				</if>
-			) 
-	</insert>
-	
-	<!--카드 사 추가-->
-	<insert id="insertCardKind" parameterType="map">
-		INSERT HH_CARD_KIND (
-			NAME
-				<if test="bean != null and bean != '' ">
-					, BEAN
-				</if>
-			) VALUSE (
-				#{name} 
-				<if test="bean != null and bean != '' ">
-					, #{bean}
-				</if>
-			)
-	</insert>
-	
-	<!--은행 사 조회-->
-	<select id="selectBankKind" parameterType="map" resultMap="BasicItemVOMap">
-		SELECT 
-			NO
-			, NAME 
-			, BEAN
-		FROM HH_BANK_COMPANY 
-		WHERE 1=1
-			<if test="no != null">
-				AND NO = #{no}
-			</if>
-		ORDER BY NAME
-	</select>
-	
-	<!--카드 사 조회-->
-	<select id="selectCardKind" parameterType="map" resultMap="BasicItemVOMap">
-		SELECT 
-			NO
-			, NAME
-			, BEAN 
-		FROM HH_CARD_COMPANY 
-		WHERE 1=1
-			<if test="no != null">
-				AND NO = #{no}
-			</if>
-		ORDER BY NAME
-	</select>
-	
-	
-	<select id="selectBank" resultMap="BankCardVoMap">
-		SELECT
-			NO
-			, BC
-			, NAME
-			, BANK_NO 
-			, CARD_NO
-			, DSCR
-		FROM HH_BANK_CARD
-		WHERE 1=1
-			AND ENABLED = 'Y'
-			<if test="bc != null ">
-			AND BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
-			</if>
-		ORDER BY NAME
-	</select>
-	
 
-	<!-- 카드 은행 목록 조회 -->
-	<select id="getBankCardList" resultMap="BankCardVoMap">
+
+
+
+	<sql id="selectBankCardSql">
 		SELECT
 			NO
 			, BC
@@ -249,12 +191,34 @@
 		FROM HH_BANK_CARD
 		WHERE 1=1
 			AND ENABLED = 'Y'
+	</sql>
+
+	<select id="selectBankCardList" parameterType="map" resultMap="BankCardVoMap">
+		<include refid="selectBankCardSql"/>
 			<if test="bc != null ">
-			AND BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
+				AND BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
 			</if>
 		ORDER BY NAME
 	</select>
 	
+	<select id="selectBankCard" parameterType="map" resultMap="BankCardVoMap">
+		<include refid="selectBankCardSql"/>
+			AND NO = #{no}
+	</select>
+
+	<!-- 간단 정보 조회 -->
+	<select id="getSimpleBankCard" parameterType="map" resultMap="BankCardVoMap">
+		SELECT
+			NO
+			, BC
+			, NAME
+			, DSCR
+		FROM HH_BANK_CARD
+		WHERE 1=1
+			AND NO = #{no}
+			AND ENABLED = 'Y'
+	</select>
+
 	<!-- 추가하기 전 동일 정보 체크 -->
 	<select id="sameCheckBankCard" resultType="boolean" parameterType="com.utime.household.environment.vo.BankCardVO">
 		SELECT 
@@ -264,15 +228,17 @@
 	   		END AS RES 
 	   	FROM HH_BANK_CARD
 	   	WHERE 1=1
+	   		AND NO != {no}
 	   		AND ENABLED = 'Y'
 	   		AND BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
 	   		AND NAME = #{name}
 	</select>
-	
+
 	<!-- 추가 -->
 	<insert id="insertBankCard" parameterType="com.utime.household.environment.vo.BankCardVO" useGeneratedKeys="true" keyProperty="no">
 		INSERT INTO HH_BANK_CARD (
-			BC
+			UPDATE_DATE
+			, BC
 			, NAME
 			<if test=" null != dscr and '' != dscr ">
 			, DSCR
@@ -287,7 +253,8 @@
 				<otherwise></otherwise>
 			</choose>
 		) VALUES (
-			#{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
+			DATETIME('NOW','LOCALTIME')
+			, #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
 			, #{name}
 			<if test=" null != dscr and '' != dscr ">
 			, #{dscr}
@@ -304,10 +271,61 @@
 		)
 	</insert>
 	
+	<!-- 수정 -->
+	<update id="updateBankCard" parameterType="com.utime.household.environment.vo.BankCardVO">
+		UPDATE HH_BANK_CARD SET
+			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
+			, BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
+			, NAME = #{name}
+			, DSCR = <choose>
+				<when test="null != dscr and '' != dscr ">#{dscr}</when>
+				<otherwise>NULL</otherwise>
+			</choose>
+			<choose>
+				<when test="bc.code() == 'B' ">
+					, BANK_NO = #{bank.no}
+				</when>
+				<when test="bc.code() == 'C' ">
+					, CARD_NO = #{card.no}
+				</when>
+				<otherwise></otherwise>
+			</choose>
+		WHERE 1=1
+			AND NO = #{no}
+			AND ENABLED = 'Y'
+	</update>
+	
+	<!-- 삭제 -->
+	<update id="deleteBankCard" parameterType="map">
+		UPDATE HH_BANK_CARD SET
+			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
+			, ENABLED = 'N'
+		WHERE 1=1
+			AND NO = #{no}
+			AND ENABLED = 'Y'
+	</update>	
+	
+	<!-- 은행 조회 -->
+	<select id="selectBank" parameterType="map" resultMap="BankVoMap">
+		SELECT 
+			NO
+			, BANK_COMPANY 
+			, BANK_ACCOUNT_TYPE  
+			, BANK_ACCOUNT_NUMBER
+			, MATURITY 
+			, RATE 
+			, TAXABLE
+		FROM HH_BANK
+		WHERE 1=1
+			AND NO = #{bankNo}
+			AND ENABLED = 'Y'
+	</select>
+	
 	<!--은행 추가-->
 	<insert id="insertBank" parameterType="com.utime.household.environment.vo.BankVO">
 		INSERT INTO HH_BANK (
 			NO
+			, UPDATE_DATE
 			, BANK_COMPANY 
 			, BANK_ACCOUNT_TYPE  
 			<if test=" null != accountNumber and '' != accountNumber ">
@@ -320,8 +338,9 @@
 			, TAXABLE
 		) VALUES (
 			#{no}
+			, DATETIME('NOW','LOCALTIME')
 			, #{bankCompay.no} 
-			, #{accountType, typeHandler=com.utime.household.environment.handler.AccountTypeTypeHandler}}
+			, #{accountType, typeHandler=com.utime.household.environment.handler.AccountTypeTypeHandler}
 			<if test=" null != accountNumber and '' != accountNumber ">  
 			, #{accountNumber} 
 			</if>
@@ -333,10 +352,55 @@
 		)
 	</insert>
 	
+	<!-- 은행 수정 -->
+	<update id="updateBank" parameterType="com.utime.household.environment.vo.BankVO">
+		UPDATE HH_BANK SET 
+			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
+			, BANK_COMPANY = #{bankCompay.no} 
+			, BANK_ACCOUNT_TYPE = #{accountType, typeHandler=com.utime.household.environment.handler.AccountTypeTypeHandler}
+			, BANK_ACCOUNT_NUMBER = <choose>
+				<when test="null != accountNumber and '' != accountNumber ">#{accountNumber}</when>
+				<otherwise>NULL</otherwise>
+			</choose>
+			, MATURITY = <choose>
+				<when test="null != maturity and '' != maturity ">#{maturity}</when>
+				<otherwise>NULL</otherwise>
+			</choose> 
+			, RATE = #{rate} 
+			, TAXABLE = #{taxable, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
+		WHERE 1=1
+			AND NO = #{no}
+			AND ENABLED = 'Y'
+	</update>
+	
+	<!-- 은행 삭제 -->
+	<update id="deleteBank" parameterType="map">
+		UPDATE HH_BANK SET 
+			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
+			, ENABLED = 'N' 
+		WHERE 1=1
+			AND NO = #{no}
+			AND ENABLED = 'Y'
+	</update>
+	
+	<!-- 카드 조회 -->
+	<select id="selectCard" parameterType="map" resultMap="CardVoMap">
+		SELECT
+			NO
+			, CARD_COMPANY 
+			, CARD_WITHDRAWAL_DATE 
+			, CARD_WITHDRAWAL_BANK_CARD_NO
+		FROM HH_CARD
+		WHERE 1=1
+			AND NO = #{cardNo}
+			AND ENABLED = 'Y'
+	</select>
+	
 	<!--카드 추가-->
 	<insert id="insertCard" parameterType="com.utime.household.environment.vo.CardVO">
 		INSERT INTO HH_CARD (
 			NO
+			, UPDATE_DATE
 			, CARD_COMPANY
 			, CARD_WITHDRAWAL_DATE  
 			<if test=" null != bank ">
@@ -344,6 +408,7 @@
 			</if>
 		) VALUES (
 			#{no}
+			, DATETIME('NOW','LOCALTIME')
 			, #{cardCompany.no}
 			, #{withdrawalDate}
 			<if test=" null != bank ">
@@ -352,10 +417,53 @@
 		)
 	</insert> 
 	
+	<!-- 카드 수정 -->
+	<update id="updateCard" parameterType="com.utime.household.environment.vo.CardVO">
+		UPDATE HH_CARD SET 
+			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
+			, CARD_COMPANY = #{cardCompany.no}
+			, CARD_WITHDRAWAL_DATE = #{withdrawalDate}
+			, CARD_WITHDRAWAL_BANK_CARD_NO = <choose>
+				<when test="null != bank ">#{bank.no}</when>
+				<otherwise>0</otherwise>
+			</choose>
+		WHERE 1=1
+			AND NO = #{no}
+			AND ENABLED = 'Y'
+	</update>
+	
+	<!-- 카드 삭제 -->
+	<update id="deleteCard" parameterType="map">
+		UPDATE HH_CARD SET 
+			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
+			, ENABLED = 'N'
+		WHERE 1=1
+			AND NO = #{no}
+			AND ENABLED = 'Y'
+	</update>	
+	
+	<select id="selectCardItemList" parameterType="map" resultMap="CardItemVoMap">
+		SELECT 
+			NO
+			, CARD_NO
+			, NAME
+			, CARD_NUMBER 
+			, CARD_TYPE
+			, DSCR 
+			, FILE_CARD_NAME 
+			, FILE_CARD_NUMBER 
+		FROM HH_CARD_ITEM
+		WHERE 1=1
+			AND CARD_NO = #{cardNo}
+			AND ENABLED = 'Y'
+		ORDER BY NAME
+	</select>
+	
 	<!--카드 아이템 추가 -->
 	<insert id="insertCardItem" parameterType="com.utime.household.environment.vo.CardItemVO"  useGeneratedKeys="true" keyProperty="no">
 		INSERT INTO HH_CARD_ITEM (
-			CARD_NO
+			UPDATE_DATE
+			, CARD_NO
 			, NAME  
 			<if test=" null != cardNumber and '' != cardNumber "> 
 			, CARD_NUMBER
@@ -365,96 +473,57 @@
 			, DSCR
 			</if>
 		) VALUES (
-			#{cardNo}
+			DATETIME('NOW','LOCALTIME')
+			, #{cardNo}
 			, #{name}
 			<if test=" null != cardNumber and '' != cardNumber "> 
-			, #{cardType, typeHandler=com.utime.household.environment.handler.CardTypeTypeHandler}
+			, #{cardNumber}
 			</if>
-			, #{name}
+			, #{cardType, typeHandler=com.utime.household.environment.handler.CardTypeTypeHandler}
 			<if test=" null != dscr and '' != dscr ">  
 			, #{dscr}
 			</if>
 		)
 	</insert>
 	
-	<!--카드 아이템 삭제--> 
-	<update id="removeCardItem"  parameterType="com.utime.household.environment.vo.CardItemVO">
-		
-	</update>
-	
 	<!--카드 아이템 수정-->
 	<update id="updateCardItem"  parameterType="com.utime.household.environment.vo.CardItemVO">
-		
+		UPDATE HH_CARD_ITEM SET 
+			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
+			, CARD_NO = #{cardNo}
+			, NAME = #{name}
+			, CARD_NUMBER = <choose>
+				<when test="null != cardNumber and '' != cardNumber ">#{cardNumber}</when>
+				<otherwise>NULL</otherwise>
+			</choose>
+			, CARD_TYPE = #{cardType, typeHandler=com.utime.household.environment.handler.CardTypeTypeHandler}
+			, DSCR = <choose>
+				<when test="null != dscr and '' != dscr ">#{dscr}</when>
+				<otherwise>NULL</otherwise>
+			</choose>
+		WHERE 1=1
+			AND NO = #{no}
+			AND ENABLED = 'Y'
 	</update>
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	<!-- 수정 -->
-	<update id="updateBankCard" parameterType="com.utime.household.environment.vo.BankCardVO">
-		UPDATE HH_BANK_CARD SET
-			NAME = #{name}
-			<if test=" bc.name() == 'Bank' ">
-			, BANK_KIND = #{bank.bankKind}                                                                               
-			, BANK_ACCOUNT_TYPE = #{bank.accountType, typeHandler=com.utime.household.environment.handler.AccountTypeTypeHandler}
-			, BANK_ACCOUNT_NUMBER = #{bank.accountNumber}                                                                          
-			, BANK_ACCOUNT_HOLDER = #{bank.accountHolder}                                                                          
-			</if>
-			<if test=" bc.name() == 'Card' ">
-			, CARD_COMPANY = #{card.cardCompany} 
-			, CARD_TYPE = #{card.cardType, typeHandler=com.utime.household.environment.handler.CardTypeTypeHandler}
-			, CARD_BANK_CARD_NO = #{card.bank.no}                                                                          
-			, CARD_WITHDRAWAL_DATE = #{card.withdrawalDate}                                                                   
-			</if>
-			<if test=" null != dscr and '' != dscr ">
-			, DSCR = #{dscr}
-			</if>
-		WHERE NO = #{no}
+	<!--카드 아이템 삭제--> 
+	<update id="deleteCardItem"  parameterType="map">
+		UPDATE HH_CARD_ITEM SET 
+			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
+			, ENABLED = 'N'
+		WHERE 1=1
+			AND NO = #{no}
+			AND ENABLED = 'Y'
 	</update>
 	
-	<!-- 간단 정보 조회 -->
-	<select id="getSimpleBankCard" parameterType="map" resultMap="BankCardVoMap">
-		SELECT
-			NO
-			, BC
-			, NAME
-		FROM HH_BANK_CARD
-		WHERE NO = #{no}
-	</select>
-	
-	<!-- 정보 조회 -->
-	<select id="getBankCard" parameterType="map" resultMap="BankCardVoMap">
-		SELECT
-			NO
-			, BC
-			, NAME
-			, BANK_KIND
-			, BANK_ACCOUNT_TYPE
-			, BANK_ACCOUNT_NUMBER
-			, BANK_ACCOUNT_HOLDER
-			, CARD_COMPANY
-			, CARD_TYPE
-			, CARD_BANK_CARD_NO
-			, CARD_WITHDRAWAL_DATE
-			, DSCR
-		FROM HH_BANK_CARD
-		WHERE NO = #{no}
-	</select>
-	
-	<!-- 삭제 -->
-	<update id="deleteBankCard" parameterType="map">
-		UPDATE HH_BANK_CARD SET
-			ENABLED = 'N'
-		WHERE NO = #{no}
+	<!--카드 아이템 삭제--> 
+	<update id="deleteAllCardItem"  parameterType="map">
+		UPDATE HH_CARD_ITEM SET 
+			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
+			, ENABLED = 'N'
+		WHERE 1=1
+			AND CARD_NO = #{cardNo}
+			AND ENABLED = 'Y'
 	</update>
 	
 </mapper>

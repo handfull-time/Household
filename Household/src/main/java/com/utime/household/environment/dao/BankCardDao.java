@@ -3,9 +3,8 @@ package com.utime.household.environment.dao;
 import java.util.List;
 
 import com.utime.household.environment.vo.BankCardVO;
-import com.utime.household.environment.vo.BasicItemVO;
-import com.utime.household.environment.vo.EBankCard;
 import com.utime.household.environment.vo.CompanyVO;
+import com.utime.household.environment.vo.EBankCard;
 
 public interface BankCardDao {
 	
@@ -14,14 +13,14 @@ public interface BankCardDao {
 	 * @param name
 	 * @return
 	 */
-	public List<CompanyVO> getBankKind();
+	public List<CompanyVO> getBankCompanyList();
 	
 	/**
 	 * 카드 사 조회
 	 * @param name
 	 * @return
 	 */
-	public List<CompanyVO> getCardKind();
+	public List<CompanyVO> getCardCompanyList();
 
 	/**
 	 * 목록 조회

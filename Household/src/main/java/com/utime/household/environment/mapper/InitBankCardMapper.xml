@@ -7,6 +7,8 @@
 	<insert id="createBankCard">
 		CREATE TABLE HH_BANK_CARD (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, REG_DATE DATE DEFAULT (DATETIME('NOW','LOCALTIME')) <!-- 작성 일자  -->
+			, UPDATE_DATE DATE DEFAULT NULL
 			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))  <!--  사용 여부 Y:사용, N:미사용 --> 
 			, BC CHAR(1) CHECK(BC IN ('B', 'C', 'O')) <!-- 카드 은행 구분 B:은행, C:카드, O:기타 -->
 			, NAME TEXT(32) NOT NULL <!-- 소유자 이름 -->
@@ -42,6 +44,8 @@
 	<insert id="createBank">
 		CREATE TABLE HH_BANK (
 			NO INTEGER PRIMARY KEY <!-- BankCardNo 의 고유 번호를 따름 -->
+			, REG_DATE DATE DEFAULT (DATETIME('NOW','LOCALTIME')) <!-- 작성 일자  -->
+			, UPDATE_DATE DATE DEFAULT NULL
 			, BANK_COMPANY NUMBER DEFAULT NULL <!-- 은행 종류  -->
 			, BANK_ACCOUNT_TYPE CHAR(1) DEFAULT NULL CHECK (BANK_ACCOUNT_TYPE IN ('O', 'T', 'R', 'F')) <!-- 은행 계좌 종류 --> 
 			, BANK_ACCOUNT_NUMBER TEXT(16) DEFAULT NULL <!-- 은행 계좌 번호  -->
@@ -56,6 +60,8 @@
 	<insert id="createCard">
 		CREATE TABLE HH_CARD (
 			NO INTEGER PRIMARY KEY  <!-- BankCardNo 의 고유 번호를 따름 -->
+			, REG_DATE DATE DEFAULT (DATETIME('NOW','LOCALTIME')) <!-- 작성 일자  -->
+			, UPDATE_DATE DATE DEFAULT NULL
 			, CARD_COMPANY INTEGER DEFAULT NULL <!-- 카드 회사  -->
 			, CARD_WITHDRAWAL_DATE INTEGER DEFAULT 0 <!-- 매월 출금일자. --> 
 			, CARD_WITHDRAWAL_BANK_CARD_NO INTEGER DEFAULT 0 <!-- 출금 은행 번호 --> 
@@ -68,6 +74,8 @@
 	<insert id="createCardItem">
 		CREATE TABLE HH_CARD_ITEM (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, REG_DATE DATE DEFAULT (DATETIME('NOW','LOCALTIME')) <!-- 작성 일자  -->
+			, UPDATE_DATE DATE DEFAULT NULL
 			, CARD_NO INTEGER NOT NULL <!-- HH_CARD - NO -->
 			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
 			, NAME TEXT(64) NOT NULL <!-- 카드 이름 -->

@@ -61,28 +61,28 @@ class BankCardDaoImpl implements BankCardDao{
 				log.info("HH_BANK_KIND 생성");
 				initMapper.createBankKind();
 				
-				mapper.insertBankKind("KB국민은행", InputBankCardDefine.NameKbBank);
-				mapper.insertBankKind("하나은행", null);
-				mapper.insertBankKind("신한은행", null);
-				mapper.insertBankKind("우리은행", InputBankCardDefine.NameWooriBank);
-				mapper.insertBankKind("IBK기업은행", null);
-				mapper.insertBankKind("NH농협은행", null);
-				mapper.insertBankKind("KDB산업은행", InputBankCardDefine.NameKdb);
-				mapper.insertBankKind("SC제일은행", null);
-				mapper.insertBankKind("BNK부산은행", null);
-				mapper.insertBankKind("DGB대구은행", null);
-				mapper.insertBankKind("수협은행", null);
-				mapper.insertBankKind("카카오뱅크", InputBankCardDefine.NameKakaoBank);
-				mapper.insertBankKind("BNK경남은행", null);
-				mapper.insertBankKind("한국씨티은행", null);
-				mapper.insertBankKind("광주은행", null);
-				mapper.insertBankKind("토스뱅크", null);
-				mapper.insertBankKind("전북은행", null);
-				mapper.insertBankKind("케이뱅크", null);
-				mapper.insertBankKind("제주은행", null);
-				mapper.insertBankKind("우체국", null);
-				mapper.insertBankKind("새마을금고", null);
-				mapper.insertBankKind("저축은행", null);
+				mapper.insertBankCompany("KB국민은행", InputBankCardDefine.NameKbBank);
+				mapper.insertBankCompany("하나은행", null);
+				mapper.insertBankCompany("신한은행", null);
+				mapper.insertBankCompany("우리은행", InputBankCardDefine.NameWooriBank);
+				mapper.insertBankCompany("IBK기업은행", null);
+				mapper.insertBankCompany("NH농협은행", null);
+				mapper.insertBankCompany("KDB산업은행", InputBankCardDefine.NameKdb);
+				mapper.insertBankCompany("SC제일은행", null);
+				mapper.insertBankCompany("BNK부산은행", null);
+				mapper.insertBankCompany("DGB대구은행", null);
+				mapper.insertBankCompany("수협은행", null);
+				mapper.insertBankCompany("카카오뱅크", InputBankCardDefine.NameKakaoBank);
+				mapper.insertBankCompany("BNK경남은행", null);
+				mapper.insertBankCompany("한국씨티은행", null);
+				mapper.insertBankCompany("광주은행", null);
+				mapper.insertBankCompany("토스뱅크", null);
+				mapper.insertBankCompany("전북은행", null);
+				mapper.insertBankCompany("케이뱅크", null);
+				mapper.insertBankCompany("제주은행", null);
+				mapper.insertBankCompany("우체국", null);
+				mapper.insertBankCompany("새마을금고", null);
+				mapper.insertBankCompany("저축은행", null);
 			}
 
 		}catch (Exception e) {
@@ -95,17 +95,17 @@ class BankCardDaoImpl implements BankCardDao{
 				log.info("HH_CARD_KIND 생성");
 				initMapper.createCardKind();
 				
-				mapper.insertCardKind("KB국민카드", null);
-				mapper.insertCardKind("신한카드", InputBankCardDefine.NameShinhanCard);
-				mapper.insertCardKind("하나카드", null);
-				mapper.insertCardKind("롯데카드", null);
-				mapper.insertCardKind("BC카드", null);
-				mapper.insertCardKind("NH농협카드", null);
-				mapper.insertCardKind("삼성카드", InputBankCardDefine.NameSamsung);
-				mapper.insertCardKind("현대카드", null);
-				mapper.insertCardKind("우리카드", null);
-				mapper.insertCardKind("제일은행카드", null);
-				mapper.insertCardKind("이음-인천", InputBankCardDefine.NameIncheonEum);
+				mapper.insertCardCompany("KB국민카드", null);
+				mapper.insertCardCompany("신한카드", InputBankCardDefine.NameShinhanCard);
+				mapper.insertCardCompany("하나카드", null);
+				mapper.insertCardCompany("롯데카드", null);
+				mapper.insertCardCompany("BC카드", null);
+				mapper.insertCardCompany("NH농협카드", null);
+				mapper.insertCardCompany("삼성카드", InputBankCardDefine.NameSamsung);
+				mapper.insertCardCompany("현대카드", null);
+				mapper.insertCardCompany("우리카드", null);
+				mapper.insertCardCompany("제일은행카드", null);
+				mapper.insertCardCompany("이음-인천", InputBankCardDefine.NameIncheonEum);
 			}
 
 		}catch (Exception e) {
@@ -160,87 +160,98 @@ class BankCardDaoImpl implements BankCardDao{
 	}
 	
 	@Override
-	public List<CompanyVO> getBankKind(){
-		return this.mapper.selectBankKind();
+	public List<CompanyVO> getBankCompanyList(){
+		return this.mapper.selectBankCompanyList();
 	}
 	
 	@Override
-	public List<CompanyVO> getCardKind(){
-		return this.mapper.selectCardKind();
+	public List<CompanyVO> getCardCompanyList(){
+		return this.mapper.selectCardCompanyList();
 	}
 	
 
 	@Override
 	public List<BankCardVO> getBankCardList(EBankCard bc) {
-		return mapper.getBankCardList(bc);
+		return mapper.selectBankCardList(bc);
 	}
 
 	@Override
 	@Transactional( rollbackFor = Exception.class )
-	public int saveBankCard(BankCardVO vo) throws Exception {
+	public int saveBankCard(BankCardVO reqVo) throws Exception {
 		
-		List<CardItemVO> cardItemDbList;
 		int result;
-		final EBankCard bc = vo.getBc();
-		if( vo.getNo() < 0L ) {
+		List<CardItemVO> cardItemDbList = null;
+		final EBankCard bc = reqVo.getBc();
+		if( reqVo.getNo() < 0L ) {
 			
-			if( mapper.sameCheckBankCard(vo) ) {
+			if( mapper.sameCheckBankCard(reqVo) ) {
 				throw new Exception("동일 정보 있다.");
 			}
+			
+			// 새로운 고유 번호 획득
 			final long seq = this.getNextValueSequence();
 			
 			if( bc == EBankCard.Bank ) {
-				vo.getBank().setNo(seq);
+				reqVo.getBank().setNo(seq);
 			}else if( bc == EBankCard.Card ) {
-				vo.getCard().setNo(seq);
+				reqVo.getCard().setNo(seq);
 			}
 			
-			result = mapper.insertBankCard(vo);
+			result = mapper.insertBankCard(reqVo);
 
-			if( result > 0 && vo.getNo() > 0L ) {
+			if( result > 0 && reqVo.getNo() > 0L ) {
 				if( bc == EBankCard.Bank ) {
-					result += mapper.insertBank(vo.getBank());
+					result += mapper.insertBank(reqVo.getBank());
 				}else if( bc == EBankCard.Card ) {
 					cardItemDbList = new ArrayList<>();
-					result += mapper.insertCard(vo.getCard());
+					result += mapper.insertCard(reqVo.getCard());
+					
+					reqVo.getCard().getCards().forEach( item -> item.setCardNo(seq) );
 				}else {
 					
 				}
 			}
 			
 		}else {
-			result = mapper.updateBankCard(vo);
+			result = mapper.updateBankCard(reqVo);
 			if( bc == EBankCard.Bank ) {
-				result += mapper.updateBank(vo.getBank());
+				result += mapper.updateBank(reqVo.getBank());
 			}else if( bc == EBankCard.Card ) {
-				result += mapper.updateCard(vo.getCard());
-				cardItemDbList = mapper.selectCardItemList(vo.getCard().getNo());
+				result += mapper.updateCard(reqVo.getCard());
+				final long seq = reqVo.getCard().getNo();
+				reqVo.getCard().getCards().forEach( item -> item.setCardNo(seq) );
+				cardItemDbList = mapper.selectCardItemList(seq);
 			}else {
 				
 			}
 		}
 		
-		if( bc == EBankCard.Card && cardItemDbList != null ) {
-			final List<CardItemVO> cardItemReqList = vo.getCard().getCards();
+		if( bc == EBankCard.Card  ) {
+			final List<CardItemVO> cardItemReqList = reqVo.getCard().getCards();
 		
 			final Map<Long, CardItemVO> dbMap = cardItemDbList.stream()
-	                 .collect(Collectors.toMap(CardItemVO::getNo, card -> card));
+	                 .collect(Collectors.toMap(card -> card.getNo(), card -> card));
 			final Map<Long, CardItemVO> rqMap = cardItemReqList.stream()
 	                 .collect(Collectors.toMap(CardItemVO::getNo, card -> card));
 			
 			
-			dbMap.forEach((key, value) -> {
-				if( rqMap.containsKey(key) ) {
-					CardItemVO itm = rqMap.get(key);
-					if( ! itm.equals(value) ) {
-						
-					}
+			// dbList에만 있는 항목 처리
+			cardItemDbList.forEach( dbEntry -> {
+				final CardItemVO uiEntry = rqMap.get(dbEntry.getNo());
+				if( uiEntry == null ) {
+					mapper.deleteCardItem( dbEntry.getNo() );
+				} else if( ! uiEntry.equals( dbEntry ) ) {
+					mapper.updateCardItem( uiEntry );
 				}
-	        });
-		}
-		
-		 
+			});
 
+			// uiList에만 있는 항목 처리
+			cardItemReqList.forEach( uiEntry -> {
+				if( !dbMap.containsKey(uiEntry.getNo()) ) {
+					mapper.insertCardItem(uiEntry);
+				}
+			});
+		}
 		
 		return result;
 	}
@@ -253,12 +264,28 @@ class BankCardDaoImpl implements BankCardDao{
 	@Override
 	public BankCardVO getBankCard(long no) {
 		
-		return mapper.getBankCard( no );
+		return mapper.selectBankCard( no );
 	}
 	
 	@Override
+	@Transactional( rollbackFor = Exception.class )
 	public int deleteBankCard(long no) throws Exception {
+		int result = 0;
+		final BankCardVO dbItem = this.getBankCard( no );
+		if( dbItem == null ) {
+			return result;
+		}
 		
-		return mapper.deleteBankCard(no);
+		if( dbItem.getBc() == EBankCard.Bank ) {
+			result += mapper.deleteBank(dbItem.getBank().getNo());
+		}else if( dbItem.getBc() == EBankCard.Card ) {
+			final long cardNo = dbItem.getCard().getNo();
+			result += mapper.deleteAllCardItem(cardNo);
+			result += mapper.deleteCard(cardNo);
+		}
+		
+		result += mapper.deleteBankCard(no);
+		
+		return result;
 	}
 }

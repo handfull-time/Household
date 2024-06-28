@@ -93,14 +93,14 @@ public interface BankCardMapper {
 	 * @param vo
 	 * @return
 	 */
-	int insertBankCard(BankCardVO vo);
+	int insertBankCard(BankCardVO vo) throws Exception;
 	
 	/**
 	 * 수정
 	 * @param vo
 	 * @return
 	 */
-	int updateBankCard(BankCardVO vo);
+	int updateBankCard(BankCardVO vo) throws Exception;
 	
 	/**
 	 * 삭제
@@ -108,7 +108,7 @@ public interface BankCardMapper {
 	 * @return
 	 * @throws Exception
 	 */
-	int deleteBankCard( @Param("no") long no );
+	int deleteBankCard( @Param("no") long no ) throws Exception;
 	
 	/**
 	 * 은행 정보 조회
@@ -122,42 +122,42 @@ public interface BankCardMapper {
 	 * @param bvo
 	 * @return
 	 */
-	public int insertBank(BankVO bvo);
+	public int insertBank(BankVO bvo) throws Exception;
 	
 	/**
 	 * 은행 수정
 	 * @param bvo
 	 * @return
 	 */
-	public int updateBank(BankVO bvo);
+	public int updateBank(BankVO bvo) throws Exception;
 	
 	/**
 	 * 은행 삭제
 	 * @param bvo
 	 * @return
 	 */
-	public int deleteBank(@Param("no") long no);
+	public int deleteBank(@Param("no") long no) throws Exception;
 	
 	/**
 	 * 카드 추가
 	 * @param card
 	 * @return
 	 */
-	public int insertCard(CardVO card);
+	public int insertCard(CardVO card) throws Exception;
 	
 	/**
 	 * 카드 수정
 	 * @param card
 	 * @return
 	 */
-	public int updateCard(CardVO card);
+	public int updateCard(CardVO card) throws Exception;
 	
 	/**
 	 * 카드 삭제
 	 * @param card
 	 * @return
 	 */
-	public int deleteCard(@Param("no") long no);
+	public int deleteCard(@Param("no") long no) throws Exception;
 	
 	/**
 	 * 카드 아이템 리스트
@@ -192,7 +192,7 @@ public interface BankCardMapper {
 	 * @param cardNo
 	 * @return
 	 */
-	int deleteAllCardItem(@Param("cardNo") long cardNo);
+	int deleteAllCardItem(@Param("cardNo") long cardNo) throws Exception;
 	
 
 

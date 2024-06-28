@@ -57,9 +57,9 @@ class BankCardDaoImpl implements BankCardDao{
 			}
 			
 			
-			if( ! common.existTable("HH_BANK_KIND") ) {
-				log.info("HH_BANK_KIND 생성");
-				initMapper.createBankKind();
+			if( ! common.existTable("HH_BANK_COMPANY") ) {
+				log.info("HH_BANK_COMPANY 생성");
+				initMapper.createBankCompany();
 				
 				mapper.insertBankCompany("KB국민은행", InputBankCardDefine.NameKbBank);
 				mapper.insertBankCompany("하나은행", null);
@@ -91,9 +91,9 @@ class BankCardDaoImpl implements BankCardDao{
 		
 		try {
 			
-			if( ! common.existTable("HH_CARD_KIND") ) {
-				log.info("HH_CARD_KIND 생성");
-				initMapper.createCardKind();
+			if( ! common.existTable("HH_CARD_COMPANY") ) {
+				log.info("HH_CARD_COMPANY 생성");
+				initMapper.createCardCompany();
 				
 				mapper.insertCardCompany("KB국민카드", null);
 				mapper.insertCardCompany("신한카드", InputBankCardDefine.NameShinhanCard);
@@ -179,14 +179,14 @@ class BankCardDaoImpl implements BankCardDao{
 	@Transactional( rollbackFor = Exception.class )
 	public int saveBankCard(BankCardVO reqVo) throws Exception {
 		
+		if( mapper.sameCheckBankCard(reqVo) ) {
+			throw new Exception("동일 정보 있다.");
+		}
+		
 		int result;
 		List<CardItemVO> cardItemDbList = null;
 		final EBankCard bc = reqVo.getBc();
 		if( reqVo.getNo() < 0L ) {
-			
-			if( mapper.sameCheckBankCard(reqVo) ) {
-				throw new Exception("동일 정보 있다.");
-			}
 			
 			// 새로운 고유 번호 획득
 			final long seq = this.getNextValueSequence();
@@ -210,10 +210,16 @@ class BankCardDaoImpl implements BankCardDao{
 				}else {
 					
 				}
+			}else {
+				throw new Exception("데이터 추가 중 오류 발생");
 			}
 			
 		}else {
 			result = mapper.updateBankCard(reqVo);
+			if( result < 1 ) {
+				throw new Exception("데이터 수정 중 오류 발생");
+			}
+			
 			if( bc == EBankCard.Bank ) {
 				result += mapper.updateBank(reqVo.getBank());
 			}else if( bc == EBankCard.Card ) {

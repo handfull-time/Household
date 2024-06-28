@@ -1,5 +1,6 @@
 package com.utime.household.environment.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -10,12 +11,14 @@ import com.utime.household.environment.service.BankCardService;
 import com.utime.household.environment.vo.BankCardVO;
 import com.utime.household.environment.vo.BankVO;
 import com.utime.household.environment.vo.CardVO;
+import com.utime.household.environment.vo.CompanyVO;
 import com.utime.household.environment.vo.EAccountType;
 import com.utime.household.environment.vo.EBankCard;
-import com.utime.household.environment.vo.CompanyVO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 class BankCardServiceImpl implements BankCardService {
@@ -38,6 +41,7 @@ class BankCardServiceImpl implements BankCardService {
 		try {
 			this.dao.saveBankCard(vo);
 		} catch (Exception e) {
+			log.error("", e);
 			result.setCodeMessage("EPS0P1", e.getMessage());
 		}
 		
@@ -50,6 +54,7 @@ class BankCardServiceImpl implements BankCardService {
 		try {
 			this.dao.deleteBankCard(no);
 		} catch (Exception e) {
+			log.error("", e);
 			result.setCodeMessage("EPS0S1", e.getMessage());
 		}
 		
@@ -69,8 +74,6 @@ class BankCardServiceImpl implements BankCardService {
 				result.setBc(EBankCard.Bank);
 				final BankVO bank = new BankVO();
 				result.setBank(bank);
-				
-//				bank.setBankKind(EBankKind.KB);
 				bank.setAccountType(EAccountType.Ordinary);
 				
 			}else {
@@ -91,12 +94,73 @@ class BankCardServiceImpl implements BankCardService {
 	}
 	
 	@Override
-	public List<CompanyVO> getBankKind() {
+	public BankCardVO getBank(long no) {
+		final BankCardVO result;
+		if( no < 0L ) {
+			result = new BankCardVO();
+			result.setNo(no);
+			result.setBc(EBankCard.Bank);
+			
+			final BankVO bank = new BankVO();
+			bank.setNo(no);
+			
+			final List<CompanyVO> banks = getBankCompanies();
+			if( banks != null && ! banks.isEmpty() ) {
+				bank.setBankCompay(banks.get(0));
+			}else {
+				final CompanyVO company = new CompanyVO();
+				company.setNo(no);
+				company.setName("미정");
+				bank.setBankCompay(company);
+			}
+			bank.setAccountType(EAccountType.Ordinary);
+			
+			result.setBank( bank );
+			
+		}else {
+			result = this.dao.getBankCard(no);
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public BankCardVO getCard(long no) {
+		final BankCardVO result;
+		if( no < 0L ) {
+			result = new BankCardVO();
+			result.setNo(no);
+			result.setBc(EBankCard.Card);
+			
+			final CardVO card = new CardVO();
+			card.setNo(no);
+			
+			final List<CompanyVO> cards = this.getCardCompanies();
+			if( cards != null && ! cards.isEmpty() ) {
+				card.setCardCompany(cards.get(0));
+			}else {
+				final CompanyVO company = new CompanyVO();
+				company.setNo(no);
+				company.setName("미정");
+				card.setCardCompany(company);
+			}
+			card.setCards(new ArrayList<>());
+			
+			result.setCard(card);
+		}else {
+			result = this.dao.getBankCard(no);
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public List<CompanyVO> getBankCompanies() {
 		return this.dao.getBankCompanyList();
 	}
 	
 	@Override
-	public List<CompanyVO> getCardCompany() {
+	public List<CompanyVO> getCardCompanies() {
 		return this.dao.getCardCompanyList();
 	}
 	

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.utime.household.common.vo.ReturnBasic;
-import com.utime.household.dataIO.vo.InputBankCardList;
 import com.utime.household.environment.service.BankCardService;
 import com.utime.household.environment.vo.BankCardVO;
 import com.utime.household.environment.vo.EAccountType;
@@ -31,11 +30,16 @@ public class BankCardController {
 	}
 	
 	@GetMapping(value="Home.html")
-	public String bankCardMain(ModelMap model) {
+	public String bankCardMain(ModelMap model, @RequestParam(name = "BcType", defaultValue = "Bank") EBankCard bc) {
 		
-		model.addAttribute("BankCard", EBankCard.values() );
+		final String result;
+		if( bc == EBankCard.Bank ) {
+			result = "bankMain";
+		}else {
+			result = "cardMain";
+		}
 		
-		return "Environment/bankcard/bankcard";
+		return "Environment/bankcard/" + result;
 	}
 	
 //	@GetMapping(value="Home.html")
@@ -60,35 +64,50 @@ public class BankCardController {
 //		return "redirect:/Config/BankCard/Home.html";
 //	}
 	
-	@PostMapping(value="List.list")
-	public String listBankCard(ModelMap model, @RequestParam(value = "bc", required = false) EBankCard bc) {
+	@PostMapping(value="ListBank.list")
+	public String listBank(ModelMap model) {
 		
-		model.addAttribute("list",  service.getBankCardList(bc) );
-
-		return "Environment/bankcard/bankcardList";
+		model.addAttribute("list",  service.getBankCardList(EBankCard.Bank) );
+		
+		return "Environment/bankcard/bankList";
 	}
 	
+	@PostMapping(value="ListCard.list")
+	public String listCard(ModelMap model) {
+		
+		model.addAttribute("list",  service.getBankCardList(EBankCard.Card) );
+
+		return "Environment/bankcard/cardList";
+	}
+
 	
-	@PostMapping(value="Detail.layer")
-	public String DetailBankCardLayer(ModelMap model, @RequestParam(value = "no") long no) {
+	@PostMapping(value="DetailBank.layer")
+	public String DetailBankLayer(ModelMap model, @RequestParam(value = "no") long no) {
 		
-		final BankCardVO item = service.getBankCard(no);
+		final BankCardVO item = service.getBank(no);
 		
-		if( item.getBc() == EBankCard.Bank ) {
-			model.addAttribute("BankKinds", service.getBankKind() );
-			model.addAttribute("BankCards", EBankCard.values() );
-			model.addAttribute("AccountTypes", EAccountType.values() );
-		}else {
-			model.addAttribute("CardCompanies", service.getCardCompany() );
-			model.addAttribute("CardTypes", ECardType.values() );
-			model.addAttribute("Banks", service.getBankCardList(EBankCard.Bank) );
-		}
+		model.addAttribute("Companies", service.getBankCompanies() );
+		model.addAttribute("BankCards", EBankCard.values() );
+		model.addAttribute("AccountTypes", EAccountType.values() );
 		
 		model.addAttribute("data",  item );
 
-		return "Environment/bankcard/bankcardItem";
+		return "Environment/bankcard/bankItem";
 	}
 	
+	@PostMapping(value="DetailCard.layer")
+	public String DetailCardLayer(ModelMap model, @RequestParam(value = "no") long no) {
+		
+		final BankCardVO item = service.getCard(no);
+		
+		model.addAttribute("Companies", service.getCardCompanies() );
+		model.addAttribute("CardTypes", ECardType.values() );
+		model.addAttribute("Banks", service.getBankCardList(EBankCard.Bank) );
+		
+		model.addAttribute("data",  item );
+
+		return "Environment/bankcard/cardItem";
+	}
 	
 	@ResponseBody
 	@PostMapping(value="Save.json")

@@ -20,8 +20,18 @@
 		)
 	</insert>
 	
+	<!-- 부동산( 건물/토지 등) -->
+	<insert id="createProperty">
+		CREATE TABLE HH_PROPERTY (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
+			, NAME TEXT(32) NOT NULL <!-- 이름 -->
+			, AMOUNT INTEGER DEFAULT 0 <!-- 금액 -->
+		)
+	</insert>
+	
 	<!-- 은행 종류 -->	
-	<insert id="createBankKind">
+	<insert id="createBankCompany">
 		CREATE TABLE HH_BANK_COMPANY (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
 			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
@@ -31,7 +41,7 @@
 	</insert>
 	
 	<!-- 카드 종류 -->
-	<insert id="createCardKind">
+	<insert id="createCardCompany">
 		CREATE TABLE HH_CARD_COMPANY (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
 			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
@@ -46,12 +56,14 @@
 			NO INTEGER PRIMARY KEY <!-- BankCardNo 의 고유 번호를 따름 -->
 			, REG_DATE DATE DEFAULT (DATETIME('NOW','LOCALTIME')) <!-- 작성 일자  -->
 			, UPDATE_DATE DATE DEFAULT NULL
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))  <!--  사용 여부 Y:사용, N:미사용 --> 
 			, BANK_COMPANY NUMBER DEFAULT NULL <!-- 은행 종류  -->
 			, BANK_ACCOUNT_TYPE CHAR(1) DEFAULT NULL CHECK (BANK_ACCOUNT_TYPE IN ('O', 'T', 'R', 'F')) <!-- 은행 계좌 종류 --> 
 			, BANK_ACCOUNT_NUMBER TEXT(16) DEFAULT NULL <!-- 은행 계좌 번호  -->
+			, BANK_ACCOUNT_HOLDER TEXT(32) DEFAULT NULL <!-- 예금주  -->
 			, MATURITY DATE DEFAULT NULL <!-- 만기 일자  -->
 			, RATE REAL DEFAULT NULL <!-- 이율  -->
-			, TAXABLE CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))   <!--  과세 여부 Y:세금냄, N:비과세 -->
+			, TAXABLE CHAR(1) NOT NULL DEFAULT 'Y' CHECK (TAXABLE IN ('Y', 'N'))   <!--  과세 여부 Y:세금냄, N:비과세 -->
 			, FOREIGN KEY(BANK_COMPANY) REFERENCES HH_BANK_COMPANY(NO) 
 		)
 	</insert>
@@ -62,6 +74,7 @@
 			NO INTEGER PRIMARY KEY  <!-- BankCardNo 의 고유 번호를 따름 -->
 			, REG_DATE DATE DEFAULT (DATETIME('NOW','LOCALTIME')) <!-- 작성 일자  -->
 			, UPDATE_DATE DATE DEFAULT NULL
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))  <!--  사용 여부 Y:사용, N:미사용 --> 
 			, CARD_COMPANY INTEGER DEFAULT NULL <!-- 카드 회사  -->
 			, CARD_WITHDRAWAL_DATE INTEGER DEFAULT 0 <!-- 매월 출금일자. --> 
 			, CARD_WITHDRAWAL_BANK_CARD_NO INTEGER DEFAULT 0 <!-- 출금 은행 번호 --> 

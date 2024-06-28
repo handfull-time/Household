@@ -1,0 +1,46 @@
+<div class="card-body" xmlns:th="http://www.thymeleaf.org">
+
+	<script type="text/javascript" th:inline="javascript">
+		$(function() {
+	
+			$('#DataTableBankCard').DataTable({
+		        "processing": false,
+		        "paging": false,
+			});
+		})
+	
+	</script>
+
+	<div class="table-responsive">
+		<table class="table table-bordered" id="DataTableBankCard">
+			<thead>
+				<tr>
+					<th>카드사</th>
+					<th>카드이름</th>
+					<th>은행</th>
+					<th>출금일자</th>
+					<th>보유카드</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="data : ${list}" >
+					<td class="text-left" th:text="${data.card.cardCompany.name}"></td>
+					<td class="text-center" >
+						<a th:href="'javascript:onShowDetail(' + ${data.no} + ')'"  th:text="${data.name}"></a>
+					</td>
+					<td class="text-left" th:text="${data.card.bank==null? '없음':data.card.bank.name}"></td>
+					<td class="text-center" th:text="${data.card.withdrawalDate} + '일'"></td>
+					<td class="text-left" >
+						<th:block th:each="card, iterStat : ${data.cards}" >
+							<label th:text="${card.name}"></label><br th:if="${!iterStat.last}"/>
+						</th:block>
+					</td>
+					<td class="text-center">
+					    <button type="button" class="btn btn-danger btn-sm" th:onclick="onDelete([[${data.no}]], '[[${data.name}]]'	)">삭제</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

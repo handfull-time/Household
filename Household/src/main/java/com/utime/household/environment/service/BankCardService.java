@@ -37,7 +37,8 @@ public interface BankCardService {
 
 	/**
 	 * 상세 정보 얻기
-	 * @param vo
+	 * @param no
+	 * @param defaultBc
 	 * @return
 	 */
 	BankCardVO getBankCard(long no);
@@ -46,12 +47,25 @@ public interface BankCardService {
 	 * 은행사 목록
 	 * @return
 	 */
-	List<CompanyVO> getBankKind();
+	List<CompanyVO> getBankCompanies();
 
 	/**
 	 * 카드사 목록
 	 * @return
 	 */
-	List<CompanyVO> getCardCompany();	
+	List<CompanyVO> getCardCompanies();
 
+	/**
+	 * 은행 정보 조회
+	 * @param no
+	 * @return
+	 */
+	BankCardVO getBank(long no);	
+
+	/**
+	 * 카드 정보 조회
+	 * @param no
+	 * @return
+	 */
+	BankCardVO getCard(long no);	
 }

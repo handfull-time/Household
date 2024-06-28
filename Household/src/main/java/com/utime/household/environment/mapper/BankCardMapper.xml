@@ -73,12 +73,13 @@
 	
 	<resultMap id="BankVoMap" type="com.utime.household.environment.vo.BankVO">
 		<result column="NO" property="no" />
-		<result column="BANK_ACCOUNT_TYPE" property="accountType" typeHandler="com.utime.household.environment.handler.CardTypeTypeHandler" />
+		<result column="BANK_ACCOUNT_TYPE" property="accountType" typeHandler="com.utime.household.environment.handler.AccountTypeTypeHandler" />
 		<result column="BANK_ACCOUNT_NUMBER" property="accountNumber" />
+		<result column="BANK_ACCOUNT_HOLDER" property="accountHolder" />
 		<result column="MATURITY" property="maturity" />
 		<result column="RATE" property="rate" />
 		<result column="TAXABLE" property="taxable" typeHandler="com.utime.household.common.handler.BooleanTypeHandler"/>
-		
+ 		
 		<association 
 			column="BANK_COMPANY" 
 			property="bankCompay" 
@@ -96,12 +97,12 @@
 
 	<!--은행 사 추가-->
 	<insert id="insertBankCompany" parameterType="map">
-		INSERT HH_BANK_COMPANY (
+		INSERT INTO HH_BANK_COMPANY (
 				NAME
 				<if test="bean != null and bean != '' ">
-					, BEAN
+					, BEAN_NAME
 				</if>
-			) VALUSE (
+			) VALUES (
 				#{name} 
 				<if test="bean != null and bean != '' ">
 					, #{bean}
@@ -111,12 +112,12 @@
 	
 	<!--카드 사 추가-->
 	<insert id="insertCardCompany" parameterType="map">
-		INSERT HH_CARD_COMPANY (
+		INSERT INTO HH_CARD_COMPANY (
 				NAME
 				<if test="bean != null and bean != '' ">
-					, BEAN
+					, BEAN_NAME
 				</if>
-			) VALUSE (
+			) VALUES (
 				#{name} 
 				<if test="bean != null and bean != '' ">
 					, #{bean}
@@ -124,12 +125,16 @@
 			)
 	</insert>
 	
+	<sql id="CompanyColumnSql">
+		NO
+		, NAME 
+		, BEAN_NAME
+	</sql>
+	
 	<!--은행 사 조회-->
-	<select id="selectBankCompanyList" parameterType="map" resultMap="BasicItemVOMap">
-		SELECT 
-			NO
-			, NAME 
-			, BEAN
+	<select id="selectBankCompanyList" parameterType="map" resultMap="CompanyVoMap">
+		SELECT
+			<include refid="CompanyColumnSql"/> 
 		FROM HH_BANK_COMPANY 
 		WHERE 1=1
 			<if test="no != null">
@@ -141,9 +146,7 @@
 	
 	<select id="selectBankCompany" parameterType="map" resultMap="CompanyVoMap">
 		SELECT
-			NO 
-			, NAME 
-			, BEAN_NAME
+			<include refid="CompanyColumnSql"/> 
 		FROM HH_BANK_COMPANY
 		WHERE 1=1
 			AND NO = #{bankNo}
@@ -151,11 +154,9 @@
 	</select>
 
 	<!--카드 사 조회-->
-	<select id="selectCardCompanyList" parameterType="map" resultMap="BasicItemVOMap">
+	<select id="selectCardCompanyList" parameterType="map" resultMap="CompanyVoMap">
 		SELECT 
-			NO
-			, NAME
-			, BEAN 
+			<include refid="CompanyColumnSql"/> 
 		FROM HH_CARD_COMPANY 
 		WHERE 1=1
 			<if test="no != null">
@@ -167,9 +168,7 @@
 	
 	<select id="selectCardCompany" parameterType="map" resultMap="CompanyVoMap">
 		SELECT
-			NO 
-			, NAME 
-			, BEAN_NAME
+			<include refid="CompanyColumnSql"/> 
 		FROM HH_CARD_COMPANY
 		WHERE 1=1
 			AND NO = #{cardNo}
@@ -228,7 +227,9 @@
 	   		END AS RES 
 	   	FROM HH_BANK_CARD
 	   	WHERE 1=1
-	   		AND NO != {no}
+	   		<if test="no > -1 ">
+	   			AND NO != #{no}
+	   		</if>
 	   		AND ENABLED = 'Y'
 	   		AND BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
 	   		AND NAME = #{name}
@@ -244,10 +245,10 @@
 			, DSCR
 			</if>
 			<choose>
-				<when test="bc.code() == 'B' ">
+				<when test='bc.code == "B" '>
 					, BANK_NO
 				</when>
-				<when test="bc.code() == 'C' ">
+				<when test='bc.code == "C" '>
 					, CARD_NO
 				</when>
 				<otherwise></otherwise>
@@ -260,10 +261,10 @@
 			, #{dscr}
 			</if>
 			<choose>
-				<when test="bc.code() == 'B' ">
+				<when test='bc.code == "B" '>
 					, #{bank.no}
 				</when>
-				<when test="bc.code() == 'C' ">
+				<when test='bc.code == "C" '>
 					, #{card.no}
 				</when>
 				<otherwise></otherwise>
@@ -282,10 +283,10 @@
 				<otherwise>NULL</otherwise>
 			</choose>
 			<choose>
-				<when test="bc.code() == 'B' ">
+				<when test='bc.code == "B" '>
 					, BANK_NO = #{bank.no}
 				</when>
-				<when test="bc.code() == 'C' ">
+				<when test='bc.code == "C" '>
 					, CARD_NO = #{card.no}
 				</when>
 				<otherwise></otherwise>
@@ -312,6 +313,7 @@
 			, BANK_COMPANY 
 			, BANK_ACCOUNT_TYPE  
 			, BANK_ACCOUNT_NUMBER
+			, BANK_ACCOUNT_HOLDER
 			, MATURITY 
 			, RATE 
 			, TAXABLE
@@ -331,6 +333,9 @@
 			<if test=" null != accountNumber and '' != accountNumber ">
 			, BANK_ACCOUNT_NUMBER 
 			</if>
+			<if test=" null != accountHolder and '' != accountHolder ">
+			, BANK_ACCOUNT_HOLDER
+			</if>
 			<if test=" null != maturity ">
 			, MATURITY 
 			</if>
@@ -343,6 +348,9 @@
 			, #{accountType, typeHandler=com.utime.household.environment.handler.AccountTypeTypeHandler}
 			<if test=" null != accountNumber and '' != accountNumber ">  
 			, #{accountNumber} 
+			</if>
+			<if test=" null != accountHolder and '' != accountHolder ">
+			, #{accountHolder}
 			</if>
 			<if test=" null != maturity ">
 			, #{maturity} 
@@ -360,6 +368,10 @@
 			, BANK_ACCOUNT_TYPE = #{accountType, typeHandler=com.utime.household.environment.handler.AccountTypeTypeHandler}
 			, BANK_ACCOUNT_NUMBER = <choose>
 				<when test="null != accountNumber and '' != accountNumber ">#{accountNumber}</when>
+				<otherwise>NULL</otherwise>
+			</choose>
+			, BANK_ACCOUNT_HOLDER = <choose>
+				<when test="null != accountHolder and '' != accountHolder ">#{accountHolder}</when>
 				<otherwise>NULL</otherwise>
 			</choose>
 			, MATURITY = <choose>

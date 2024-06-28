@@ -2,6 +2,8 @@ package com.utime.household.environment.vo;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -33,8 +35,14 @@ public class BankVO {
 	String accountNumber;
 	
 	/**
+	 * 예금 주
+	 */
+	String accountHolder;
+	
+	/**
 	 * . 예금/적금 일 경우.
 	 */
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	Date maturity;
 	
 	/**

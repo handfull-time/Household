@@ -19,13 +19,13 @@ public interface InitBankCardMapper {
 	 * 카드 사 종류
 	 * @return
 	 */
-	public int createCardKind();
+	public int createCardCompany();
 	
 	/**
 	 * 은행 사 종류
 	 * @return
 	 */
-	public int createBankKind();
+	public int createBankCompany();
 	
 	/**
 	 * 은행 정보 생성

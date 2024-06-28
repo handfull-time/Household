@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<div xmlns:th="http://www.thymeleaf.org">
+	
+	<style type="text/css">
+		.hidden {
+		    display: none;
+		}
+		.modal-header {
+		    cursor: move;
+		}
+	</style>
+	
+	<script type="text/javascript" th:inline="javascript">
+	
+	$(document).ready(function () {
+        $("#editBankCardModal").draggable({
+            handle: ".modal-header"
+        });
+        
+//        const inputBcList = /*[[${InputBC}]]*/null;
+//        console.info( 'inputBcList', inputBcList );
+//        
+//        const selectBc = document.getElementById('selectBc');
+//        selectBc.orgValue = inputBcList;
+//
+//        const valueToSelect = /*[[${data.bc}]]*/null;
+//
+//        for (let i = 0; i < selectBc.options.length; i++) {
+//            const option = selectBc.options[i];
+//            if (option.value === valueToSelect) {
+//                option.selected = true;
+//                break; // 일치하는 옵션을 찾으면 루프 종료
+//            }
+//        } 
+//        
+//        
+//        onChangeBankCard( selectBc );
+    });
+	
+//	function onChangeBankCard( select ){
+//		
+//		const selectValue = select.value;
+//		const inputBcList = select.orgValue;
+//		
+//		const selectInputBc = document.getElementById('selectInputBc');
+//		selectInputBc.innerHTML = '';
+//		
+//		inputBcList.forEach(function (inputBc) {
+//            if (inputBc.bc === selectValue) {
+//                const option = document.createElement('option');
+//                option.value = inputBc.name;
+//                option.textContent = inputBc.dscr;
+//                selectInputBc.appendChild(option);
+//            }
+//        });
+//	}
+
+	</script>
+	
+	<div class="modal fade" id="editBankCardModal" tabindex="-1" role="dialog" aria-labelledby="editBankCardModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            	
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">[[${data.bc.dscr}]] [[${data.no > -1? '수정':'추가'}]]</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fas fa-times"></i></span>
+                    </button>
+                </div>
+                <form id="editForm">
+                	<input type="hidden" name="no" th:value="${data.no}">
+                	<input type="hidden" name="bc" th:value="${data.bc}">
+	                <div class="modal-body">
+					    <div class="card">
+					        <div class="card-body">
+					            <div class="table-responsive">
+					                <table class="table table-borderless">
+					                    <tbody>
+<!-- 					                        <tr>
+					                            <th class="text-left" scope="row">은행/카드 종류</th>
+					                            <td class="text-right">
+					                                <select name="bc" class="form-control" id="selectBc" onchange="onChangeBankCard(this)">
+														<option 
+															th:each="item : ${BankCards}" 
+															th:value="${item}"
+															th:text="${item.dscr}"
+															th:selected="${item} == ${data.bc}"
+															></option>
+													</select>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">은행/카드 이름</th>
+					                            <td class="text-right">
+					                                <select name="inputBC" class="form-control" id="selectInputBc">
+					                                	<option 
+															th:each="item : ${InputBC}" 
+															th:value="${item.name}"
+															th:text="${item.dscr}"
+															th:selected="${item.bc} == ${data.bc}"
+															></option>
+													</select>
+					                            </td>
+					                        </tr> -->
+					                        <tr>
+					                            <th class="text-left" scope="row">[[${data.bc.dscr}]] 이름</th>
+					                            <td class="text-left">
+					                                <input type="text" class="form-control border-1" maxlength="32" name="name" th:value="${data.name}" required>
+					                            </td>
+					                        </tr>
+					                        
+					                        <th:block th:if="${data.bc eq T(com.utime.household.environment.vo.EBankCard).Bank}">
+					                        <tr>
+					                            <th class="text-left" scope="row">은행 종류</th>
+					                            <td class="text-right">
+					                                <select name="bank.bankKind" class="form-control" id="selectBankKind">
+					                                	<option 
+															th:each="item : ${BankKinds}" 
+															th:value="${item}"
+															th:text="${item.dscr}"
+															th:selected="${item} == ${data.bank.bankKind}"
+															></option>
+													</select>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">계좌 종류</th>
+					                            <td class="text-right">
+					                                <select name="bank.accountType" class="form-control" id="selectBankKind">
+					                                	<option 
+															th:each="item : ${AccountTypes}" 
+															th:value="${item}"
+															th:text="${item.dscr}"
+															th:selected="${item} == ${data.bank.accountType}"
+															></option>
+													</select>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">계좌 번호</th>
+					                            <td class="text-left">
+					                                <input type="text" class="form-control border-1" maxlength="16" name="bank.accountNumber" th:value="${data.bank.accountNumber}" required>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">예금 주</th>
+					                            <td class="text-left">
+					                                <input type="text" class="form-control border-1" maxlength="16" name="bank.accountHolder" th:value="${data.bank.accountHolder}" required>
+					                            </td>
+					                        </tr>
+					                        </th:block>
+					                        <th:block th:if="${data.bc eq T(com.utime.household.environment.vo.EBankCard).Card}">
+					                        <tr>
+					                            <th class="text-left" scope="row">카드 회사</th>
+					                            <td class="text-right">
+					                                <select name="card.cardCompany" class="form-control" >
+					                                	<option 
+															th:each="item : ${CardCompanies}" 
+															th:value="${item}"
+															th:text="${item.dscr}"
+															th:selected="${item} == ${data.card.cardCompany}"
+															></option>
+													</select>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">카드 종류</th>
+					                            <td class="text-right">
+					                                <select name="card.cardType" class="form-control" >
+					                                	<option 
+															th:each="item : ${CardTypes}" 
+															th:value="${item}"
+															th:text="${item.dscr}"
+															th:selected="${item} == ${data.card.cardType}"
+															></option>
+													</select>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">연계 은행 정보</th>
+					                            <td class="text-left">
+					                                <select name="card.bank.no" class="form-control" >
+					                                	<option 
+															th:each="item : ${Banks}" 
+															th:value="${item.no}"
+															th:text="${item.name}"
+															th:selected="${item.no} == ${data.card.bank.no}"
+															></option>
+													</select>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">매월 출금일자</th>
+					                            <td class="text-left">
+					                                <input type="text" class="form-control border-1" maxlength="2" name="card.withdrawalDate" th:value="${data.card.withdrawalDate}" required>
+					                            </td>
+					                        </tr>
+					                        </th:block>
+					                        <tr>
+					                            <th class="text-left" scope="row">비고</th>
+					                            <td class="text-left">
+					                                <input type="text" class="form-control border-1" maxlength="128" name="dscr" th:value="${data.dscr}" required>
+					                            </td>
+					                        </tr>
+					                    </tbody>
+					                </table>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+                </form>
+                <div class="modal-footer">
+                	<a class="btn btn-success btn-icon-split" onclick="modalSuccessClick()">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-check-circle"></i>
+                        </span>
+                        <span class="text">[[${data.no > -1? '수정':'추가'}]]</span>
+                    </a>
+
+                	<a class="btn btn-secondary btn-icon-split" data-dismiss="modal">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-times"></i>
+                        </span>
+                        <span class="text">취소</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

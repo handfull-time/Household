@@ -36,7 +36,7 @@
     <!-- Sequence 값을 업데이트 -->
     <update id="updateIncrementValue" parameterType="map">
         UPDATE SEQUENCE_TABLE SET 
-        	CURRENT_VALUE = CURRENT_VALUE + 1 
+        	CURRENT_VALUE = (CURRENT_VALUE + 1) 
         WHERE SEQUENCE_NAME = #{sequenceName}
     </update>
 

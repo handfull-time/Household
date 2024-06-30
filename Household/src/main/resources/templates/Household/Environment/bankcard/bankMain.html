@@ -62,7 +62,7 @@
 		}
 		
 		function _onSave(title, data){
-			onJsonAction( /*[[@{/Env/BankCard/Save.json}]]*/ null, data, function(json){
+			onToJsonAction( /*[[@{/Env/BankCard/Save.json}]]*/ null, data, function(json){
 				if (json.code === '0') {
 					onHideModalLayer('editBankCardModal');
 					

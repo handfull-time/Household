@@ -167,6 +167,13 @@ public interface BankCardMapper {
 	List<CardItemVO> selectCardItemList(@Param("cardNo") long cardNo);
 	
 	/**
+	 * 카드 아이템 
+	 * @param no
+	 * @return
+	 */
+	CardItemVO selectCardItem(@Param("no") long no);
+	
+	/**
 	 * 카드 아이템 추가 
 	 * @param item
 	 * @return
@@ -193,10 +200,7 @@ public interface BankCardMapper {
 	 * @return
 	 */
 	int deleteAllCardItem(@Param("cardNo") long cardNo) throws Exception;
-	
 
-
-
-
+	boolean sameCheckCardItem(CardItemVO vo);
 	
 }

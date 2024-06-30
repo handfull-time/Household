@@ -39,12 +39,12 @@
 		<id column="NO" property="no"/>
 		<result column="CARD_WITHDRAWAL_DATE"  property="withdrawalDate"/>
 
-		<association 
+		<!--<association 
 			column="CARD_COMPANY" 
 			property="cardCompany" 
 			javaType="com.utime.household.environment.vo.CompanyVO"
 			select="selectCardCompany"
-			/>
+			/>-->
 	
 		<association 
 			column="CARD_WITHDRAWAL_BANK_CARD_NO" 
@@ -53,13 +53,13 @@
 			select="selectBank"
 			/>
 			
-		<collection
-			column="CARD_WITHDRAWAL_BANK_CARD_NO" 
+		<!--<collection
+			column="NO" 
 			property="cards" 
 			javaType="java.util.ArrayList"
 			ofType="com.utime.household.environment.vo.CardItemVO" 
 			select="selectCardItemList"
-			/>
+			/>-->
 	</resultMap>
 	
 	<resultMap id="CardItemVoMap" extends="BasicItemVOMap" type="com.utime.household.environment.vo.CardItemVO">
@@ -232,7 +232,7 @@
 	   		</if>
 	   		AND ENABLED = 'Y'
 	   		AND BC = #{bc, typeHandler=com.utime.household.environment.handler.BankCardTypeHandler}
-	   		AND NAME = #{name}
+	   		AND UPPER(NAME) = UPPER(#{name})
 	</select>
 
 	<!-- 추가 -->
@@ -470,6 +470,40 @@
 			AND ENABLED = 'Y'
 		ORDER BY NAME
 	</select>
+	
+	<select id="selectCardItem" parameterType="map" resultMap="CardItemVoMap">
+		SELECT 
+			NO
+			, CARD_NO
+			, NAME
+			, CARD_NUMBER 
+			, CARD_TYPE
+			, DSCR 
+			, FILE_CARD_NAME 
+			, FILE_CARD_NUMBER 
+		FROM HH_CARD_ITEM
+		WHERE 1=1
+			AND NO = #{no}
+			AND ENABLED = 'Y'
+		ORDER BY NAME
+	</select>
+	
+	<select id="sameCheckCardItem" resultType="boolean" parameterType="com.utime.household.environment.vo.CardItemVO">
+		SELECT 
+			CASE COUNT(1) 
+	   			WHEN 1 THEN 1
+				ELSE 0
+	   		END AS RES 
+	   	FROM HH_CARD_ITEM
+	   	WHERE 1=1
+	   		<if test="no > -1 ">
+	   			AND NO != #{no}
+	   		</if>
+	   		AND CARD_NO = #{cardNo}
+	   		AND ENABLED = 'Y'
+	   		AND UPPER(NAME) = UPPER(#{name})
+	</select>
+
 	
 	<!--카드 아이템 추가 -->
 	<insert id="insertCardItem" parameterType="com.utime.household.environment.vo.CardItemVO"  useGeneratedKeys="true" keyProperty="no">

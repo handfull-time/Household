@@ -184,7 +184,7 @@ class BankCardDaoImpl implements BankCardDao{
 		}
 		
 		int result;
-		List<CardItemVO> cardItemDbList = null;
+//		List<CardItemVO> cardItemDbList = null;
 		final EBankCard bc = reqVo.getBc();
 		if( reqVo.getNo() < 0L ) {
 			
@@ -203,10 +203,10 @@ class BankCardDaoImpl implements BankCardDao{
 				if( bc == EBankCard.Bank ) {
 					result += mapper.insertBank(reqVo.getBank());
 				}else if( bc == EBankCard.Card ) {
-					cardItemDbList = new ArrayList<>();
+//					cardItemDbList = new ArrayList<>();
 					result += mapper.insertCard(reqVo.getCard());
 					
-					reqVo.getCard().getCards().forEach( item -> item.setCardNo(seq) );
+//					reqVo.getCard().getCards().forEach( item -> item.setCardNo(seq) );
 				}else {
 					
 				}
@@ -226,38 +226,38 @@ class BankCardDaoImpl implements BankCardDao{
 				result += mapper.updateCard(reqVo.getCard());
 				final long seq = reqVo.getCard().getNo();
 				reqVo.getCard().getCards().forEach( item -> item.setCardNo(seq) );
-				cardItemDbList = mapper.selectCardItemList(seq);
+//				cardItemDbList = mapper.selectCardItemList(seq);
 			}else {
 				
 			}
 		}
 		
-		if( bc == EBankCard.Card  ) {
-			final List<CardItemVO> cardItemReqList = reqVo.getCard().getCards();
-		
-			final Map<Long, CardItemVO> dbMap = cardItemDbList.stream()
-	                 .collect(Collectors.toMap(card -> card.getNo(), card -> card));
-			final Map<Long, CardItemVO> rqMap = cardItemReqList.stream()
-	                 .collect(Collectors.toMap(CardItemVO::getNo, card -> card));
-			
-			
-			// dbList에만 있는 항목 처리
-			cardItemDbList.forEach( dbEntry -> {
-				final CardItemVO uiEntry = rqMap.get(dbEntry.getNo());
-				if( uiEntry == null ) {
-					mapper.deleteCardItem( dbEntry.getNo() );
-				} else if( ! uiEntry.equals( dbEntry ) ) {
-					mapper.updateCardItem( uiEntry );
-				}
-			});
-
-			// uiList에만 있는 항목 처리
-			cardItemReqList.forEach( uiEntry -> {
-				if( !dbMap.containsKey(uiEntry.getNo()) ) {
-					mapper.insertCardItem(uiEntry);
-				}
-			});
-		}
+//		if( bc == EBankCard.Card  ) {
+//			final List<CardItemVO> cardItemReqList = reqVo.getCard().getCards();
+//		
+//			final Map<Long, CardItemVO> dbMap = cardItemDbList.stream()
+//	                 .collect(Collectors.toMap(card -> card.getNo(), card -> card));
+//			final Map<Long, CardItemVO> rqMap = cardItemReqList.stream()
+//	                 .collect(Collectors.toMap(CardItemVO::getNo, card -> card));
+//			
+//			
+//			// dbList에만 있는 항목 처리
+//			cardItemDbList.forEach( dbEntry -> {
+//				final CardItemVO uiEntry = rqMap.get(dbEntry.getNo());
+//				if( uiEntry == null ) {
+//					mapper.deleteCardItem( dbEntry.getNo() );
+//				} else if( ! uiEntry.equals( dbEntry ) ) {
+//					mapper.updateCardItem( uiEntry );
+//				}
+//			});
+//
+//			// uiList에만 있는 항목 처리
+//			cardItemReqList.forEach( uiEntry -> {
+//				if( !dbMap.containsKey(uiEntry.getNo()) ) {
+//					mapper.insertCardItem(uiEntry);
+//				}
+//			});
+//		}
 		
 		return result;
 	}
@@ -293,5 +293,34 @@ class BankCardDaoImpl implements BankCardDao{
 		result += mapper.deleteBankCard(no);
 		
 		return result;
+	}
+
+	@Override
+	public CardItemVO getCardItem(long no) {
+		return mapper.selectCardItem(no);
+	}
+
+	@Override
+	@Transactional( rollbackFor = Exception.class )
+	public int saveCardItem(CardItemVO vo) throws Exception {
+		
+		if( mapper.sameCheckCardItem(vo) ) {
+			throw new Exception("동일 정보 있다.");
+		}
+
+		int result;
+		if( vo.getNo() < 0L ) {
+			result = mapper.insertCardItem(vo);
+		}else {
+			result = mapper.updateCardItem(vo);
+		}
+		return result;
+	}
+
+	@Override
+	@Transactional( rollbackFor = Exception.class )
+	public int deleteCardItem(long no) throws Exception {
+
+		return mapper.deleteCardItem(no);
 	}
 }

@@ -10,10 +10,12 @@ import com.utime.household.environment.dao.BankCardDao;
 import com.utime.household.environment.service.BankCardService;
 import com.utime.household.environment.vo.BankCardVO;
 import com.utime.household.environment.vo.BankVO;
+import com.utime.household.environment.vo.CardItemVO;
 import com.utime.household.environment.vo.CardVO;
 import com.utime.household.environment.vo.CompanyVO;
 import com.utime.household.environment.vo.EAccountType;
 import com.utime.household.environment.vo.EBankCard;
+import com.utime.household.environment.vo.ECardType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -162,6 +164,47 @@ class BankCardServiceImpl implements BankCardService {
 	@Override
 	public List<CompanyVO> getCardCompanies() {
 		return this.dao.getCardCompanyList();
+	}
+
+	@Override
+	public CardItemVO getCardItem(long cardNo, long no) {
+		final CardItemVO result;
+		
+		if( no < 0L ) {
+			result = new CardItemVO();
+			result.setCardNo(cardNo);
+			result.setCardType(ECardType.Credit);
+		}else {
+			result = this.dao.getCardItem(no);
+		}
+		
+		return result;
+	}
+
+	@Override
+	public ReturnBasic saveCardItem(CardItemVO vo) {
+		final ReturnBasic result = new ReturnBasic();
+		try {
+			this.dao.saveCardItem(vo);
+		} catch (Exception e) {
+			log.error("", e);
+			result.setCodeMessage("EPS0L1", e.getMessage());
+		}
+		
+		return result;
+	}
+
+	@Override
+	public ReturnBasic deleteCardItem(long no) {
+		final ReturnBasic result = new ReturnBasic();
+		try {
+			this.dao.deleteCardItem(no);
+		} catch (Exception e) {
+			log.error("", e);
+			result.setCodeMessage("EPS0M1", e.getMessage());
+		}
+		
+		return result;
 	}
 	
 }

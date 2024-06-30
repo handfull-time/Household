@@ -2,7 +2,9 @@ package com.utime.household.environment.dao;
 
 import java.util.List;
 
+import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.environment.vo.BankCardVO;
+import com.utime.household.environment.vo.CardItemVO;
 import com.utime.household.environment.vo.CompanyVO;
 import com.utime.household.environment.vo.EBankCard;
 
@@ -57,5 +59,26 @@ public interface BankCardDao {
 	 * @throws Exception
 	 */
 	int deleteBankCard(long no)throws Exception;
+	
+	/**
+	 * 카드 아이템 정보 조회
+	 * @param no
+	 * @return
+	 */
+	CardItemVO getCardItem(long no);
+
+	/**
+	 * 카드 아이템 저장
+	 * @param vo
+	 * @return
+	 */
+	int saveCardItem(CardItemVO vo)throws Exception;
+
+	/**
+	 * 카드 아이템 삭제
+	 * @param no
+	 * @return
+	 */
+	int deleteCardItem(long no)throws Exception;	
 }
 

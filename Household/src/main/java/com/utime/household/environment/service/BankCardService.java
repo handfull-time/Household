@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.environment.vo.BankCardVO;
+import com.utime.household.environment.vo.CardItemVO;
 import com.utime.household.environment.vo.EBankCard;
 import com.utime.household.environment.vo.CompanyVO;
 
@@ -67,5 +68,26 @@ public interface BankCardService {
 	 * @param no
 	 * @return
 	 */
-	BankCardVO getCard(long no);	
+	BankCardVO getCard(long no);
+
+	/**
+	 * 카드 아이템 정보 조회
+	 * @param no
+	 * @return
+	 */
+	CardItemVO getCardItem(long cardNo, long no);
+
+	/**
+	 * 카드 아이템 저장
+	 * @param vo
+	 * @return
+	 */
+	ReturnBasic saveCardItem(CardItemVO vo);
+
+	/**
+	 * 카드 아이템 삭제
+	 * @param no
+	 * @return
+	 */
+	ReturnBasic deleteCardItem(long no);	
 }

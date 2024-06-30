@@ -213,6 +213,20 @@ function onJsonAction(urlAddress, sendData, resultAction){
     });
 }
 
+function onToJsonAction(urlAddress, sendData, resultAction){
+	$.ajax({
+        type: 'POST',
+        url: urlAddress,
+        data: JSON.stringify(sendData),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function(json) {
+        	resultAction( json );
+        },
+        error: _ajaxError
+    });
+}
+
 /**
  * Form을 Object로 변환한다.
  */
@@ -222,12 +236,35 @@ function getFormObject(formId) {
     
     const formData = new FormData(form);
     
-    const formObject = {};
+    const result = {};
     formData.forEach((value, key) => {
-        formObject[key] = value;
+		
+		const keys = key.split('.'); // Split key into array of keys
+        let obj = result;
+
+        for (let i = 0; i < keys.length; i++) {
+            const k = keys[i];
+
+            if (i === keys.length - 1) {
+                // If it's the last key, set the value
+                if (Array.isArray(obj[k])) {
+                    obj[k].push(value);
+                } else if (obj[k] !== undefined) {
+                    obj[k] = [obj[k], value];
+                } else {
+                    obj[k] = value;
+                }
+            } else {
+                // If it's not the last key, ensure the nested object exists
+                if (!obj[k]) {
+                    obj[k] = {};
+                }
+                obj = obj[k];
+            }
+        }
     });
     
-    console.log(formObject);
+    console.log(result);
     
-    return formObject;
+    return result;
 }

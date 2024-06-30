@@ -39,27 +39,27 @@
 		<id column="NO" property="no"/>
 		<result column="CARD_WITHDRAWAL_DATE"  property="withdrawalDate"/>
 
-		<!--<association 
+		<association 
 			column="CARD_COMPANY" 
 			property="cardCompany" 
 			javaType="com.utime.household.environment.vo.CompanyVO"
 			select="selectCardCompany"
-			/>-->
+			/>
 	
 		<association 
 			column="CARD_WITHDRAWAL_BANK_CARD_NO" 
 			property="bank" 
-			javaType="com.utime.household.environment.vo.BankVO"
-			select="selectBank"
+			javaType="com.utime.household.environment.vo.BankCardVO"
+			select="selectBankCard"
 			/>
 			
-		<!--<collection
+		<collection
 			column="NO" 
 			property="cards" 
 			javaType="java.util.ArrayList"
 			ofType="com.utime.household.environment.vo.CardItemVO" 
 			select="selectCardItemList"
-			/>-->
+			/>
 	</resultMap>
 	
 	<resultMap id="CardItemVoMap" extends="BasicItemVOMap" type="com.utime.household.environment.vo.CardItemVO">
@@ -88,7 +88,6 @@
 			/>
 		
 	</resultMap>
-	
 	
 	<resultMap id="CompanyVoMap" extends="BasicItemVOMap" type="com.utime.household.environment.vo.CompanyVO">
 		<result column="BEAN_NAME" property="beanName" />

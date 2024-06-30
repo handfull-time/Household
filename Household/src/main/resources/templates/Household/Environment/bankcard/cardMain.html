@@ -94,6 +94,12 @@
 			});
 		}
 		
+		function onShowCardItemDetail(cardNo, no){
+			
+			onShowModalLayer( /*[[@{/Env/BankCard/DetailCardItem.layer}]]*/null, { cardNo: cardNo, no: no}, 'editBankCardModal' );
+		}
+
+
 		function modalSuccessCardItemClick(){
 			const data = getFormObject( 'editForm' );
 			const isAdd = data.no < 0;

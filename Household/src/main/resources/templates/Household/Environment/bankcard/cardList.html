@@ -32,10 +32,10 @@
 					<td class="text-left" th:text="${data.card.bank==null? '없음':data.card.bank.name}"></td>
 					<td class="text-center" th:text="${data.card.withdrawalDate} + '일'"></td>
 					<td class="text-left" >
-						<th:block th:each="card, iterStat : ${data.cards}" >
-							<label th:text="${card.name}"></label><br th:if="${!iterStat.last}"/>
+						<th:block th:each="card, iterStat : ${data.card.cards}" >
+							<label th:text="${card.name}" th:onclick="onShowCardItemDetail( [[${data.no}]], [[${card.no}]])"></label><br th:if="${!iterStat.last}"/>
 						</th:block>
-						<button type="button" class="btn btn-danger btn-sm" th:onclick="onDelete([[${data.no}]], '[[${data.name}]]'	)">삭제</button>
+						<button type="button" class="btn btn-secondary btn-sm" th:onclick="onShowCardItemDetail( [[${data.no}]], -1)">추가</button>
 					</td>
 					<td class="text-center">
 					    <button type="button" class="btn btn-danger btn-sm" th:onclick="onDelete([[${data.no}]], '[[${data.name}]]'	)">삭제</button>

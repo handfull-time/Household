@@ -172,7 +172,12 @@ class BankCardDaoImpl implements BankCardDao{
 
 	@Override
 	public List<BankCardVO> getBankCardList(EBankCard bc) {
-		return mapper.selectBankCardList(bc);
+		final List<BankCardVO> result = mapper.selectBankCardList(bc);
+		
+		if( result == null )
+			return result;
+		
+		return result;
 	}
 
 	@Override
@@ -224,8 +229,8 @@ class BankCardDaoImpl implements BankCardDao{
 				result += mapper.updateBank(reqVo.getBank());
 			}else if( bc == EBankCard.Card ) {
 				result += mapper.updateCard(reqVo.getCard());
-				final long seq = reqVo.getCard().getNo();
-				reqVo.getCard().getCards().forEach( item -> item.setCardNo(seq) );
+//				final long seq = reqVo.getCard().getNo();
+//				reqVo.getCard().getCards().forEach( item -> item.setCardNo(seq) );
 //				cardItemDbList = mapper.selectCardItemList(seq);
 			}else {
 				

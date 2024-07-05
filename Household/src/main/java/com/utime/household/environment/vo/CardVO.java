@@ -2,16 +2,16 @@ package com.utime.household.environment.vo;
 
 import java.util.List;
 
+import com.utime.household.common.util.HouseholdUtils;
+
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * 카드 정보
  */
 @Setter
 @Getter
-@ToString
 public class CardVO{
 	
 	/** 고유 번호 */
@@ -35,4 +35,9 @@ public class CardVO{
 	 */
 	List<CardItemVO> cards;
 	
+	@Override
+	public String toString() {
+		return HouseholdUtils.toString(this);
+	}
+
 }

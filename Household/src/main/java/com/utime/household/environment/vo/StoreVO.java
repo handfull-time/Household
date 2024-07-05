@@ -1,15 +1,15 @@
 package com.utime.household.environment.vo;
 
+import com.utime.household.common.util.HouseholdUtils;
+
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * 사용처 정보
  */
 @Setter
 @Getter
-@ToString(callSuper = true)
 public class StoreVO extends BasicItemVO{
 
 	/** 
@@ -47,4 +47,10 @@ public class StoreVO extends BasicItemVO{
 	public boolean isNew() {
 		return this.categoryNo > -1 && this.no < 0 && this.name != null && ! "".equals(this.name ); 
 	}
+	
+	@Override
+	public String toString() {
+		return HouseholdUtils.toString(this);
+	}
+
 }

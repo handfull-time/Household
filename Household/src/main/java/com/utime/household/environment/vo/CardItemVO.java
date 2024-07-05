@@ -4,14 +4,12 @@ import com.utime.household.common.util.HouseholdUtils;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * 카드 정보
  */
 @Setter
 @Getter
-@ToString
 public class CardItemVO extends BasicItemVO{
 	
 	/**
@@ -65,4 +63,10 @@ public class CardItemVO extends BasicItemVO{
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return HouseholdUtils.toString(this);
+	}
+
 }

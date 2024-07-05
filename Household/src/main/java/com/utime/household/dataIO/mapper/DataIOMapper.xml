@@ -10,7 +10,8 @@
 			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))  <!--  사용 여부 Y:사용, N:미사용 --> 
 			, REG_DATE DATE DEFAULT (DATETIME('NOW','LOCALTIME')) <!-- 작성 일자  -->
 			, DEAL_DATE DATE NOT NULL <!-- 거래 일자  -->
-			, AMOUNT INTEGER(12) NOT NULL <!-- 금액  -->
+			, ORIGIN_AMOUNT INTEGER(12) NOT NULL <!-- 원 금액  -->
+			, USE_AMOUNT INTEGER(12) NOT NULL <!-- 사용 금액  -->
 			, INCLUDED CHAR(1) NOT NULL CHECK(INCLUDED IN ('T', 'F'))  <!--  포함 여부 T:포함, F:미포함 --> 
 			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O')) <!-- 입/출금 I 입금, O 출금  -->
 			, BANK_CARD_NO INTEGER NOT NULL <!-- 입출금 은행/카드 번호  -->
@@ -36,7 +37,8 @@
 		CREATE TABLE HH_RECORD_TEMP (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
 			, DEAL_DATE DATE NOT NULL
-			, AMOUNT INTEGER(12) NOT NULL 
+			, ORIGIN_AMOUNT INTEGER(12) NOT NULL <!-- 원 금액  -->
+			, USE_AMOUNT INTEGER(12) NOT NULL <!-- 사용 금액  -->
 			, INCLUDED CHAR(1) NOT NULL CHECK(INCLUDED IN ('T', 'F'))
 			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O'))
 			, BANK_CARD_NO INTEGER NOT NULL
@@ -59,7 +61,8 @@
 	<insert id="insertHouseholdTempData" parameterType="com.utime.household.dataIO.vo.HouseholdDataVO">
 		INSERT INTO HH_RECORD_TEMP (
 			DEAL_DATE 
-			, AMOUNT
+			, ORIGIN_AMOUNT
+			, USE_AMOUNT
 			, INCLUDED
 			, IN_OUT
 			, BANK_CARD_NO 
@@ -74,7 +77,8 @@
 			, HASH
 		) VALUES (
 			DATETIME(#{dealDate, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler})
-			, #{amount}
+			, #{originAmount}
+			, #{useAmount}
 			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
 			, #{bcVo.no}
@@ -95,7 +99,8 @@
 	
 	<sql id="SameSelectSQL">
 		${Header}DEAL_DATE
-		, ${Header}AMOUNT
+		, ${Header}ORIGIN_AMOUNT
+		, ${Header}USE_AMOUNT
 		, ${Header}INCLUDED
 		, ${Header}IN_OUT
 		, ${Header}BANK_CARD_NO
@@ -178,7 +183,8 @@
 	<insert id="insertHouseholdData" parameterType="com.utime.household.dataIO.vo.HouseholdDataVO">
 		INSERT INTO HH_RECORD (
 			DEAL_DATE <!-- 거래 일자 -->
-			, AMOUNT <!-- 금액 -->
+			, ORIGIN_AMOUNT <!-- 원가 -->
+			, USE_AMOUNT <!-- 이용가 -->
 			, INCLUDED<!--  포함 여부 T:포함, F:미포함 -->
 			, IN_OUT <!-- 입/출금 I 입금, O 출금 -->
 			, BANK_CARD_NO <!-- 입출금 은행/카드 번호 -->
@@ -193,7 +199,8 @@
 			,HASH
 		) VALUES (
 			DATETIME(#{dealDate, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler})
-			, #{amount}
+			, #{originAmount}
+			, #{useAmount}
 			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
 			, #{bcVo.no}
@@ -216,7 +223,9 @@
 		<id column="NO" property="no" />
 		<id column="REG_DATE" property="regDate" />
 		<id column="DEAL_DATE" property="dealDate" typeHandler="com.utime.household.dataIO.handler.DealDateTypeHandler"/>
-		<id column="AMOUNT" property="amount" />
+		<id column="ORIGIN_AMOUNT" property="originAmount" />
+		<id column="USE_AMOUNT" property="useAmount" />
+		
 		<id column="IN_OUT" property="io" typeHandler="com.utime.household.dataIO.handler.InoutTypeHandler"/>
 
 		<id column="BANK_CARD_NO" property="bcVo.no" />
@@ -246,7 +255,8 @@
 			HR.NO
 			,HR.REG_DATE
 			,HR.DEAL_DATE
-			,HR.AMOUNT
+			,HR.ORIGIN_AMOUNT
+			,HR.USE_AMOUNT
 			,HR.IN_OUT
 			,HR.BANK_CARD_NO
 			,HBC.BC 
@@ -280,7 +290,7 @@
 			AND HR.STORE_NO = #{storeNo}
 			</if>
 			<if test="amount != 0">
-			AND HR.AMOUNT <choose><when test="amountThan"> <![CDATA[>=]]> </when><otherwise> <![CDATA[<=]]> </otherwise></choose> #{amount}
+			AND HR.USE_AMOUNT <choose><when test="amountThan"> <![CDATA[>=]]> </when><otherwise> <![CDATA[<=]]> </otherwise></choose> #{amount}
 			</if>
 			<if test=" null != begin and '' != begin and null != end and '' != end">
 			AND HR.DEAL_DATE BETWEEN DATE(#{begin}) AND DATE(#{end}, '+1 DAY')

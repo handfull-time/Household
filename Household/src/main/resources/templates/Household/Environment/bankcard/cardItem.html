@@ -8,6 +8,10 @@
 		.modal-header {
 		    cursor: move;
 		}
+		.byteLength {
+            display: block;
+            text-align: center;
+        }
 	</style>
 	
 	<script type="text/javascript" th:inline="javascript">
@@ -17,43 +21,14 @@
             handle: ".modal-header"
         });
         
-//        const inputBcList = /*[[${InputBC}]]*/null;
-//        console.info( 'inputBcList', inputBcList );
-//        
-//        const selectBc = document.getElementById('selectBc');
-//        selectBc.orgValue = inputBcList;
-//
-//        const valueToSelect = /*[[${data.bc}]]*/null;
-//
-//        for (let i = 0; i < selectBc.options.length; i++) {
-//            const option = selectBc.options[i];
-//            if (option.value === valueToSelect) {
-//                option.selected = true;
-//                break; // 일치하는 옵션을 찾으면 루프 종료
-//            }
-//        } 
-//        
-//        
-//        onChangeBankCard( selectBc );
+        $('.byte-input').on('input', function() {
+        	viewByteLength( $(this) );
+        });
+        
+        $('.byte-input').trigger('input');
+
     });
 	
-//	function onChangeBankCard( select ){
-//		
-//		const selectValue = select.value;
-//		const inputBcList = select.orgValue;
-//		
-//		const selectInputBc = document.getElementById('selectInputBc');
-//		selectInputBc.innerHTML = '';
-//		
-//		inputBcList.forEach(function (inputBc) {
-//            if (inputBc.bc === selectValue) {
-//                const option = document.createElement('option');
-//                option.value = inputBc.name;
-//                option.textContent = inputBc.dscr;
-//                selectInputBc.appendChild(option);
-//            }
-//        });
-//	}
 
 	</script>
 	
@@ -78,9 +53,14 @@
 					                <table class="table table-borderless">
 					                    <tbody>
 					                        <tr>
-					                            <th class="text-left" scope="row">[[${data.bc.dscr}]] 이름</th>
+					                            <th class="text-left" scope="row">
+					                            	[[${data.bc.dscr}]] 이름<br>
+					                            	<div class="byteLength">
+					                            		<span class="current-size"></span>/<span class="max-size"></span>
+					                            	</div>
+					                            </th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="32" th:field="*{name}" required>
+					                                <input type="text" class="form-control border-1 byte-input" maxlength="32" th:field="*{name}" required>
 					                            </td>
 					                        </tr>
 					                        
@@ -111,13 +91,18 @@
 					                        <tr>
 					                            <th class="text-left" scope="row">매월 출금 일자</th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="16" th:field="*{card.withdrawalDate}" required>
+					                                <input type="number" class="form-control border-1" maxlength="2" th:field="*{card.withdrawalDate}" required>
 					                            </td>
 					                        </tr>
 					                        <tr>
-					                            <th class="text-left" scope="row">비고</th>
+					                            <th class="text-left" scope="row">
+					                            	비고<br>
+					                            	<div class="byteLength">
+					                            		<span class="current-size"></span>/<span class="max-size"></span>
+					                            	</div>
+					                            </th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="128" th:field="*{dscr}" required>
+					                                <input type="text" class="form-control border-1 byte-input" maxlength="128" th:field="*{dscr}" required>
 					                            </td>
 					                        </tr>
 					                    </tbody>

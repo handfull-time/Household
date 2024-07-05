@@ -1,15 +1,15 @@
 package com.utime.household.environment.vo;
 
+import com.utime.household.common.util.HouseholdUtils;
+
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * 대 분류
  */
 @Setter
 @Getter
-@ToString(callSuper = true)
 public class CategoryVO extends BasicItemVO{
 	
 	ECategoryType cType;
@@ -27,4 +27,10 @@ public class CategoryVO extends BasicItemVO{
 		super(no, name);
 		this.cType = cType;
 	}
+	
+	@Override
+	public String toString() {
+		return HouseholdUtils.toString(this);
+	}
+
 }

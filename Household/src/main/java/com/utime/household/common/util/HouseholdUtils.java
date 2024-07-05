@@ -6,6 +6,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class HouseholdUtils {
 	/**
 	 * obj 값이 비었는가? 
@@ -86,5 +89,11 @@ public class HouseholdUtils {
     	}
     	
     	return src1.equals(src2);
+    }
+    
+    private static Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+    
+    public static String toString( Object obj) {
+    	return obj.getClass().getName() + "\n" + HouseholdUtils.gson.toJson(obj) + "\n";
     }
 }

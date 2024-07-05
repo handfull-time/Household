@@ -2,6 +2,8 @@ package com.utime.household.common.vo;
 
 import java.util.List;
 
+import com.utime.household.common.util.HouseholdUtils;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,4 +23,8 @@ public class Page<T> {
     private int recordsTotal;
     private int draw;
 
+    @Override
+	public String toString() {
+		return HouseholdUtils.toString(this);
+	}
 }

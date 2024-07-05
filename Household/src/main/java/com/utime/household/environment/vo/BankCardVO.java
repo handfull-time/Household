@@ -1,12 +1,12 @@
 package com.utime.household.environment.vo;
 
+import com.utime.household.common.util.HouseholdUtils;
+
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Setter
 @Getter
-@ToString(callSuper = true)
 public class BankCardVO extends BasicItemVO{
 
 	/** 
@@ -28,4 +28,9 @@ public class BankCardVO extends BasicItemVO{
 	 * 비고
 	 */
 	String dscr;
+	
+	@Override
+	public String toString() {
+		return HouseholdUtils.toString(this);
+	}
 }

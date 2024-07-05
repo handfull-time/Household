@@ -8,6 +8,10 @@
 		.modal-header {
 		    cursor: move;
 		}
+		.byteLength {
+            display: block;
+            text-align: center;
+        }
 	</style>
 	
 	<script type="text/javascript" th:inline="javascript">
@@ -16,6 +20,13 @@
         $("#editBankCardModal").draggable({
             handle: ".modal-header"
         });
+        
+        $('.byte-input').on('input', function() {
+        	viewByteLength( $(this) );
+        });
+        
+        $('.byte-input').trigger('input');
+
     });
 	
 	</script>
@@ -41,9 +52,14 @@
 					                <table class="table table-borderless">
 					                    <tbody>
 					                        <tr>
-					                            <th class="text-left" scope="row">[[${data.bc.dscr}]] 이름</th>
+					                            <th class="text-left" scope="row">
+					                            	[[${data.bc.dscr}]] 이름<br>
+					                            	<div class="byteLength">
+					                            		<span class="current-size"></span>/<span class="max-size"></span>
+					                            	</div>
+					                            </th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="32" th:field="*{name}" required>
+					                                <input type="text" class="form-control border-1 byte-input" maxlength="32" th:field="*{name}" required>
 					                            </td>
 					                        </tr>
 					                        <tr>
@@ -71,15 +87,25 @@
 					                            </td>
 					                        </tr>
 					                        <tr>
-					                            <th class="text-left" scope="row">계좌 번호</th>
+					                            <th class="text-left" scope="row">
+					                            	계좌 번호<br>
+					                            	<div class="byteLength">
+					                            		<span class="current-size"></span>/<span class="max-size"></span>
+					                            	</div>
+					                            </th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="16" th:field="*{bank.accountNumber}" >
+					                                <input type="text" class="form-control border-1 byte-input" maxlength="16" th:field="*{bank.accountNumber}" >
 					                            </td>
 					                        </tr>
 					                        <tr>
-					                            <th class="text-left" scope="row">예금 주</th>
+					                            <th class="text-left" scope="row">
+					                            	예금 주<br>
+					                            	<div class="byteLength">
+					                            		<span class="current-size"></span>/<span class="max-size"></span>
+					                            	</div>
+					                            </th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="32" th:field="*{bank.accountHolder}" >
+					                                <input type="text" class="form-control border-1 byte-input" maxlength="32" th:field="*{bank.accountHolder}" >
 					                            </td>
 					                        </tr>
 					                        <tr>
@@ -89,9 +115,14 @@
 					                            </td>
 					                        </tr>
 					                        <tr>
-					                            <th class="text-left" scope="row">비고</th>
+					                            <th class="text-left" scope="row">
+					                            	비고<br>
+					                            	<div class="byteLength">
+					                            		<span class="current-size"></span>/<span class="max-size"></span>
+					                            	</div>
+					                            </th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="128" th:field="*{dscr}" >
+					                                <input type="text" class="form-control border-1 byte-input" maxlength="128" th:field="*{dscr}" >
 					                            </td>
 					                        </tr>
 					                    </tbody>

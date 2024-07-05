@@ -8,6 +8,11 @@
 		.modal-header {
 		    cursor: move;
 		}
+		.byteLength {
+            display: block;
+            text-align: center;
+        }
+        
 	</style>
 	
 	<script type="text/javascript" th:inline="javascript">
@@ -16,6 +21,12 @@
         $("#editBankCardModal").draggable({
             handle: ".modal-header"
         });
+        
+        $('.byte-input').on('input', function() {
+        	viewByteLength( $(this) );
+        });
+        
+        $('.byte-input').trigger('input');
     });
 	
 	</script>
@@ -40,9 +51,14 @@
 					                <table class="table table-borderless">
 					                    <tbody>
 					                        <tr>
-					                            <th class="text-left" scope="row">이름</th>
+					                            <th class="text-left" scope="row">
+					                            	이름<br>
+					                            	<div class="byteLength">
+					                            		<span class="current-size"></span>/<span class="max-size"></span>
+					                            	</div>
+					                            </th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="32" th:field="*{name}" required>
+					                                <input type="text" class="form-control border-1 byte-input" maxlength="32" th:field="*{name}" required>
 					                            </td>
 					                        </tr>
 					                        
@@ -59,27 +75,47 @@
 											    </td>
 											</tr>
 					                        <tr>
-					                            <th class="text-left" scope="row">카드번호</th>
+					                            <th class="text-left" scope="row">
+					                            	카드번호<br>
+					                            	<div class="byteLength">
+					                            		<span class="current-size"></span>/<span class="max-size"></span>
+					                            	</div>
+					                            </th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="16" th:field="*{cardNumber}" required>
+					                                <input type="text" class="form-control border-1 byte-input" maxlength="16" th:field="*{cardNumber}" required>
 					                            </td>
 					                        </tr>
 											<tr>
-						                        <th class="text-left" scope="row">파일에서 처리되는 이름</th>
+						                        <th class="text-left" scope="row">
+						                        	파일에서 처리되는 이름<br>
+					                            	<div class="byteLength">
+					                            		<span class="current-size"></span>/<span class="max-size"></span>
+					                            	</div>
+						                        </th>
 						                        <td class="text-left">
-						                            <input type="text" class="form-control border-1" maxlength="16" th:field="*{innerFileCardName}" required>
+						                            <input type="text" class="form-control border-1 byte-input" maxlength="16" th:field="*{innerFileCardName}" required>
 						                        </td>
 						                    </tr>
 											<tr>
-					                            <th class="text-left" scope="row">청구서에 기록되는 카드 번호</th>
+					                            <th class="text-left" scope="row">
+					                            	청구서에 기록되는 카드 번호<br>
+					                            	<div class="byteLength">
+					                            		<span class="current-size"></span>/<span class="max-size"></span>
+					                            	</div>
+					                            </th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="16" th:field="*{innerFileCardNumber}" required>
+					                                <input type="text" class="form-control border-1 byte-input" maxlength="16" th:field="*{innerFileCardNumber}" required>
 					                            </td>
 					                        </tr>											
 					                        <tr>
-					                            <th class="text-left" scope="row">비고</th>
+					                            <th class="text-left" scope="row">
+					                            	비고<br>
+					                            	<div class="byteLength">
+					                            		<span class="current-size"></span>/<span class="max-size"></span>
+					                            	</div>
+					                            </th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="128" th:field="*{dscr}" required>
+					                                <input type="text" class="form-control border-1 byte-input" maxlength="128" th:field="*{dscr}" required>
 					                            </td>
 					                        </tr>
 					                    </tbody>
@@ -96,7 +132,7 @@
                         </span>
                         <span class="text">[[${data.no > -1? '수정':'추가'}]]</span>
                     </a>
-					<a th:if="${data.no > 0}" class="btn btn-danger btn-icon-split" onclick="onCardItemDelete([[${data.no}]])">
+					<a th:if="${data.no > 0}" class="btn btn-danger btn-icon-split" th:onclick="'onCardItemDelete(' + ${data.no} + ')'">
 			            <span class="icon text-white-50">
 			                <i class="fas fa-trash-alt"></i>
 			            </span>

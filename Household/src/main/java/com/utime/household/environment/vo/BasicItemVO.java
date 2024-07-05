@@ -1,12 +1,12 @@
 package com.utime.household.environment.vo;
 
+import com.utime.household.common.util.HouseholdUtils;
+
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Setter
 @Getter
-@ToString
 public class BasicItemVO {
 	
 	/** 고유 번호 */
@@ -30,5 +30,10 @@ public class BasicItemVO {
 		this.no = no;
 		this.name = name;
 		this.enabled = enabled;
+	}
+	
+	@Override
+	public String toString() {
+		return HouseholdUtils.toString(this);
 	}
 }

@@ -3,17 +3,16 @@ package com.utime.household.environment.vo;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.utime.household.common.util.HouseholdUtils;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * 은행 정보
  */
 @Setter
 @Getter
-@ToString
 public class BankVO {
 	
 	/** 고유 번호 */
@@ -55,4 +54,9 @@ public class BankVO {
 	 */
 	boolean taxable;
 	
+	@Override
+	public String toString() {
+		return HouseholdUtils.toString(this);
+	}
+
 }

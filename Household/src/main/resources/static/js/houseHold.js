@@ -268,3 +268,18 @@ function getFormObject(formId) {
     
     return result;
 }
+
+function viewByteLength(inputEle){
+    const inputValue = inputEle.val();
+    const byteSize = getByteSize(inputValue);
+    const maxLength = inputEle.attr('maxlength');
+    
+    const byteLengthDiv = inputEle.closest('tr').find('.byteLength');
+    byteLengthDiv.find('.current-size').text(byteSize);
+    byteLengthDiv.find('.max-size').text(maxLength);
+}
+
+// Function to calculate byte size of a string
+function getByteSize(str) {
+    return new Blob([str]).size;
+}

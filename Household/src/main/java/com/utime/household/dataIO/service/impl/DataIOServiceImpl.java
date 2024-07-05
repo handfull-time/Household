@@ -2,28 +2,29 @@ package com.utime.household.dataIO.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.dataIO.dao.DataIODao;
 import com.utime.household.dataIO.service.DataIOService;
 import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 import com.utime.household.dataIO.vo.HouseholdDataVO;
 import com.utime.household.dataIO.vo.HouseholdReqDataVO;
 import com.utime.household.dataIO.vo.HouseholdResDataVO;
-import com.utime.household.dataIO.vo.InputBankCardList;
 import com.utime.household.dataIO.vo.OuputReqVO;
 import com.utime.household.environment.dao.BankCardDao;
 import com.utime.household.environment.dao.CategoryDao;
 import com.utime.household.environment.dao.StoreDao;
 import com.utime.household.environment.vo.BankCardVO;
 import com.utime.household.environment.vo.CategoryVO;
+import com.utime.household.environment.vo.EBankCard;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +47,7 @@ class DataIOServiceImpl implements DataIOService{
 	private final String splitChar = "";
 	
 	private int getHash( int index, HouseholdDataVO item ) {
-		final String hash = index + splitChar + item.getDealDate().getTime() + splitChar + item.getAmount() + splitChar + item.getStore().getStore();
+		final String hash = index + splitChar + item.getDealDate().getTime() + splitChar + item.getUseAmount() + splitChar + item.getStore().getStore();
 		return hash.hashCode();
 	}
 	
@@ -67,50 +68,59 @@ class DataIOServiceImpl implements DataIOService{
 			return result;
 		}
 		
-		String beanName = InputBankCardList.getBeanName(bcVo);
+		String beanName = null;
+		final EBankCard bc = bcVo.getBc();
+		if( bc == EBankCard.Bank ) {
+			beanName = bcVo.getBank().getBankCompay().getBeanName();
+		}else if( bc == EBankCard.Card ) {
+			beanName = bcVo.getCard().getCardCompany().getBeanName();
+		}
+		
+		if( beanName == null ) {
+			result = new HouseholdDataListResVO();
+			
+			result.setCodeMessage("EHS0A3", "은행/카드 분석 정보가 등록되지 않았습다.");
+			
+			return result;
+		}
 		
 		final BankCardExtractDataService service = ctx.getBean(beanName, BankCardExtractDataService.class);
 
-		bcVo.setBank(null);
-		bcVo.setCard(null);
-		bcVo.setDscr(null);
-		
-		
 		try {
 			result = service.extractData( bcVo, file );
-			result.setBcVo( bcVo );
-
-			if( result != null && ! result.isError() && result.getList() != null ) {
-				
-				final Map<Long, CategoryVO> ctMap = new HashMap<>();
-				{
-				    final List<CategoryVO> ctList = ctDao.getCategoryList(null);
-					for( CategoryVO vo : ctList ){
-						ctMap.put(vo.getNo(), vo);
-					}
-				}
-				
-			    final StoreManage storeMgr = new StoreManage( storeDao.getStoreList() );
-			    
-				
-				final List<HouseholdDataVO> list = result.getList();
-				for( int i=0 ; i<list.size() ; i++ ) {
-					final HouseholdDataVO item = list.get(i);
-					
-					// 데이터 유니크 보장을 위해 추가.
-					item.setHash( this.getHash( i, item ) );
-					
-					storeMgr.genericStore(item.getStore());
-					item.setCategoryOwner(ctMap.get( item.getStore().getCategoryNo() ) ); 
-				}
-			}
 			
 		} catch (Exception e) {
 			log.error("", e);
 			result = new HouseholdDataListResVO();
 			result.setCodeMessage("EHS0A2", e.getMessage());
 		}
+
+		result.setBcVo( bcVo );
+
+		if( result.isError() || HouseholdUtils.isEmpty( result.getList() ) ) {
+			return result;
+		}
+			
+		final Map<Long, CategoryVO> ctMap;
+		{
+		    final List<CategoryVO> ctList = ctDao.getCategoryList(null);
+		    ctMap = ctList.stream().collect(Collectors.toMap(CategoryVO::getNo, category -> category));
+		}
 		
+	    final StoreManage storeMgr = new StoreManage( storeDao.getStoreList() );
+	    
+		
+		final List<HouseholdDataVO> list = result.getList();
+		for( int i=0 ; i<list.size() ; i++ ) {
+			final HouseholdDataVO item = list.get(i);
+			
+			// 데이터 유니크 보장을 위해 추가.
+			item.setHash( this.getHash( i, item ) );
+			
+			storeMgr.genericStore(item.getStore());
+			
+			item.setCategoryOwner(ctMap.get( item.getStore().getCategoryNo() ) ); 
+		}		
 		return result;
 	}
 	

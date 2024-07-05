@@ -2,7 +2,9 @@ package com.utime.household.dataIO.vo;
 
 import java.util.Date;
 
+import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.environment.vo.BankCardVO;
+import com.utime.household.environment.vo.CardItemVO;
 import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.StoreVO;
@@ -24,8 +26,11 @@ public class HouseholdDataVO {
 //	@DateTimeFormat(pattern = "yyyy.MM.dd hh:mm")
 	Date dealDate;
 	
-	/** 거래 금액 */
-	int amount;
+	/** 원래 금액 */
+	int originAmount;
+
+	/** 실제 지불 금액 */
+	int useAmount;
 	
 	/** 포함 여부 true:포함, false:미포함 */
 	boolean included = true;
@@ -35,6 +40,9 @@ public class HouseholdDataVO {
 	
 	/** 은행 카드 번호 */
 	BankCardVO bcVo;
+	
+	/** 카드 아이템 */
+	CardItemVO carditem;
 
 	/** 입출금 대분류 항목 */
 	CategoryVO categoryOwner;
@@ -58,28 +66,7 @@ public class HouseholdDataVO {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("[no=").append(no).append(", ");
-		if (regDate != null)
-			builder.append("regDate=").append(regDate).append(", ");
-		if (dealDate != null)
-			builder.append("dealDate=").append(dealDate).append(", ");
-		builder.append("amount=").append(amount).append(", included=").append(included).append(", ");
-		if (io != null)
-			builder.append("io=").append(io).append(", ");
-		if (bcVo != null)
-			builder.append("bcVo=").append(bcVo).append(", ");
-		if (categoryOwner != null)
-			builder.append("categoryOwner=").append(categoryOwner).append(", ");
-		if (categorySub != null)
-			builder.append("categorySub=").append(categorySub).append(", ");
-		if (store != null)
-			builder.append("store=").append(store).append(", ");
-		if (dscr != null)
-			builder.append("dscr=").append(dscr).append(", ");
-		builder.append("hash=").append(hash).append(", ownerNo=").append(ownerNo).append("]\n");
-		return builder.toString();
+		return HouseholdUtils.toString(this);
 	}
-	
-	
+
 }

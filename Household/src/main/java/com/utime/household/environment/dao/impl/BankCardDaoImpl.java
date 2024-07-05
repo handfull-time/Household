@@ -275,7 +275,22 @@ class BankCardDaoImpl implements BankCardDao{
 	@Override
 	public BankCardVO getBankCard(long no) {
 		
-		return mapper.selectBankCard( no );
+		BankCardVO result = mapper.selectBankCard( no );
+		
+		if( result == null ) {
+			return result;
+		}
+		
+		if( result.getBc() == EBankCard.Card ) {
+			if( result.getCard() == null ) 
+				return result;
+			
+			if( result.getCard().getCards() == null ) {
+				result.getCard().setCards(new ArrayList<>());
+			}
+		}
+		
+		return result;
 	}
 	
 	@Override

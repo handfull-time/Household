@@ -517,6 +517,12 @@
 			<if test=" null != dscr and '' != dscr ">  
 			, DSCR
 			</if>
+			<if test=" null != innerFileCardName and '' != innerFileCardName ">
+			, FILE_CARD_NAME
+			</if>
+			<if test=" null != innerFileCardNumber and '' != innerFileCardNumber ">
+			, FILE_CARD_NUMBER
+			</if>
 		) VALUES (
 			DATETIME('NOW','LOCALTIME')
 			, #{cardNo}
@@ -527,6 +533,12 @@
 			, #{cardType, typeHandler=com.utime.household.environment.handler.CardTypeTypeHandler}
 			<if test=" null != dscr and '' != dscr ">  
 			, #{dscr}
+			</if>
+			<if test=" null != innerFileCardName and '' != innerFileCardName ">
+			, #{innerFileCardName}
+			</if>
+			<if test=" null != innerFileCardNumber and '' != innerFileCardNumber ">
+			, #{innerFileCardNumber}
 			</if>
 		)
 	</insert>

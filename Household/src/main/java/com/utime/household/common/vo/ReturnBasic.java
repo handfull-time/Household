@@ -1,8 +1,7 @@
 package com.utime.household.common.vo;
 
-import lombok.Data;
+import com.utime.household.common.util.HouseholdUtils;
 
-@Data
 public class ReturnBasic {
 
 	String code;
@@ -24,8 +23,28 @@ public class ReturnBasic {
 		return this;
 	}
 	
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
 	public boolean isError() {
 		return ! HouseholdDefine.ERROR_OK.equals(this.code);
 	}
 	
+	@Override
+	public String toString() {
+		return HouseholdUtils.toString(this);
+	}
 }

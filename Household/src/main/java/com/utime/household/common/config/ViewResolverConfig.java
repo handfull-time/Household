@@ -36,6 +36,9 @@ public class ViewResolverConfig implements WebMvcConfigurer {
 	@Resource(name="LogInterceptor")
 	private AsyncHandlerInterceptor interceptorLog;
 	
+	@Resource(name="ViewInterceptor")
+	private AsyncHandlerInterceptor interceptorView;
+	
 	/**
 	 * 인터셉터 추가.
 	 */
@@ -48,15 +51,10 @@ public class ViewResolverConfig implements WebMvcConfigurer {
 		patterns.add("/images/**");
 		patterns.add("/vendor/**");
 		
-		final List<String> urls = new ArrayList<>();
-//		urls.add("/Admin/Trade/**");
-//		urls.add("/Admin/Mall/**");
-//		urls.add("/Admin/Statistics/**");
-//		urls.add("/Admin/Optional/**");
-//		urls.add("/Admin/Manager/**");
-
 		// 로그
 		registry.addInterceptor( this.interceptorLog ).excludePathPatterns(patterns);
+		registry.addInterceptor( this.interceptorView ).addPathPatterns("/**/*.html");
+		
 	}
 
 	/**

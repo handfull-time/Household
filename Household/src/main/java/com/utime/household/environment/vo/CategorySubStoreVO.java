@@ -2,16 +2,22 @@ package com.utime.household.environment.vo;
 
 import java.util.List;
 
+import com.utime.household.common.util.HouseholdUtils;
+
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * 소분류
  */
 @Setter
 @Getter
-@ToString(callSuper = true)
 public class CategorySubStoreVO extends CategorySubVO{
 	List<StoreVO> list;	
+	
+	@Override
+	public String toString() {
+		return HouseholdUtils.toString(this);
+	}
+
 }

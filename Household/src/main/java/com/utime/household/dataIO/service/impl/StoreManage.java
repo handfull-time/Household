@@ -19,8 +19,6 @@ class StoreManage extends ArrayList<StoreVO>{
 			this.add(vo);
 			this.map.put(vo.getName(), vo);
 		}
-		
-		
 	}
 	
 	private StoreVO getSplit(String name, String key) {

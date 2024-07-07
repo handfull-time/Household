@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/LayoutCommon}">
+
+<th:block layout:fragment="title">[[${bankCard.name}]] 자료 결과</th:block>
+
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+
+	<style type="text/css">
+		#DataTableResult caption {
+	        text-align: right;
+	        right: 0;
+	        top: 0;
+	        padding: 5px;
+	    }
+	</style>
+
+</th:block>
+
+<!-- index.html 고유 스크립트 추가 -->
+<th:block layout:fragment="script">
+
+	<script type="text/javascript" th:inline="javascript">
+
+	let currentRowData = null;
+	
+	const dataRawList = /*[[${list}]]*/ null;
+	
+    $(function () {
+		console.info('걍...');
+		
+		const table = $('#DataTableResult').DataTable({
+			"paging": false,
+			"footerCallback": function(row, data, start, end, display) {
+				updateTotalAmount( this, data );
+		    }
+		});
+		
+		const tableBody = $('#DataTableResult tbody');
+		const checkAll = $('#checkAll');
+		
+		// 체크박스 초기 상태 결정
+		const allCheckboxes = $('input[type="checkbox"].rowCheckbox', tableBody);
+		const checkedCheckboxes = allCheckboxes.filter(':checked');
+	    checkAll.prop('checked', checkedCheckboxes.length === allCheckboxes.length);
+
+		// checkAll 체크박스 상태 변경 시
+		checkAll.on('change', function() {
+		    const isChecked = this.checked;
+		    $('input[type="checkbox"].rowCheckbox', tableBody).prop('checked', isChecked);
+		});
+
+		// table body 내의 체크박스 상태 변경 시
+		tableBody.on('change', 'input[type="checkbox"].rowCheckbox', function() {
+		    const allCheckboxes = $('input[type="checkbox"].rowCheckbox', tableBody);
+		    const checkedCheckboxes = allCheckboxes.filter(':checked');
+		    
+		    if (checkedCheckboxes.length === allCheckboxes.length) {
+		        checkAll.prop('checked', true);
+		    } else {
+		        checkAll.prop('checked', false);
+		    }
+		});
+		
+	})
+	
+	function updateTotalAmount(owner, data) {
+	    let totalAmount = 0;
+	    for (let item of data) {
+	        totalAmount += parseInt(item[2].replace(/[^0-9]/g, ''));
+	    }
+	
+	    // 결과를 푸터에 표시
+	    const api = owner.api();
+	    $(api.column(2).footer()).html(totalAmount.toLocaleString());
+	}
+	
+	function modalSuccessClick(){
+    	console.info( '적용 버튼 클릭 이벤트' );
+	    if (! currentRowData) {
+	    	return;
+	    }
+	    
+	    const editFormData = getFormObject( 'editForm' );
+	    console.info( 'editForm', editFormData );
+	    
+    	const editModal = document.getElementById('editForm');
+     	
+    	const categorySelect = editModal.elements['categorySelect'];
+		const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+		if( selectedOption.value.length < 1 ){
+			toastAlert( '경고' , '입출금 항목 ['+selectedOption.text+']는 저장 할 수 없습니다.', 'warning');
+			return false;
+		} 
+		
+    	// amount 수정
+    	//const editInputAmount = editModal.elements['editInputAmount'];
+    	//const intpuAmount = parseInt(editInputAmount.value.replace(/[^0-9.-]+/g, ''), 10);
+    	const intpuAmount = parseInt(editFormData.amount.replace(/[^0-9.-]+/g, ''), 10);
+    	const isChangeAmount = currentRowData.amount !== intpuAmount;
+    	currentRowData.amount = intpuAmount;
+
+    	// included 수정
+    	//const radioIncludedY = editModal.querySelector('#EditRadioIncludedY');
+    	//currentRowData.included = radioIncludedY.checked;
+    	currentRowData.included = editFormData.included === 'true';
+    	
+    	const categoryTypeSelect = editModal.elements['categoryTypeSelect'];
+    	const categoryTypeSelected = categoryTypeSelect.options[categoryTypeSelect.selectedIndex];
+    	if( currentRowData.category == null ){
+    		currentRowData.category = new Object();
+    	}
+    	currentRowData.category.ctype = categoryTypeSelected.value;
+    	currentRowData.category.typeName = categoryTypeSelected.text;
+
+    	// category 수정
+    	currentRowData.category.no = parseInt(selectedOption.value, 10);
+    	currentRowData.category.name = selectedOption.text;
+
+    	// store 수정
+    	const storeSelect = editModal.elements['storeSelect'];
+    	const storeSelectNo = storeSelect.selectedIndex;
+    	if( storeSelectNo > -1 ){
+        	currentRowData.store.no = parseInt(storeSelect.value, 10);
+        	currentRowData.store.name = storeSelect.options[storeSelect.selectedIndex].text;
+        	currentRowData.store.categoryNo = currentRowData.category.no;
+    	}else{
+        	currentRowData.store.no = -1;
+        	currentRowData.store.name = '';
+    	}
+
+    	// 비고 수정
+    	//const editInputDscr = editModal.elements['editInputDscr'];
+    	//currentRowData.dscr = editInputDscr.value;
+    	currentRowData.dscr = editFormData.dscr.trim();
+    	
+    	// 수정된 데이터를 화면에 반영
+    	const selectRow = currentRowData.rowData;
+    	const index = currentRowData.index;
+    	delete currentRowData.index;
+    	delete currentRowData.rowData;
+
+    	// 복제한 데이터 다시 추가.
+    	dataRawList.splice(index, 1);
+    	dataRawList.splice(index, 0, currentRowData);
+    	
+    	if (selectRow) {
+    		const cells = selectRow.cells;
+
+    		const checkbox = cells[0].querySelector('input[type="checkbox"]');
+    		checkbox.checked = true;
+
+    		cells[2].textContent = currentRowData.amount.toLocaleString();
+            cells[3].textContent = currentRowData.included? '포함':'비포함';
+//    		cells[3].setAttribute('included', currentRowData.included);
+//    		cells[4].setAttribute('category.type', currentRowData.category.type);
+    		cells[5].textContent = currentRowData.category.typeName;
+    		cells[6].textContent = currentRowData.category.name;
+//    		cells[5].setAttribute('category.no', currentRowData.category.no);
+    		cells[7].textContent = currentRowData.store.name;
+//    		cells[7].setAttribute('store.no', currentRowData.store.no);
+    		cells[9].textContent = currentRowData.dscr;
+    	}
+    	
+		currentRowData = null;
+		
+		if( isChangeAmount ){
+			const table = document.getElementById('DataTableResult');
+		    const tbody = table.querySelector('tbody');
+		    const rows = tbody.querySelectorAll('tr');
+		    let totalAmount = 0;
+
+		    rows.forEach(function(row) {
+		        const amountText = row.cells[2].textContent.replace(/[^\d.-]+/g, '');
+		        const amount = parseInt(amountText, 10);
+		        totalAmount += amount;
+		    });
+
+			const tfootSecondColumn = $('#DataTableResult tfoot td:eq(1)');
+			tfootSecondColumn.text(totalAmount.toLocaleString());
+		}
+	    
+        $('#editModal').modal('hide');
+    }
+	
+	function getRowData( row ){
+		const cells = row.cells;
+		
+	    /*  
+	    const data = {
+	    	no: -1,
+	    	isChecked:false,
+   	        regDate: "",
+   	        dealDate: "",
+   	        amount: 0,
+   	        included: true,
+   	        io: 'In',
+   	        bcVo: { no: 0 },
+   	        store: { no: 0, store: '' },
+   	        category: { no: 0, type:'' },
+   	        dscr: ""
+	    };
+	    */
+	    
+	    // 인덱스 조회
+	    const index = parseInt( row.getAttribute('index') );
+	    // 원본 데이터 추출
+	    const orgData = dataRawList[index];
+	    // 데이터 복제
+	    const data = {...orgData};
+	    data.index = index;
+	    // 날짜 변환
+	    const date = new Date(data.dealDate);
+	    data.dealDate = `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+
+//	    data.no = row.getAttribute('no'); 
+	     
+   	    // 첫 번째 셀 (체크박스)
+   	    const checkbox = cells[0].querySelector('input[type="checkbox"]');
+   	    data.isChecked = checkbox.checked;
+ 
+   	 /* 
+   	    data.dealDate = cells[1].textContent.trim();
+   	 	data.io = cells[1].getAttribute('io'); 
+ 
+   	    const amountText = cells[2].textContent.replace(/[^0-9.-]+/g, ''); // 숫자 및 소수점, 음수 부호만 추출
+   	    data.amount = parseInt(amountText, 10);
+
+   	    data.included = cells[3].getAttribute('included') === 'true'; //   textContent.trim() === '포함';
+
+   	 	data.category.type = cells[4].getAttribute('category.type'); 
+   	    // 입금/출금 종류
+   	    data.category.no = parseInt(cells[5].getAttribute('category.no'), 10);
+
+   	    // 입금/출금 항목
+   	    data.category.name = cells[5].textContent.trim();
+
+   	    // 입금/출금 구분
+   	    data.store.store = cells[6].textContent.trim();
+
+   	    // 사용처
+   	    data.store.no = parseInt(cells[7].getAttribute('store.no'), 10);
+   	    data.store.store = cells[7].textContent.trim();
+
+   	    // 비고
+   	    data.dscr = cells[8].textContent.trim();
+   	     */
+		console.info(data);
+		
+		return data;			
+	}
+	
+	/**
+	 * Modal layer 값 설정
+	 */
+	function showModalLayer(cell){
+		const row = cell.closest('tr');
+		
+		const data = getRowData( row );
+		data.rowData = row;
+		currentRowData = data;
+		
+		const editModal = document.getElementById('editForm');
+		
+		const editDealDate = editModal.querySelector('#editDealDate');
+		editDealDate.textContent = data.dealDate;
+
+		const editDlgOriginStore = editModal.querySelector('#editDlgOriginStore');
+		editDlgOriginStore.textContent = data.store.store;
+		editDlgOriginStore.setAttribute('org_data', data.store.store);
+		
+		const editInputAmount = editModal.elements['editInputAmount'];
+		editInputAmount.value = data.amount.toLocaleString();
+
+		if( data.included ){
+			const radioIncludedY = editModal.querySelector('#EditRadioIncludedY'); // '포함' 라디오 버튼
+			radioIncludedY.checked = true;
+		}else{
+			const radioIncludedN = editModal.querySelector('#EditRadioIncludedN'); // '비포함' 라디오 버튼
+			radioIncludedN.checked = true;
+		}
+		
+		const categoryTypeSelect = editModal.elements['categoryTypeSelect'];
+		const categorySelect = editModal.elements['categorySelect'];
+		const editRegKeyword = editModal.querySelector('#editRegKeyword');
+
+		if( data.category != null ){
+			
+			categoryTypeSelect.value = data.category.ctype;
+			categoryTypeChange( categoryTypeSelect );
+			
+			categorySelect.value = data.category.no;
+			categoryChange( categorySelect );
+			
+			const storeSelect = editModal.elements['storeSelect'];
+			storeSelect.value = data.store.no;
+			editRegKeyword.classList.add('hidden');
+		}else{
+			categoryTypeSelect.value = 'Expense';
+			categoryTypeChange( categoryTypeSelect );
+			
+			categorySelect.value = '';
+			editRegKeyword.classList.remove('hidden');
+			//populateStoreSelect(-1);
+		}
+		
+		const editInputDscr = editModal.elements['editInputDscr'];
+		editInputDscr.value = data.dscr;
+		
+		$('#editModal').modal('show');
+	}
+	
+	function doSave(){
+		
+		const table = document.getElementById('DataTableResult');
+	    const tbody = table.querySelector('tbody');
+	    const rows = tbody.querySelectorAll('tr');
+	    const sendList = [];
+
+	    let missCategoryData = null;
+	    rows.forEach(function(row) {
+	    	
+	    	const data = getRowData( row );
+	        data.regDate = null;
+	    	
+	        if( data.isChecked && data.category.no < 0 && missCategoryData == null ){
+	        	missCategoryData = data;
+	   	 	}
+	        
+	        if( data.isChecked ){
+	        	sendList.push( data );
+	        }
+	   	 	
+	    });
+		
+	    if( missCategoryData != null ){
+	    	toastAlert( '경고', '['+missCategoryData.store.store + '] 저장할때는 입출금 종류는 필수입니다.', 'warning');
+	    	return false;
+	    }
+	    
+		toastConfirm( '저장', '선택한 ' + sendList.length + ' 개 데이터를 저장하시겠습니까?', function(){
+			_doSave( sendList );
+		} );
+	}
+	
+	function _doSave( sendList ){
+		console.info( '저장' );
+		
+		const sendData = new Object();
+		sendData.bcNo = /*[[${bankCard.no}]]*/ null;
+		sendData.list = sendList;
+		
+		
+		// 히든 폼 생성 및 설정
+		const form = document.createElement('form');
+		form.method = 'POST';
+		form.action = '/Household/IO/DoSaveData.html';
+		
+		// JSON 데이터를 히든 폼 필드에 추가
+		const jsonInput = document.createElement('input');
+		jsonInput.type = 'hidden';
+		jsonInput.name = 'jsonData';
+		jsonInput.value = JSON.stringify(sendData);
+		form.appendChild(jsonInput);
+		
+		// 폼을 문서에 추가하고 서버로 제출
+		document.body.appendChild(form);
+		form.submit();
+	}
+	</script>
+
+</th:block>
+
+<div layout:fragment="content">
+
+	<div class="card shadow mb-4">
+		<div class="card-body">
+			<div class="table-responsive">
+				<div class="row col-sm-5">
+                    <a class="btn btn-primary btn-icon-split float-left" onclick="doSave()">
+					    <span class="icon text-white-50">
+					        <i class="fas fa-save"></i>
+					    </span>
+					    <span class="text">저장</span>
+					</a>
+	            </div>
+				<table class="table table-bordered" id="DataTableResult" >
+					<caption>
+						[[${bankCard.name}]] 자료 결과
+					</caption>
+					<thead>
+			            <tr>
+			            	<th class="text-center" ><input type="checkbox" id="checkAll" checked="checked"></th>
+			                <th>거래 일자</th>
+			                <th>거래 금액</th>
+			                <th>내역 포함 여부</th>
+			                <th>입금/출금</th>
+			                <th>입금/출금 종류</th>
+			                <th>입금/출금 항목</th>
+			                <th>구분 키워드</th>
+			                <th>사용처</th>
+			                <th>비고</th>
+			            </tr>
+			        </thead>
+			        <tbody>
+			            <tr th:each="data, status : ${list}" th:attr="index=${status.index}">
+			            	<td class="text-center" ><input type="checkbox" class="rowCheckbox" th:checked="${data.store.categoryNo ne -1}"></td>
+			                <td class="text-center" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd HH:mm')}"></td><!-- 거래 일자 -->
+			                <td class="text-right" th:text="${#numbers.formatDecimal(data.amount, 2, 'COMMA', 0, 'POINT')}"></td><!-- 거래 금액 -->
+			                <td class="text-center" th:text="${data.included? '포함':'비포함'}"></td><!-- 내역 포함 여부 -->
+			                <td class="text-center" th:text="${data.io.dscr}"></td><!-- 내역 포함 여부 -->
+			                <th:block th:if="${data.store.categoryNo eq -1}">
+			                <td ></td><!-- 입금/출금 종류 -->
+			                <td ></td><!-- 입금/출금 항목 -->
+			                <td ></td><!-- 구분 키워드 -->
+							</th:block>
+			                <th:block th:if="${data.store.categoryNo ne -1}">
+			                <td th:text="${data.category.cType.dscr}"></td><!-- 입금/출금 종류 -->
+			                <td th:text="${data.category.name}"></td><!-- 입금/출금 항목 -->
+			                <td th:text="${data.store.name}"></td><!-- 구분 키워드 -->
+							</th:block>
+			                <td > <!-- 사용처 -->
+								<a href="javascript:void(0);" onclick="showModalLayer(this);" th:text="${data.store.store}"></a>
+							</td>
+			                <td th:text="${data.dscr}"></td><!-- 비고 -->
+			            </tr>
+			        </tbody>	
+			        <tfoot>
+				        <tr>
+			                <td>Total</td>
+			                <td colspan="9" class="text-right" ></td>
+				        </tr>
+				    </tfoot>
+				</table>
+			</div> <!-- table-responsive -->
+		</div> <!-- card body -->
+	</div>
+	
+	<th:block th:replace="dataIO/uploadDataModal :: editModal"/>
+	
+</div>
+
+
+</html>

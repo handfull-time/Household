@@ -42,63 +42,33 @@ class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 	
 	@SuppressWarnings("unused")
 	private static class TSamsungCardVO{
-		/**
-		 * 이용일
-		 */
+		/** 이용일 */
 		Date useDate;
-		
-		/**
-		 * 이용구분 
-		 */
+		/** 이용구분 */
 		String useType;
-		
-		/**
-		 * 가맹점
-		 */
+		/** 가맹점 */
 		String merchant;
-		/** 
-		 * 이용금액 
-		 */
+		/** 이용금액 */
 		int useAmount;
-		/**
-		 * 총할부금액 
-		 */
+		/** 총할부금액 */
 		int totalInstallmentAmount;
-		/**
-		 * 이용혜택 
-		 */
+		/** 이용혜택 */
 		String useBenefit;
-		/**
-		 * 혜택금액 
-		 */
+		/** 혜택금액 */
 		int benefitAmount;
-		/**
-		 * 개월 
-		 */
+		/** 개월 */
 		int months;
-		/**
-		 * 회차 
-		 */
+		/** 회차 */
 		int installmentNumber;
-		/**
-		 * 원금 
-		 */
+		/** 원금 */
 		int principal;
-		/**
-		 * 이자/수수료 
-		 */
+		/** 이자/수수료 */
 		int interestFee;
-		/**
-		 * 포인트명 
-		 */
+		/** 포인트명 */
 		String pointName;
-		/**
-		 * 적립금액 
-		 */
+		/** 적립금액 */
 		int accumulatedAmount;
-		/**
-		 * 입금후잔액 
-		 */
+		/** 입금후잔액 */
 		int balanceAfterDeposit;
 		
 		@Override
@@ -210,7 +180,7 @@ class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 
     			CardItemVO item = null;
     			for( CardItemVO im : cards ) {
-    				if( im.getNo() >= 0L && im.getInnerFileCardName().equals( userDif ) ) {
+    				if( im.getNo() >= 0L && userDif.equals( im.getInnerFileCardName() ) ) {
     					item = im;
     					break;
     				}
@@ -274,9 +244,9 @@ class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 				addItem.setCarditem( cardItemMap.get(cardVo.useType) );
 				
 				addItem.setDealDate( cardVo.useDate );
-				addItem.setStore( new StoreVO( cardVo.useType ) );
+				addItem.setStore( new StoreVO( cardVo.merchant ) );
 				addItem.setOriginAmount( cardVo.useAmount );
-				addItem.setUseAmount( cardVo.principal );
+				addItem.setUseAmount( cardVo.principal + cardVo.interestFee );
 				final String dscr = cardVo.useBenefit;
 				
 				final boolean isDscr = HouseholdUtils.isNotEmpty(dscr);
@@ -288,7 +258,7 @@ class BankCardExtractSamsungDataService implements BankCardExtractDataService{
 					addItem.setDscr( (isDscr? (dscr + ", "):"") + cardVo.months +"개월 (" + cardVo.installmentNumber + "회차)");
 				}
 				
-				addItem.setIo( (cardVo.principal > 0)? EInOut.Out:EInOut.In );
+				addItem.setIo( (addItem.getUseAmount() > 0)? EInOut.Out:EInOut.In );
 				addItem.setIncluded(addItem.getUseAmount() != 0);
 				
 				list.add(addItem);

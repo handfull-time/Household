@@ -201,6 +201,18 @@ public interface BankCardMapper {
 	 */
 	int deleteAllCardItem(@Param("cardNo") long cardNo) throws Exception;
 
+	/**
+	 * 같은 이름 있는지 검사
+	 * @param vo
+	 * @return
+	 */
 	boolean sameCheckCardItem(CardItemVO vo);
+	
+	/**
+	 * 이 은행 번호를 사용중인 카드 조회
+	 * @param bankNo
+	 * @return
+	 */
+	List<BankCardVO> selectCardFromBankNo(@Param("no") long no);	
 	
 }

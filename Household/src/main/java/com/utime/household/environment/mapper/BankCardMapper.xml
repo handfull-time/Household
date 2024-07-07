@@ -583,4 +583,15 @@
 			AND ENABLED = 'Y'
 	</update>
 	
+	<!--은행을 쓰고 있는 카드사 조회-->
+	<select id="selectCardFromBankNo" resultMap="BankCardVoMap">
+		<include refid="selectBankCardSql"/>
+		AND NO IN (
+			SELECT 
+				NO
+			FROM HH_CARD 
+			WHERE CARD_WITHDRAWAL_BANK_CARD_NO = #{no}
+		)
+	</select>
+	
 </mapper>

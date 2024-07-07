@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -31,6 +32,7 @@ import com.utime.household.dataIO.vo.HouseholdResDataVO;
 import com.utime.household.environment.service.BankCardService;
 import com.utime.household.environment.service.CategoryService;
 import com.utime.household.environment.service.StoreService;
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.ECategoryType;
 
 import lombok.RequiredArgsConstructor;
@@ -71,6 +73,7 @@ public class DataIOController {
 		model.addAttribute("bankCard", res.getBcVo());
 		model.addAttribute("listCategoryType", ECategoryType.values() );
 		model.addAttribute("listCategory", ctService.getCategoryList());
+		model.addAttribute("listCategorySub", ctService.getSubCategoryList(-1L) );
 		model.addAttribute("listStore", stService.getStoreList());
 		
 		return "dataIO/uploadResult";

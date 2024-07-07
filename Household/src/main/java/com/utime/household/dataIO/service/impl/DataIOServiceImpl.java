@@ -23,8 +23,11 @@ import com.utime.household.environment.dao.BankCardDao;
 import com.utime.household.environment.dao.CategoryDao;
 import com.utime.household.environment.dao.StoreDao;
 import com.utime.household.environment.vo.BankCardVO;
+import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.CategoryVO;
 import com.utime.household.environment.vo.EBankCard;
+import com.utime.household.environment.vo.ECategoryType;
+import com.utime.household.environment.vo.StoreVO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -105,21 +108,43 @@ class DataIOServiceImpl implements DataIOService{
 		{
 		    final List<CategoryVO> ctList = ctDao.getCategoryList(null);
 		    ctMap = ctList.stream().collect(Collectors.toMap(CategoryVO::getNo, category -> category));
+		    
+		    final CategoryVO none = new CategoryVO();
+		    none.setNo(-1L);
+		    none.setName("미분류");
+		    none.setCType(ECategoryType.Expense);
+		    
+		    ctMap.put(none.getNo(), none);
 		}
 		
-	    final StoreManage storeMgr = new StoreManage( storeDao.getStoreList() );
+		
+		final Map<Long, CategorySubVO> ctSubMap;
+	    {
+	    	final List<CategorySubVO> categorySubList = ctDao.getSubCategoryList(-1L);
+	    	
+	    	ctSubMap = categorySubList.stream().collect(Collectors.toMap(CategorySubVO::getNo, categorySub -> categorySub));
+	    	
+	    	final CategorySubVO none = new CategorySubVO();
+	    	none.setNo(-1L);
+	    	none.setName("미분류");
+	    	none.setOwner( ctMap.get(-1L) );
+	    	
+	    	ctSubMap.put( none.getNo(), none);
+	    }
 	    
+	    final StoreManage storeMgr = new StoreManage( storeDao.getStoreList() );
 		
 		final List<HouseholdDataVO> list = result.getList();
 		for( int i=0 ; i<list.size() ; i++ ) {
 			final HouseholdDataVO item = list.get(i);
-			
 			// 데이터 유니크 보장을 위해 추가.
 			item.setHash( this.getHash( i, item ) );
 			
-			storeMgr.genericStore(item.getStore());
+			final StoreVO store = item.getStore();
 			
-			item.setCategoryOwner(ctMap.get( item.getStore().getCategoryNo() ) ); 
+			storeMgr.genericStore( store );
+			item.setCategoryOwner( ctMap.get( store.getCategoryNo() ) );
+			item.setCategorySub( ctSubMap.get(store.getCategorySubNo()) );
 		}		
 		return result;
 	}

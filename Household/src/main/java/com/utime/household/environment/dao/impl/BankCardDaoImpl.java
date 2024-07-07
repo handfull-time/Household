@@ -343,4 +343,11 @@ class BankCardDaoImpl implements BankCardDao{
 
 		return mapper.deleteCardItem(no);
 	}
+	
+	@Override
+	public List<BankCardVO> getCardFromBankNo(long no) {
+		
+		return mapper.selectCardFromBankNo(no);
+	}
+	
 }

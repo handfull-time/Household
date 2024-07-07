@@ -79,6 +79,14 @@ public interface BankCardDao {
 	 * @param no
 	 * @return
 	 */
-	int deleteCardItem(long no)throws Exception;	
+	int deleteCardItem(long no)throws Exception;
+
+	/**
+	 * 이 은행 번호를 사용중인 카드 조회
+	 * @param no
+	 * @return
+	 */
+	List<BankCardVO> getCardFromBankNo(long no);
+
 }
 

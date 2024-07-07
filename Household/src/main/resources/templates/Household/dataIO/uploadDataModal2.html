@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="editModal">
+	
+	<style type="text/css">
+		.hidden {
+		    display: none;
+		}
+		.modal-header {
+		    cursor: move;
+		}
+	</style>
+	
+	<script type="text/javascript" th:inline="javascript">
+	
+	$(document).ready(function () {
+        $("#editModal").draggable({
+            handle: ".modal-header"
+        });
+    });
+	
+	// Store 데이터
+	const storeData = /*[[${listStore}]]*/ null;
+	const categoryList = /*[[${listCategory}]]*/ null;
+	
+	function categoryTypeChange(selectCateType){
+		const selectValue = selectCateType.value;
+		
+		const categorySelect = document.getElementById('categorySelect');
+		categorySelect.innerHTML = '';
+		
+        const option = document.createElement('option');
+        option.value = ''; 
+        option.textContent = '전체';
+        categorySelect.appendChild(option);
+        
+		categoryList.forEach(function (category) {
+            if (category.ctype === selectValue) {
+                const option = document.createElement('option');
+                option.value = category.no; 
+                option.textContent = category.name;
+                categorySelect.appendChild(option);
+            }
+        });
+		
+		categoryChange( categorySelect );
+	}
+	
+	function categoryChange( selectCategory ){
+		
+		const selectCategoryValue = selectCategory.value;
+		
+		if( selectCategoryValue ){
+			const categoryNo = parseInt(selectCategoryValue);
+			
+			populateStoreSelect(categoryNo);
+			
+			/* const storeSelect = document.getElementById('storeSelect');
+			storeSelect.innerHTML = '';
+
+			const optionUnSelected = document.createElement('option');
+			optionUnSelected.value = -1;
+			optionUnSelected.textContent = '미지정';
+            storeSelect.appendChild(optionUnSelected);
+			
+			storeData.forEach(function (store) {
+	            if (store.categoryNo === categoryNo) {
+	                const option = document.createElement('option');
+	                option.value = store.no; // Store의 no 값을 value로 설정
+	                option.textContent = store.name; // Store의 이름을 옵션 텍스트로 설정
+	                storeSelect.appendChild(option);
+	            }
+	        }); */
+		} else {
+			populateStoreSelect(-1);
+		}
+	}
+	
+	// 초기 상태에서 모든 Store 데이터를 Store select에 추가하는 함수
+/* 	function populateStoreSelect() {
+		const storeSelect = document.getElementById('storeSelect');
+	    storeSelect.innerHTML = ''; // 초기화
+	
+	    storeData.forEach(function (store) {
+	        const option = document.createElement('option');
+	        option.value = store.no; // Store의 no 값을 value로 설정
+	        option.textContent = store.name; // Store의 이름을 옵션 텍스트로 설정
+	        storeSelect.appendChild(option);
+	    });
+	} */
+	
+	function populateStoreSelect(categoryNo) {
+	    const storeSelect = document.getElementById('storeSelect');
+	    storeSelect.innerHTML = '';
+
+	    const optionUnSelected = document.createElement('option');
+	    optionUnSelected.value = -1;
+	    optionUnSelected.textContent = '미지정';
+	    storeSelect.appendChild(optionUnSelected);
+
+	    const filteredStores = storeData.filter(store => categoryNo === -1 || store.categoryNo === categoryNo);
+
+	    filteredStores.forEach(store => {
+	        const option = document.createElement('option');
+	     	// Store의 no 값을 value로 설정
+	        option.value = store.no;
+	     	// Store의 이름을 옵션 텍스트로 설정
+	        option.textContent = store.name;
+	        storeSelect.appendChild(option);
+	    });
+	    
+	    storeSelectChange( storeSelect );
+	}
+
+	function storeSelectChange(storeSelect){
+		
+		const editRegKeyword = document.getElementById('editRegKeyword');
+		
+		if( parseInt(storeSelect.value) === -1 ){
+			editRegKeyword.classList.remove('hidden');
+		}else{
+			editRegKeyword.classList.add('hidden');
+		}
+	}
+	
+	
+	function colorChange( inputEle ){
+		
+		const editDlgOriginStore = document.getElementById('editDlgOriginStore');
+
+		const inputValue = inputEle.value;
+		if( inputValue.length < 1 ){
+			editDlgOriginStore.innerHTML = editDlgOriginStore.getAttribute('org_data');
+			return false;
+		}
+		
+		const btnRegKeyStore = document.getElementById('btnRegKeyStore');
+		
+		let sameData = null;
+		for (let data of storeData ) {
+	        if (data.name === inputValue) {
+	        	sameData = data;
+	        	break;
+	        }
+	    }
+		
+		if( sameData !== null ){
+			console.info( 'same data', sameData);
+			
+			const categorySelect = document.getElementById('categorySelect');
+			const selectedOptions = categorySelect.options;
+			const categoryNo = sameData.categoryNo;
+			let categoryName = null;
+			for( let option of selectedOptions ){
+				if (option.value == categoryNo) {
+					categoryName = option.text;
+					break;
+				}
+			}
+        	toastAlert( '경고' , '['+categoryName+'] ' + inputValue + ' 같은 값이 있습니다.', 'warning');
+        	btnRegKeyStore.setAttribute('disabled', 'disabled');
+            return false;
+		}
+		
+		
+		btnRegKeyStore.removeAttribute('disabled');
+			
+		console.info( 'inputValue', inputValue );
+		
+		const text = editDlgOriginStore.textContent.toLowerCase(); // 텍스트 내용을 소문자로 변환
+		//console.info( 'origin text', text);
+		
+		//const separators = /[ ,_/]/; // 여러 구분자를 포함한 정규 표현식
+    	//const words = text.split(separators); // 정규 표현식을 사용하여 문자열 분할
+
+    	//const uniqueWords = Array.from(new Set(words)); // 중복 제거
+    	//const uniqueWords = Array.from(new Set(text.split(''))); // 각 글자를 중복되지 않게 배열에 담음
+		//console.info( 'uniqueWords', uniqueWords );
+		
+		//uniqueWords.forEach((word) => {
+			
+			//console.info( 'word', word, word.includes(inputValue) , inputValue.includes(word));
+			
+			//if (word.includes(inputValue)) {
+				// 입력 값이 단어에 포함되면 해당 단어의 색상을 빨간색으로 변경
+				//text = text.replace(word, `<span style="color: red;">${word}</span>`);
+				
+				//text = text.replace(new RegExp(`\\b${word}\\b`, 'g'), `<span style="color: red;">${word}</span>`);
+				//console.info( 'text', text);
+			//}
+		//});
+		
+		//console.info( 'inputValue', inputValue, 'text', text, text.includes(inputValue) , inputValue.includes(text));
+		
+		if(text.includes(inputValue)){
+			const convertText = text.replace(inputValue, `<span style="color: red;">${inputValue}</span>`);
+			//console.info('convertText', convertText);
+			editDlgOriginStore.innerHTML = convertText;
+		}
+		
+	}
+	
+	function registerKeyword(){
+		const regKeyStore = document.getElementById('regKeyStore');
+		const regKeyStoreValue = regKeyStore.value.trim();
+		console.info( 'regKeyStoreValue', regKeyStoreValue);
+		
+		if( regKeyStoreValue.length < 1 ){
+			return false;
+		}
+		
+		const categorySelect = document.getElementById('categorySelect');
+		const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+		console.info( 'selectedOption', selectedOption);
+		if( selectedOption.value.length < 1 ){
+			toastAlert( '경고' , '입출금 항목 ['+selectedOption.text+']는 추가 할 수 없습니다.', 'warning');
+			return false;
+		}
+
+		toastConfirm( '추가', '['+selectedOption.text+'] '+ regKeyStoreValue +' 구분 키워드 추가 하시겠습니까?', 
+			function(){
+
+				let minNo = 0;
+				for (let data of storeData ) {
+			        if (data.no < minNo ) {
+			        	minNo = data.no;
+			        }
+			    }
+				
+				minNo -= 2;
+				
+				const addItem = new Object();
+				addItem.no = minNo;
+				addItem.name = regKeyStoreValue;
+				addItem.categoryNo = parseInt( selectedOption.value );
+				
+				storeData.push( addItem );
+				
+				console.info( 'storeData add', addItem);
+				
+				categoryChange( categorySelect );
+				
+				// 이벤트를 발생시켜 선택한 값을 반영
+				const storeSelect = document.getElementById('storeSelect');
+				storeSelect.value = minNo;
+				storeSelect.dispatchEvent(new Event('change'));
+				
+				regKeyStore.value = '';
+				const editRegKeyword = document.getElementById('editRegKeyword');
+				editRegKeyword.classList.add('hidden');
+			} 
+		);
+		
+	}
+	
+	/**
+	 * 숫자 콤마 처리
+	 */
+	function formatAmount(input) {
+      // 입력 값을 가져와 콤마를 제거한 후 숫자로 파싱합니다.
+      const value = input.value.replace(/[^0-9.-]+/g, '');
+      const numberValue = parseInt(value, 10);
+
+      // 숫자로 변환된 값이 유효한 경우, 다시 콤마를 추가하여 표시합니다.
+      if (!isNaN(numberValue)) {
+        input.value = numberValue.toLocaleString();
+      }
+    }
+	</script>
+	
+	<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            	
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">내역 수정</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fas fa-times"></i></span>
+                    </button>
+                </div>
+                <form id="editForm">
+	                <div class="modal-body">
+					    <div class="card">
+					        <div class="card-header py-0">
+					            <p class="lead text-gray"><span id="editDealDate"></span></p> <!-- 원 거래일자 -->
+					            <p class="lead text-gray"><span id="editDlgOriginStore" ></span></p> <!-- 원 거래처 -->
+					        </div>
+					
+					        <div class="card-body">
+					            <div class="table-responsive">
+					                <table class="table table-borderless">
+					                    <tbody>
+					                        <tr>
+					                            <th class="text-left" scope="row">금액</th>
+					                            <td class="text-right">
+					                                <input type="text" name="amount" id="editInputAmount" class="form-control border-1 text-right" oninput="formatAmount(this)">
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">포함/비포함</th>
+					                            <td class="text-right">
+					                                <label for="EditRadioIncludedY" id="lbEditRadioIncludedY">
+					                                    <input type="radio" name="included" id="EditRadioIncludedY" value="true" />
+					                                    포함
+					                                </label>
+					                                <label for="EditRadioIncludedN" id="lbEditRadioIncludedN">
+					                                    <input type="radio" name="included" id="EditRadioIncludedN" value="false" />
+					                                    비포함
+					                                </label>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">입출금 종류</th>
+					                            <td class="text-right">
+					                                <select class="form-control" name="category.ctype" id="categoryTypeSelect" onchange="categoryTypeChange(this)">
+					                                    <option th:each="item : ${listCategoryType}" th:value="${item}" th:text="${item.dscr}"></option>
+					                                </select>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">입출금 항목</th>
+					                            <td class="text-right">
+					                                <select name="category.no" class="form-control" id="categorySelect" onchange="categoryChange(this)">
+														<option value="">전체</option>
+					                                    <option th:each="item : ${listCategory}" th:value="${item.no}" th:text="${item.name}"></option>
+					                                </select>
+					                            </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">구분 키워드</th>
+					                            <td class="text-right">
+					                                <select name="store.no" class="form-control" id="storeSelect" onChange="storeSelectChange(this)">
+					                                </select>
+					                            </td>
+					                        </tr>
+					                        <tr id="editRegKeyword">
+					                            <th class="text-left" scope="row">추가 키워드</th>
+											    <td class="text-right">
+											        <div class="input-group mb-2" style="width: 100%;">
+											            <input type="text" id="regKeyStore" class="form-control " onkeyup="colorChange(this)">
+											            <div class="input-group-append">
+											                <button type="button" class="btn btn-success" id="btnRegKeyStore" onclick="registerKeyword()">
+											                    <span class="text">키워드 등록</span>
+											                </button>
+											            </div>
+											        </div>
+											    </td>
+					                        </tr>
+					                        <tr>
+					                            <th class="text-left" scope="row">비고</th>
+					                            <td class="text-right">
+					                                <input type="text" name="dscr" id="editInputDscr" class="form-control border-1 text-left">
+					                            </td>
+					                        </tr>
+					                    </tbody>
+					                </table>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+                </form>
+                <div class="modal-footer">
+                	<a class="btn btn-success btn-icon-split" onclick="modalSuccessClick()">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-check-circle"></i>
+                        </span>
+                        <span class="text">적용</span>
+                    </a>
+
+                	<a class="btn btn-secondary btn-icon-split" data-dismiss="modal">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-times"></i>
+                        </span>
+                        <span class="text">취소</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

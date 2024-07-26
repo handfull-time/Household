@@ -12,22 +12,23 @@
 	
 	<script type="text/javascript" th:inline="javascript">
 	
-	
-	
-	
-	
 	$(document).ready(function () {
         $("#editStoreModal").draggable({
             handle: ".modal-header"
         });
         
-        const no = /*[[${data.categoryNo}]]*/ -1;
+        let no = /*[[${data.categoryNo}]]*/ -1;
+        if( no < 0 ){
+        	 const form = document.getElementById('editForm');
+             const selectElement = form.elements['categoryNo'];
+             no = selectElement.value;
+        }
         
         populateCategorySelect( {value: no} );
     });
 	
 	function populateCategorySelect(category) {
-		const categoryNo = category.value;
+		const categoryNo = parseInt(category.value);
 		console.info( "categoryNo", categoryNo );
 		
 	    const categorySubSelect = document.getElementById('selectCategorySub');
@@ -42,20 +43,25 @@
 	    const SubCategoryNo = /*[[${data.categorySubNo}]]*/ -1;
 	    console.info( "SubCategoryNo", SubCategoryNo);
 	    
-	    const filteredSubCategory = listSubCategory.filter(categorySub => categoryNo === -1 || categorySub.owner.no === categoryNo);
-
+	    //const filteredSubCategory = listSubCategory.filter(categorySub => categoryNo === -1 || categorySub.owner.no === categoryNo);
 	    
-	    filteredSubCategory.forEach(categorySub => {
+	    const filteredSubCategory = listSubCategory.filter( categorySub => {
+		    	return categorySub.owner.no === categoryNo 
+	    	} 
+	    );
+	    
+	    console.info( "filteredSubCategory.length", filteredSubCategory.length );
+	    
+	    filteredSubCategory.forEach( categorySub => {
 	    	
-		    console.info( JSON.stringify(categorySub) );
-
 		    const option = document.createElement('option');
 	        option.value = categorySub.no;
 	        option.textContent = categorySub.name;
-	        console.info( "SubCategoryNo", SubCategoryNo, "categorySub.no === SubCategoryNo", categorySub.no === SubCategoryNo );
 	        option.selected = categorySub.no === SubCategoryNo;
 	        
 	    	categorySubSelect.appendChild(option);
+	    	
+	        console.info( JSON.stringify(categorySub) , SubCategoryNo, "categorySub.no === SubCategoryNo", categorySub.no === SubCategoryNo );
 	    });
 	}
 
@@ -101,7 +107,7 @@
 					                            </td>
 					                        </tr>
 					                        <tr>
-					                            <th class="text-left" scope="row">이름</th>
+					                            <th class="text-left" scope="row">검색 이름</th>
 					                            <td class="text-left">
 					                                <input type="text" class="form-control border-1" maxlength="64" name="name" th:value="${data.name}" required>
 					                            </td>

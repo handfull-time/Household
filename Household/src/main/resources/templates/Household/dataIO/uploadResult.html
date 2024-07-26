@@ -220,10 +220,10 @@
         categoryTypeSelect.value = data.io;
 
         const categoryOwnerSelect = editModal.elements['categoryOwnerSelect'];
-        categoryOwnerSelect.value = data.data.categoryOwner.no;
+        categoryOwnerSelect.value = data.categoryOwner.no;
 
 		const categorySubSelect = editModal.elements['categorySubSelect'];
-		categorySubSelect.value = data.data.categorySub.no;
+		categorySubSelect.value = data.categorySub.no;
 
 		const storeSelect = editModal.elements['storeSelect'];
         storeSelect.value = data.store.no;
@@ -324,7 +324,7 @@
                         <tr th:each="data, status : ${list}" th:attr="index=${status.index}">
                             <td class="text-center" ><input type="checkbox" class="rowCheckbox" th:checked="${data.store.categoryNo ne -1}"></td>
                             <td class="text-center" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd HH:mm')}"></td>
-							<td class="text-center" th:text="${data.included ? '포함' : '비포함'}"></td>
+							<td class="text-center" th:text="${data.included ? '포함' : '비포함'}" th:style="${data.included ? 'color: blue;' : 'color: red;'}"></td>
                             <td class="text-right" th:text="${data.originAmount == 0 ? '0' : #numbers.formatInteger(data.originAmount, 1, 'COMMA')}"></td>
 							<td class="text-right" th:text="${data.useAmount == 0 ? '0' : #numbers.formatInteger(data.useAmount, 1, 'COMMA')}"></td>
                             <td class="text-center" th:text="${data.io}"></td>

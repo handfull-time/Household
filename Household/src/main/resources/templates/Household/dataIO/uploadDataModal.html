@@ -20,38 +20,58 @@
 
     // Store 데이터
     const storeData = /*[[${listStore}]]*/ null;
+    // 대분류 카테고리
     const categoryList = /*[[${listCategory}]]*/ null;
+    // 소분류 카테고리
 	const categorySubList = /*[[${listCategorySub}]]*/ null;
-
-    function categoryTypeChange(selectCateType){
-        const selectValue = selectCateType.value;
-
-        const categorySelect = document.getElementById('categorySelect');
-        categorySelect.innerHTML = '';
-
-        const option = document.createElement('option');
-        option.value = ''; 
-        option.textContent = '전체';
-        categorySelect.appendChild(option);
-        
-        categoryList.forEach(function (category) {
-            if (category.ctype === selectValue) {
-                const option = document.createElement('option');
-                option.value = category.no; 
-                option.textContent = category.name;
-                categorySelect.appendChild(option);
-            }
-        });
-
-        categoryChange( categorySelect );
-    }
-
-    function categoryChange( selectCategory ){
+	
+	/**
+	 * 대분류 선택 이벤트
+	 */
+    function categoryOwnerChange( selectCategory ){
 
         const selectCategoryValue = selectCategory.value;
 
         if( selectCategoryValue ){
             const categoryNo = parseInt(selectCategoryValue);
+
+            populateCategorySub(categoryNo);
+
+        } else {
+        	populateCategorySub(-1);
+        }
+    }
+    
+	/**
+	 * 소분류 데이터 생성 
+	 */
+    function populateCategorySub( ownerNo ){
+    	const cateSubSelect = document.getElementById('categorySubSelect');
+    	cateSubSelect.innerHTML = '';
+
+        const optionUnSelected = document.createElement('option');
+        optionUnSelected.value = -1;
+        optionUnSelected.textContent = '미지정';
+        storeSelect.appendChild(optionUnSelected);
+
+        const filteredCategorySub = categorySubList.filter(cateSub => ownerNo === -1 || cateSub.owner.no === ownerNo);
+
+        filteredCategorySub.forEach(cateSub => {
+            const option = document.createElement('option');
+            option.value = cateSub.no;
+            option.textContent = cateSub.name;
+            cateSubSelect.appendChild(option);
+        });
+        
+        categorySubChange( cateSubSelect );
+    }
+    
+    function categorySubChange( selectCategory ){
+
+        const selectSubCategoryValue = selectCategory.value;
+
+        if( selectSubCategoryValue ){
+            const categoryNo = parseInt(selectSubCategoryValue);
 
             populateStoreSelect(categoryNo);
 
@@ -113,8 +133,8 @@
         }
 
         if( sameData !== null ){
-            const categorySelect = document.getElementById('categorySelect');
-            const selectedOptions = categorySelect.options;
+            const categoryOwnerSelect = document.getElementById('categoryOwnerSelect');
+            const selectedOptions = categoryOwnerSelect.options;
             const categoryNo = sameData.categoryNo;
             let categoryName = null;
             for( let option of selectedOptions ){
@@ -147,8 +167,8 @@
             return false;
         }
 
-        const categorySelect = document.getElementById('categorySelect');
-        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+        const categoryOwnerSelect = document.getElementById('categoryOwnerSelect');
+        const selectedOption = categoryOwnerSelect.options[categoryOwnerSelect.selectedIndex];
         if( selectedOption.value.length < 1 ){
             toastAlert( '경고' , '입출금 항목 ['+selectedOption.text+']는 추가 할 수 없습니다.', 'warning');
             return false;
@@ -173,7 +193,7 @@
 
                 storeData.push( addItem );
 
-                categoryChange( categorySelect );
+                categoryOwnerChange( categoryOwnerSelect );
 
                 const storeSelect = document.getElementById('storeSelect');
                 storeSelect.value = minNo;
@@ -256,7 +276,7 @@
                                             <tr>
                                                 <th class="text-left" scope="row">대분류</th>
                                                 <td class="text-right">
-                                                    <select name="categoryOwnerNo" class="form-control" id="categoryOwnerSelect" onchange="categoryChange(this)">
+                                                    <select name="categoryOwnerNo" class="form-control" id="categoryOwnerSelect" onchange="categoryOwnerChange(this)">
                                                         <option value="">전체</option>
                                                         <option th:each="item : ${listCategory}" th:value="${item.no}" th:text="${item.name}"></option>
                                                     </select>
@@ -266,8 +286,6 @@
 											    <th class="text-left" scope="row">소분류</th>
 											    <td class="text-right">
 											        <select name="categorySubNo" class="form-control" id="categorySubSelect" onchange="categorySubChange(this)">
-											            <option value="">전체</option>
-											            <option th:each="item : ${listCategorySub}" th:value="${item.no}" th:text="${item.name}"></option>
 											        </select>
 											    </td>
 											</tr>

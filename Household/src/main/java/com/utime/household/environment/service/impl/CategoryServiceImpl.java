@@ -43,7 +43,7 @@ class CategoryServiceImpl implements CategoryService {
 		final int cnt = dao.getCategoryCount();
 		if( cnt > 0 )
 			return;
-
+		
 		try {
 			{
 				final CategoryVO ownerCategory = new CategoryVO("입금", ECategoryType.Income );
@@ -111,8 +111,9 @@ class CategoryServiceImpl implements CategoryService {
 			{
 				final CategoryVO ownerCategory = new CategoryVO("의류", ECategoryType.Expense );
 				dao.saveOwnerCategory(ownerCategory);
-				insertSubAndStore( ownerCategory, "의복", "ABC", "나이키", "아울렛" );
+				insertSubAndStore( ownerCategory, "의복", "나이키", "아울렛" );
 				insertSubAndStore( ownerCategory, "세탁", "세탁" );
+				insertSubAndStore( ownerCategory, "신발", "ABC" );
 				insertSubAndStore( ownerCategory, "기타" );
 			}
 
@@ -122,6 +123,7 @@ class CategoryServiceImpl implements CategoryService {
 				insertSubAndStore( ownerCategory, "학교", "학교" );
 				insertSubAndStore( ownerCategory, "학원", "태권도", "학원" );
 				insertSubAndStore( ownerCategory, "강의", "도서관" );
+				insertSubAndStore( ownerCategory, "교제" );
 				insertSubAndStore( ownerCategory, "기타" );
 			}
 			
@@ -294,6 +296,7 @@ class CategoryServiceImpl implements CategoryService {
 				max = owner.getSubCategories().size();
 			}
 		}
+		max++;
 
 		for( int i=0 ; i<=max ; i++ ) {
 			subList.add(new ArrayList<>());
@@ -305,6 +308,7 @@ class CategoryServiceImpl implements CategoryService {
 		empty.setName("");
 		empty.setOwner(null);
 		
+
 		for( int i=0 ; i<max ; i++ ) {
 			final List<CategorySubVO> addList = subList.get(i);
 			
@@ -313,6 +317,12 @@ class CategoryServiceImpl implements CategoryService {
 				if( i < owner.getSubCategories().size() ) {
 					final CategorySubStoreVO sub = owner.getSubCategories().get(i);
 					addList.add(sub);
+				}else if( i == owner.getSubCategories().size() ){
+					final CategorySubVO add = new CategorySubVO();
+					add.setNo(-2L);
+					add.setName(owner.getName());
+					add.setOwner(owner);
+					addList.add(add);
 				}else {
 					addList.add(empty);
 				}

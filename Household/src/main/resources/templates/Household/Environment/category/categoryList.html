@@ -25,7 +25,14 @@
 				<tr th:each="subList : ${list.subList}" >
 					<td class="text-left" th:each="sub : ${subList}" >
 						<th:block th:if="${sub.no ne -1}">
-							<a th:href="'javascript:onShowSubDetail(' + ${sub.no} + ')'"  th:text="${sub.name}"></a>
+							<th:block th:if="${sub.no ne -2}">
+								<a href="#" th:onclick="'onShowSubDetail(' + ${sub.owner.no} + ', ' + ${sub.no} + ')'"  th:text="${sub.name}"></a>
+							</th:block>
+							<th:block th:if="${sub.no eq -2}">
+								<a class="btn btn-default" th:onclick="'onShowSubDetail(' + ${sub.owner.no} + ', ' + ${sub.no} + ')'">
+			                        추가
+			                    </a>	
+							</th:block>
 						</th:block>
 					</td>
 				</tr>

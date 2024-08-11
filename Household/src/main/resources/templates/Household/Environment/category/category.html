@@ -78,8 +78,8 @@
 		});
 	}
 	
-	function onShowSubDetail( subNo ){
-		onShowModalLayer( /*[[@{/Env/Category/SubDetail.layer}]]*/null, { no: subNo}, 'editCategoryModal' );
+	function onShowSubDetail( ownerNo, subNo ){
+		onShowModalLayer( /*[[@{/Env/Category/SubDetail.layer}]]*/null, { ownerNo: ownerNo, subNo: subNo }, 'editCategoryModal' );
 	}
 	
 	function modalSubSuccessClick(){
@@ -125,11 +125,6 @@
             	toastAlert('실패', name + ' 삭제 실패했습니다. ' + json.code + ':' + json.message, 'warning');
             }
 		});
-	}
-	
-	
-	function onShowStoreDetail( storeNo ){
-		onShowModalLayer( /*[[@{/Env/Category/SubDetail.layer}]]*/null, { no: subNo}, 'editCategoryModal' );
 	}
 	
 	</script>

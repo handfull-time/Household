@@ -1,5 +1,6 @@
 package com.utime.household.environment.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -32,7 +33,13 @@ class StoreServiceImpl implements StoreService {
 	
 	@Override
 	public List<StoreVO> getStoreList(CategorySubVO category) {
-		return dao.getStoreList(category);
+		List<StoreVO> result;
+		if( category.getNo() < 0L ) {
+			result = new ArrayList<>();
+		}else {
+			result = dao.getStoreList(category);
+		}
+		return result;
 	}
 
 	@Override

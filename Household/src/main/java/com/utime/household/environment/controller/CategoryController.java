@@ -102,11 +102,16 @@ public class CategoryController {
 	
 	
 	@PostMapping(value="SubDetail.layer")
-	public String DetailSubCategoryLayer(ModelMap model, @RequestParam(value = "no") long no) {
+	public String DetailSubCategoryLayer(ModelMap model, @RequestParam(value = "ownerNo") long ownerNo, @RequestParam(value = "subNo") long subNo) {
 		
-		final CategorySubVO category = categoryService.getSubCategory(no);
+		final CategorySubVO category = categoryService.getSubCategory(subNo);
+		if( category.getOwner() == null ) {
+			final CategoryVO owner = new CategoryVO();
+			owner.setNo(ownerNo);
+			category.setOwner(owner);
+		}
 		
-		model.addAttribute("subData",  categoryService.getSubCategory(no) );
+		model.addAttribute("subData",  category );
 		model.addAttribute("storeDataList",  storeService.getStoreList(category) );
 
 		return "Environment/category/categorySubItem";

@@ -4,7 +4,7 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -25,6 +25,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.utime.household.common.util.CacheIntervalMap;
 import com.utime.household.dataIO.service.DataIOService;
 import com.utime.household.dataIO.vo.HouseholdDataListResVO;
 import com.utime.household.dataIO.vo.HouseholdReqDataVO;
@@ -32,9 +33,9 @@ import com.utime.household.dataIO.vo.HouseholdResDataVO;
 import com.utime.household.environment.service.BankCardService;
 import com.utime.household.environment.service.CategoryService;
 import com.utime.household.environment.service.StoreService;
-import com.utime.household.environment.vo.CategorySubVO;
 import com.utime.household.environment.vo.ECategoryType;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -46,6 +47,7 @@ public class DataIOController {
 	private final StoreService stService;
 	private final BankCardService bcService;
 	private final CategoryService ctService;
+	private final CacheIntervalMap<String, HouseholdDataListResVO> cacheMap = new CacheIntervalMap<>(1L, TimeUnit.HOURS);
 	
 	@GetMapping(value = {"Upload.html"})
 	public String rootUploadShow(ModelMap model) {
@@ -60,14 +62,29 @@ public class DataIOController {
 //		return result;
 //	}
 	
+	/**
+	 * 데이터 분석.
+	 * 기존에 화면에 다 갖고 있는 구조였는데( uploadResult4 , uploadDataModal3 파일임) 너무 화면이 복잡해 져서 백엔드에서 갖고 있는 구조로 변경하려 함.
+	 * @param request
+	 * @param model
+	 * @param bankCardNo
+	 * @param file
+	 * @return
+	 */
 	@PostMapping(value = {"UploadResult.html"})
-	public String rootUploadFile(ModelMap model, @RequestParam("bankCard") long bankCardNo, @RequestParam("uploadFile") MultipartFile file) {
+	public String rootUploadFile(HttpServletRequest request,
+			ModelMap model,  @RequestParam("bankCard") long bankCardNo, @RequestParam("uploadFile") MultipartFile file) {
+		
+		final String sessionId = request.getRequestedSessionId();
 		
 		final HouseholdDataListResVO res = service.analyzeData(bankCardNo, file );
 		if( res.isError() ) {
 			model.addAttribute("res", res);
 			return "common/error";
 		}
+		
+		cacheMap.remove(sessionId);
+		cacheMap.put(sessionId, res);
 
 		model.addAttribute("list", res.getList());
 		model.addAttribute("bankCard", res.getBcVo());

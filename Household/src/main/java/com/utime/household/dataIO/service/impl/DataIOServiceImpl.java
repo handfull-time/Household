@@ -151,10 +151,10 @@ class DataIOServiceImpl implements DataIOService{
 	
 
 	@Override
-	public HouseholdResDataVO saveCompareData(HouseholdReqDataVO vo) {
+	public HouseholdResDataVO saveCompareData(HouseholdDataListResVO vo) {
 		final HouseholdResDataVO result = new HouseholdResDataVO();
 		
-		final BankCardVO bcVo = bankCardDao.getSimpleBankCard(vo.getBcNo());
+		final BankCardVO bcVo = bankCardDao.getSimpleBankCard(vo.getBcVo().getNo());
 		result.setBcVo( bcVo );
 		
 		List<HouseholdDataVO> list = vo.getList();

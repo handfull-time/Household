@@ -20,7 +20,8 @@
 
 	</script>
 	
-	<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+	<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" 
+		aria-labelledby="editCategoryModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
             	
@@ -30,8 +31,10 @@
                         <span aria-hidden="true"><i class="fas fa-times"></i></span>
                     </button>
                 </div>
-                <form id="editForm">
-                	<input type="hidden" name="no" th:value="${subData.no}">
+                <form id="editForm" th:object="${subData}">
+                	<input type="hidden" th:field="*{no}">
+					<input type="hidden" th:field="*{owner.no}">
+
 	                <div class="modal-body">
 					    <div class="card">
 					        <div class="card-body">
@@ -41,7 +44,7 @@
 					                        <tr>
 					                            <th class="text-left" scope="row">이름</th>
 					                            <td class="text-left">
-					                                <input type="text" class="form-control border-1" maxlength="32" name="name" th:value="${subData.name}" required>
+					                                <input type="text" class="form-control border-1" maxlength="32" th:field="*{name}" required>
 					                            </td>
 					                        </tr>
 					                        <tr>

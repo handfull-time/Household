@@ -83,7 +83,7 @@
 	}
 	
 	function modalSubSuccessClick(){
-		const data = getFormObject( 'editForm' );
+		const data = getFormObject2( 'editForm' );
 		const isAdd = data.no < 0;
 		
 		const title = isAdd? '추가':'수정';
@@ -95,7 +95,7 @@
 	}
 	
 	function _onSubSave(title, data){
-		onJsonAction( /*[[@{/Env/Category/SubSave.json}]]*/ null, data, function(json){
+		onToJsonAction( /*[[@{/Env/Category/SubSave.json}]]*/ null, data, function(json){
 			if (json.code === '0') {
 				onHideModalLayer('editCategoryModal');
 				

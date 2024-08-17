@@ -25,7 +25,7 @@ public interface DataIOService {
 	 * @param vo
 	 * @return
 	 */
-	HouseholdResDataVO saveCompareData(HouseholdReqDataVO vo);
+	HouseholdResDataVO saveCompareData(HouseholdDataListResVO vo);
 	
 	/**
 	 * 비교 없이 바로 데이터 저장

@@ -24,9 +24,9 @@
 
     <script type="text/javascript" th:inline="javascript">
 
-    let currentRowData = null;
+    //let currentRowData = null;
 
-    const dataRawList = /*[[${list}]]*/ null;
+    //const dataRawList = /*[[${list}]]*/ null;
 
     $(function () {
         console.info('걍...');
@@ -74,165 +74,127 @@
     }
 
     function modalSuccessClick(){
-        if (!currentRowData) {
-            return;
-        }
-
-        const editFormData = getFormObject('editForm');
-
-        const editModal = document.getElementById('editForm');
-
-        const categoryOwnerSelect = editModal.elements['categoryOwnerSelect'];
-        const categoryOwnerSelectOption = categoryOwnerSelect.options[categoryOwnerSelect.selectedIndex];
-        if (categoryOwnerSelectOption.value.length < 1) {
-            toastAlert('경고', '입출금 항목 ['+categoryOwnerSelectOption.text+']는 저장 할 수 없습니다.', 'warning');
+		
+		if( selectRow == null ){
+			console.info('선택된 정보 없음.');
+			return false;
+		}
+		
+		const editFormData = getFormObject('editForm');
+		editFormData.originAmount = parseInt(editFormData.originAmount.replace(/[^0-9.-]+/g, ''), 10);
+		editFormData.useAmount = parseInt(editFormData.useAmount.replace(/[^0-9.-]+/g, ''), 10);
+		editFormData.included = editFormData.included === 'true';
+		
+		console.info( 'editFormData', JSON.stringify(editFormData, null, 4) );
+		
+		if (editFormData.categoryOwner.no < 0) {
+            toastAlert('경고', '대분류 항목은 지정하셔야 합니다.', 'warning');
             return false;
         }
+		
+		if (editFormData.categorySub.no < 0) {
+		    toastAlert('경고', '소분류 항목은 지정하셔야 합니다.', 'warning');
+		    return false;
+		}
+		
+		onToJsonAction( /*[[@{/IO/DoSaveItem.json}]]*/ null, editFormData, function(json){
+			if (json.code === '0') {
+				
+				const editModal = document.getElementById('editForm');
+						
+				const categoryOwnerSelect = editModal.elements['categoryOwnerSelect'];
+				const categoryOwnerSelectOption = categoryOwnerSelect.options[categoryOwnerSelect.selectedIndex];
+				editFormData.categoryOwner.name = categoryOwnerSelectOption.text;
 
-        const intpuOriginAmount = parseInt(editFormData.originAmount.replace(/[^0-9.-]+/g, ''), 10);
-        const isChangeOriginAmount = currentRowData.originAmount !== intpuOriginAmount;
-        currentRowData.originAmount = intpuOriginAmount;
+				const categorySubSelect = editModal.elements['categorySubSelect'];
+				const categorySubSelectOption = categorySubSelect.options[categorySubSelect.selectedIndex];
+				editFormData.categorySub.name = categorySubSelectOption.text;
 
-		const intpuUseAmount = parseInt(editFormData.useAmount.replace(/[^0-9.-]+/g, ''), 10);
-		const isChangeUseAmount = currentRowData.useAmount !== intpuUseAmount;
-		currentRowData.useAmount = intpuUseAmount;
+				const storeSelect = editModal.elements['storeSelect'];
+				const storeSelectOption = storeSelect.options[storeSelect.selectedIndex];
+				editFormData.store.name = storeSelectOption.text;
 
-		currentRowData.included = editFormData.included === 'true';
+				const cells = selectRow.cells;
+				
+				const cellOriginAmount = parseInt(cells[3].textContent.replace(/[^0-9.-]+/g, ''), 10);
+		        const isChangeOriginAmount = cellOriginAmount !== editFormData.originAmount;
 
-        const categoryTypeSelect = editModal.elements['categoryTypeSelect'];
-        const categoryTypeSelected = categoryTypeSelect.options[categoryTypeSelect.selectedIndex];
-        currentRowData.io = categoryTypeSelected.value;
+				const cellUseAmount = parseInt(cells[4].textContent.replace(/[^0-9.-]+/g, ''), 10);
+				const isChangeUseAmount = cellUseAmount !== editFormData.useAmount;
+				
+				const checkbox = cells[0].querySelector('input[type="checkbox"]');
+				checkbox.checked = editFormData.included;
 
-        currentRowData.categoryOwner.no = parseInt(categoryOwnerSelectOption.value, 10);
-        currentRowData.categoryOwner.name = categoryOwnerSelectOption.text;
+				cells[2].textContent = editFormData.included ? '포함' : '비포함';
+				cells[2].style.color = editFormData.included ? 'blue' : 'red';
+				cells[3].textContent = editFormData.originAmount.toLocaleString();
+				cells[4].textContent = editFormData.useAmount.toLocaleString();
+				cells[5].textContent = editFormData.io === 'In' ? '입금' : '출금';
+				cells[7].textContent = editFormData.categoryOwner.name;
+				cells[7].setAttribute('owner_no', editFormData.categoryOwner.no);
+				cells[8].textContent = editFormData.categorySub.name;
+				cells[8].setAttribute('sub_no', editFormData.categorySub.no);
+				cells[9].textContent = editFormData.store.name;
+				cells[10].textContent = editFormData.dscr;
 
-		const categorySubSelect = editModal.elements['categorySubSelect'];
-		const categorySubSelectOption = categorySubSelect.options[categorySubSelect.selectedIndex];
+				if (isChangeOriginAmount || isChangeUseAmount) {
+				    const table = document.getElementById('DataTableResult');
+				    const tbody = table.querySelector('tbody');
+				    const rows = tbody.querySelectorAll('tr');
+				    let totalAmount = 0;
 
-		currentRowData.categorySub.no = parseInt(categorySubSelectOption.value, 10);
-		currentRowData.categorySub.name = categorySubSelectOption.text;
+				    rows.forEach(function(row) {
+				        const amountText = row.cells[4].textContent.replace(/[^\d.-]+/g, '');
+				        const amount = parseInt(amountText, 10);
+				        totalAmount += amount;
+				    });
 
-        const storeSelect = editModal.elements['storeSelect'];
-        const storeSelectNo = storeSelect.selectedIndex;
-        if (storeSelectNo > -1) {
-            currentRowData.store.no = parseInt(storeSelect.value, 10);
-            currentRowData.store.name = storeSelect.options[storeSelect.selectedIndex].text;
-        } else {
-            currentRowData.store.no = -1;
-            currentRowData.store.name = '';
-        }
+				    const tfootSecondColumn = $('#DataTableResult tfoot td:eq(1)');
+				    tfootSecondColumn.text(totalAmount.toLocaleString());
+				}
 
-        currentRowData.dscr = editFormData.dscr.trim();
-
-        const selectRow = currentRowData.rowData;
-        const index = currentRowData.index;
-        delete currentRowData.index;
-        delete currentRowData.rowData;
-
-        dataRawList.splice(index, 1);
-        dataRawList.splice(index, 0, currentRowData);
-
-        if (selectRow) {
-            const cells = selectRow.cells;
-
-            const checkbox = cells[0].querySelector('input[type="checkbox"]');
-            checkbox.checked = true;
-			
-			cells[2].textContent = currentRowData.included ? '포함' : '비포함';
-			cells[3].textContent = currentRowData.originAmount.toLocaleString();
-			cells[4].textContent = currentRowData.useAmount.toLocaleString();
-			cells[5].textContent = currentRowData.io === 'I' ? '입금' : '출금';
-            cells[7].textContent = currentRowData.categoryOwner.name;
-            cells[8].textContent = currentRowData.categorySub.name;
-            cells[9].textContent = currentRowData.store.name;
-            cells[10].textContent = currentRowData.dscr;
-        }
-
-        currentRowData = null;
-
-        if (isChangeOriginAmount || isChangeUseAmount) {
-            const table = document.getElementById('DataTableResult');
-            const tbody = table.querySelector('tbody');
-            const rows = tbody.querySelectorAll('tr');
-            let totalAmount = 0;
-
-            rows.forEach(function(row) {
-                const amountText = row.cells[4].textContent.replace(/[^\d.-]+/g, '');
-                const amount = parseInt(amountText, 10);
-                totalAmount += amount;
-            });
-
-            const tfootSecondColumn = $('#DataTableResult tfoot td:eq(1)');
-            tfootSecondColumn.text(totalAmount.toLocaleString());
-        }
-
-        $('#editModal').modal('hide');
+				selectRow = null;
+				
+				onHideModalLayer('editUploadModal');				
+            } else {
+            	toastAlert('실패', data.name + ' ' + title + ' 실패했습니다. ' + json.code + ':' + json.message, 'warning');
+            }
+		});
     }
 
     function getRowData(row) {
         const cells = row.cells;
 
         const index = parseInt(row.getAttribute('index'));
-        const orgData = dataRawList[index];
-        const data = {...orgData};
+        const data = {};
         data.index = index;
-
-        const date = new Date(data.dealDate);
-        data.dealDate = `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
         const checkbox = cells[0].querySelector('input[type="checkbox"]');
         data.isChecked = checkbox.checked;
+		data.categoryOwner = {};
+		data.categoryOwner.no = parseInt(cells[7].getAttribute('owner_no'));
+		data.categorySub = {};
+		data.categorySub.no =  parseInt(cells[8].getAttribute('sub_no'));
+		data.store = {};
+		data.store.store = cells[6].textContent;
 
         return data;
     }
 
+	// 선택된 row
+	let selectRow = null;
+	
     function showModalLayer(cell) {
-        const row = cell.closest('tr');
+		console.info( 'showModalLayer' );
+		const row = cell.closest('tr');
+		
+		selectRow = row;
+		const cells = row.cells;
 
-        const data = getRowData(row);
-        data.rowData = row;
-        currentRowData = data;
-
-        const editModal = document.getElementById('editForm');
-
-        const editDealDate = editModal.querySelector('#editDealDate');
-        editDealDate.textContent = data.dealDate;
-
-        const editDlgOriginStore = editModal.querySelector('#editDlgOriginStore');
-        editDlgOriginStore.textContent = data.store.store;
-        editDlgOriginStore.setAttribute('org_data', data.store.store);
-
-        const editInputOriginAmount = editModal.elements['editInputOriginAmount'];
-        editInputOriginAmount.value = data.originAmount.toLocaleString();
-
-		const editInputUseAmount = editModal.elements['editInputUseAmount'];
-		editInputUseAmount.value = data.useAmount.toLocaleString();
-
-		if (data.included) {
-            const radioIncludedY = editModal.querySelector('#EditRadioIncludedY');
-            radioIncludedY.checked = true;
-        } else {
-            const radioIncludedN = editModal.querySelector('#EditRadioIncludedN');
-            radioIncludedN.checked = true;
-        }
-
-        const categoryTypeSelect = editModal.elements['categoryTypeSelect'];
-        categoryTypeSelect.value = data.io;
-
-        const categoryOwnerSelect = editModal.elements['categoryOwnerSelect'];
-        categoryOwnerSelect.value = data.categoryOwner.no;
-		categoryOwnerChange(categoryOwnerSelect);
-
-		const categorySubSelect = editModal.elements['categorySubSelect'];
-		categorySubSelect.value = data.categorySub.no;
-
-		const storeSelect = editModal.elements['storeSelect'];
-        storeSelect.value = data.store.no;
-
-        const editInputDscr = editModal.elements['editInputDscr'];
-        editInputDscr.value = data.dscr;
-
-        $('#editModal').modal('show');
+		const sendObj = {};
+		sendObj.no = parseInt(row.getAttribute('index'));
+		
+		onShowModalLayer( /*[[@{/IO/DetailLayer.layer}]]*/null, sendObj, 'editUploadModal' );
     }
 
     function doSave() {
@@ -245,9 +207,8 @@
         let missCategoryData = null;
         rows.forEach(function(row) {
             const data = getRowData(row);
-            data.regDate = null;
-
-            if (data.isChecked && data.categoryNo < 0 && missCategoryData == null) {
+			
+            if (data.isChecked && data.categoryOwner.no < 0 && data.categorySub.no < 0 && missCategoryData == null) {
                 missCategoryData = data;
             }
 
@@ -258,7 +219,7 @@
         });
 
         if (missCategoryData != null) {
-            toastAlert('경고', '['+missCategoryData.storeName + '] 저장할때는 입출금 종류는 필수입니다.', 'warning');
+            toastAlert('경고', '['+missCategoryData.store.store + '] 저장할때는 분류 선택은 필수입니다.', 'warning');
             return false;
         }
 
@@ -328,14 +289,14 @@
 							<td class="text-center" th:text="${data.included ? '포함' : '비포함'}" th:style="${data.included ? 'color: blue;' : 'color: red;'}"></td>
                             <td class="text-right" th:text="${data.originAmount == 0 ? '0' : #numbers.formatInteger(data.originAmount, 1, 'COMMA')}"></td>
 							<td class="text-right" th:text="${data.useAmount == 0 ? '0' : #numbers.formatInteger(data.useAmount, 1, 'COMMA')}"></td>
-                            <td class="text-center" th:text="${data.io}"></td>
+                            <td class="text-center" th:text="${data.io.dscr}"></td>
 							<td th:text="${data.store.store}" style="cursor: pointer; color: steelblue;" onclick="showModalLayer(this);"></td>
-                            <td th:text="${data.categoryOwner.name}"></td>
-                            <td th:text="${data.categorySub.name}"></td>
+                            <td th:text="${data.categoryOwner.name}" th:attr="owner_no=${data.categoryOwner.no}"></td>
+                            <td th:text="${data.categorySub.name}" th:attr="sub_no=${data.categorySub.no}"></td>
                             <td th:text="${data.store.name}"></td>
                             <td th:text="${data.dscr}"></td>
                         </tr>
-                    </tbody>    
+                    </tbody>
                     <tfoot>
                         <tr>
                             <td>Total</td>
@@ -346,9 +307,6 @@
             </div>
         </div>
     </div>
-
-    <th:block th:replace="dataIO/uploadDataModal :: editModal"/>
-
 </div>
 
 </html>

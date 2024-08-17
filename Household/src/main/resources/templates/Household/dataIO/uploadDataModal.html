@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div xmlns:th="http://www.thymeleaf.org" th:fragment="editModal">
+<div xmlns:th="http://www.thymeleaf.org">
 
     <style type="text/css">
         .hidden {
@@ -12,18 +12,32 @@
 
     <script type="text/javascript" th:inline="javascript">
 
-    $(document).ready(function () {
+	$(document).ready(function () {
         $("#editModal").draggable({
             handle: ".modal-header"
         });
+		
+		//const currentData = /*[[${data}]]*/ null;
+		//console.info( 'currentData', JSON.stringify(currentData, null, 4) );
+		
+		const editModal = document.getElementById('editForm');
+		
+		const ownerNo = /*[[${data.categoryOwner.no}]]*/ null;
+		const subNo = /*[[${data.categorySub.no}]]*/ null;
+		const categoryOwnerSelect = editModal.elements['categoryOwnerSelect'];
+		categoryOwnerSelect.value = ownerNo;
+		categoryOwnerChange(categoryOwnerSelect);
+
+		populateCategorySub( ownerNo );
+		const categorySubSelect = editModal.elements['categorySubSelect'];
+		categorySubSelect.value = subNo;
+
+		populateStoreSelect(subNo);
+		const storeSelect = editModal.elements['storeSelect'];
+		storeSelect.value =  /*[[${data.store.no}]]*/ null;
+
     });
 
-    // Store 데이터
-    const storeData = /*[[${listStore}]]*/ null;
-    // 대분류 카테고리
-    const categoryList = /*[[${listCategory}]]*/ null;
-    // 소분류 카테고리
-	const categorySubList = /*[[${listCategorySub}]]*/ null;
 	
 	/**
 	 * 대분류 선택 이벤트
@@ -31,13 +45,17 @@
     function categoryOwnerChange( selectCategory ){
 
         const selectCategoryValue = selectCategory.value;
+		
+		console.info( 'categoryOwnerChange', 'selectCategoryValue', selectCategoryValue );
 
         if( selectCategoryValue ){
             const categoryNo = parseInt(selectCategoryValue);
 
+			console.info( 'categoryOwnerChange', 'categoryNo', categoryNo );
             populateCategorySub(categoryNo);
 
         } else {
+			console.info( 'categoryOwnerChange', 'categoryNo', -1 );
         	populateCategorySub(-1);
         }
     }
@@ -46,16 +64,23 @@
 	 * 소분류 데이터 생성 
 	 */
     function populateCategorySub( ownerNo ){
+		console.info('populateCategorySub', ownerNo);
     	const cateSubSelect = document.getElementById('categorySubSelect');
     	cateSubSelect.innerHTML = '';
 
         const optionUnSelected = document.createElement('option');
         optionUnSelected.value = -1;
         optionUnSelected.textContent = '미지정';
-        storeSelect.appendChild(optionUnSelected);
-
-        const filteredCategorySub = categorySubList.filter(cateSub => ownerNo === -1 || cateSub.owner.no === ownerNo);
-
+        cateSubSelect.appendChild(optionUnSelected);
+		
+		// 소분류 카테고리
+		const categorySubList = /*[[${listCategorySub}]]*/ null;
+		//console.info( 'populateCategorySub', 'categorySubList', JSON.stringify(categorySubList, null, 4) );
+		
+//        const filteredCategorySub = categorySubList.filter(cateSub => ownerNo === -1 || cateSub.owner.no === ownerNo);
+		const filteredCategorySub = categorySubList.filter(cateSub => cateSub.owner.no === ownerNo);
+		console.info( 'populateCategorySub', 'filteredCategorySub', JSON.stringify(filteredCategorySub, null, 4) );
+		
         filteredCategorySub.forEach(cateSub => {
             const option = document.createElement('option');
             option.value = cateSub.no;
@@ -69,18 +94,24 @@
     function categorySubChange( selectCategory ){
 
         const selectSubCategoryValue = selectCategory.value;
-
+		console.info( 'categorySubChange', 'selectSubCategoryValue', selectSubCategoryValue );
+				
         if( selectSubCategoryValue ){
-            const categoryNo = parseInt(selectSubCategoryValue);
+            const categorySubNo = parseInt(selectSubCategoryValue);
 
-            populateStoreSelect(categoryNo);
+			console.info( 'categorySubChange', 'categorySubNo', categorySubNo );
+            populateStoreSelect(categorySubNo);
 
         } else {
+			console.info( 'categorySubChange', 'categorySubNo', -1 );
             populateStoreSelect(-1);
         }
     }
 
-    function populateStoreSelect(categoryNo) {
+    function populateStoreSelect(categorySubNo) {
+		
+		console.info( 'populateStoreSelect', 'categorySubNo', categorySubNo )
+		
         const storeSelect = document.getElementById('storeSelect');
         storeSelect.innerHTML = '';
 
@@ -88,9 +119,15 @@
         optionUnSelected.value = -1;
         optionUnSelected.textContent = '미지정';
         storeSelect.appendChild(optionUnSelected);
-
-        const filteredStores = storeData.filter(store => categoryNo === -1 || store.categoryNo === categoryNo);
-
+		
+		// Store 데이터
+		const storeData = /*[[${listStore}]]*/ null;
+		//console.info( 'populateCategorySub', 'storeData', JSON.stringify(storeData, null, 4) );
+				
+//        const filteredStores = storeData.filter(store => categorySubNo === -1 || store.categorySubNo === categorySubNo);
+		const filteredStores = storeData.filter(store => store.categorySubNo === categorySubNo);
+		console.info( 'populateCategorySub', 'filteredStores', JSON.stringify(filteredStores, null, 4) );
+				
         filteredStores.forEach(store => {
             const option = document.createElement('option');
             option.value = store.no;
@@ -104,6 +141,8 @@
     function storeSelectChange(storeSelect){
 
         const editRegKeyword = document.getElementById('editRegKeyword');
+		
+		console.info( 'storeSelectChange', 'storeSelect.value', storeSelect.value );
 
         if( parseInt(storeSelect.value) === -1 ){
             editRegKeyword.classList.remove('hidden');
@@ -217,7 +256,7 @@
     }
     </script>
 
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editUploadModal" tabindex="-1" role="dialog" aria-labelledby="editUploadModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 
@@ -228,11 +267,12 @@
                     </button>
                 </div>
                 <form id="editForm">
+					<input type="hidden" name="no" th:value="${data.no}"/>
                     <div class="modal-body">
                         <div class="card">
                             <div class="card-header py-0">
-                                <p class="lead text-gray"><span id="editDealDate"></span></p>
-                                <p class="lead text-gray"><span id="editDlgOriginStore" ></span></p>
+                                <p class="lead text-gray"><span id="editDealDate" th:text="${#dates.format(data.dealDate, 'yyyy.MM.dd HH:mm')}"></span></p>
+                                <p class="lead text-gray"><span id="editDlgOriginStore" th:text="${data.store.store}" ></span></p>
                             </div>
 
                             <div class="card-body">
@@ -242,24 +282,32 @@
                                             <tr>
                                                 <th class="text-left" scope="row">원래 금액</th>
                                                 <td class="text-right">
-                                                    <input type="text" name="originAmount" id="editInputOriginAmount" class="form-control border-1 text-right" oninput="formatAmount(this)">
+                                                    <input type="text" name="originAmount" id="editInputOriginAmount" 
+														class="form-control border-1 text-right" 
+														oninput="formatAmount(this)" 
+														th:value="${#numbers.formatDecimal(data.originAmount, 1, 'COMMA', 0, 'POINT')}" >
                                                 </td>
                                             </tr>
 											<tr>
 											    <th class="text-left" scope="row">실제 금액</th>
 											    <td class="text-right">
-											        <input type="text" name="useAmount" id="editInputUseAmount" class="form-control border-1 text-right" oninput="formatAmount(this)">
+											        <input type="text" name="useAmount" id="editInputUseAmount" 
+														class="form-control border-1 text-right" 
+														oninput="formatAmount(this)" 
+														th:value="${#numbers.formatDecimal(data.useAmount, 1, 'COMMA', 0, 'POINT')}">
 											    </td>
 											</tr>
                                             <tr>
                                                 <th class="text-left" scope="row">포함/비포함</th>
                                                 <td class="text-right">
                                                     <label for="EditRadioIncludedY" id="lbEditRadioIncludedY">
-                                                        <input type="radio" name="included" id="EditRadioIncludedY" value="true" />
+                                                        <input type="radio" name="included" id="EditRadioIncludedY" value="true" 
+														th:checked="${data.included}"/>
                                                         포함
                                                     </label>
                                                     <label for="EditRadioIncludedN" id="lbEditRadioIncludedN">
-                                                        <input type="radio" name="included" id="EditRadioIncludedN" value="false" />
+                                                        <input type="radio" name="included" id="EditRadioIncludedN" value="false" 
+														th:checked="${! data.included}" />
                                                         비포함
                                                     </label>
                                                 </td>
@@ -268,31 +316,38 @@
                                                 <th class="text-left" scope="row">입출금 종류</th>
                                                 <td class="text-right">
                                                     <select class="form-control" name="io" id="categoryTypeSelect">
-                                                        <option value="In">입금</option>
-                                                        <option value="Out">출금</option>
+                                                        <option value="In" th:selected="${data.io.name() eq 'In' }">입금</option>
+                                                        <option value="Out" th:selected="${data.io.name() eq 'Out' }">출금</option>
                                                     </select>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th class="text-left" scope="row">대분류</th>
                                                 <td class="text-right">
-                                                    <select name="categoryOwnerNo" class="form-control" id="categoryOwnerSelect" onchange="categoryOwnerChange(this)">
-                                                        <option value="">전체</option>
-                                                        <option th:each="item : ${listCategory}" th:value="${item.no}" th:text="${item.name}"></option>
+                                                    <select name="categoryOwner.no" class="form-control" id="categoryOwnerSelect" 
+														onchange="categoryOwnerChange(this)">
+                                                        <option value="-1">미지정</option>
+                                                        <option 
+															th:each="item : ${listCategory}" 
+															th:value="${item.no}"
+															th:selected="${data.categoryOwner.no eq item.no}"
+															th:text="${item.name}" ></option>
                                                     </select>
                                                 </td>
                                             </tr>
 											<tr>
 											    <th class="text-left" scope="row">소분류</th>
 											    <td class="text-right">
-											        <select name="categorySubNo" class="form-control" id="categorySubSelect" onchange="categorySubChange(this)">
+											        <select name="categorySub.no" class="form-control" id="categorySubSelect" 
+														onchange="categorySubChange(this)">
 											        </select>
 											    </td>
 											</tr>
                                             <tr>
                                                 <th class="text-left" scope="row">구분 키워드</th>
                                                 <td class="text-right">
-                                                    <select name="store.no" class="form-control" id="storeSelect" onChange="storeSelectChange(this)">
+                                                    <select name="store.no" class="form-control" id="storeSelect" 
+														onChange="storeSelectChange(this)">
                                                     </select>
                                                 </td>
                                             </tr>
@@ -302,7 +357,8 @@
                                                     <div class="input-group mb-2" style="width: 100%;">
                                                         <input type="text" id="regKeyStore" class="form-control " onkeyup="colorChange(this)">
                                                         <div class="input-group-append">
-                                                            <button type="button" class="btn btn-success" id="btnRegKeyStore" onclick="registerKeyword()">
+                                                            <button type="button" class="btn btn-success" id="btnRegKeyStore" 
+																onclick="registerKeyword()">
                                                                 <span class="text">키워드 등록</span>
                                                             </button>
                                                         </div>
@@ -312,7 +368,9 @@
                                             <tr>
                                                 <th class="text-left" scope="row">비고</th>
                                                 <td class="text-right">
-                                                    <input type="text" name="dscr" id="editInputDscr" class="form-control border-1 text-left">
+                                                    <input type="text" name="dscr" id="editInputDscr" 
+														class="form-control border-1 text-left"
+														th:value="${data.dscr}" >
                                                 </td>
                                             </tr>
                                         </tbody>

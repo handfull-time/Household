@@ -181,9 +181,11 @@ function onShowModalLayer(urlAddress, sendData, modalId){
 			DetailLayer.empty();
 			DetailLayer.html(data).show();
 			const modal = $('#' + modalId);
+			
 			modal.on('hidden.bs.modal', function () {
 				console.info('모달 내부의 HTML 비우기');
-				$('#DetailLayer').empty();
+				//$('#DetailLayer').empty();
+				onHideModalLayer( modalId );
 			});
 			modal.modal('show');
 		},

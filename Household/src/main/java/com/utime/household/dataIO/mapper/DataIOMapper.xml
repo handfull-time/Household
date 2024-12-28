@@ -36,19 +36,21 @@
 	<insert id="createRecordTemp">
 		CREATE TABLE HH_RECORD_TEMP (
 			NO INTEGER PRIMARY KEY AUTOINCREMENT
-			, DEAL_DATE DATE NOT NULL
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))  <!--  사용 여부 Y:사용, N:미사용 --> 
+			, REG_DATE DATE DEFAULT (DATETIME('NOW','LOCALTIME')) <!-- 작성 일자  -->
+			, DEAL_DATE DATE NOT NULL <!-- 거래 일자  -->
 			, ORIGIN_AMOUNT INTEGER(12) NOT NULL <!-- 원 금액  -->
 			, USE_AMOUNT INTEGER(12) NOT NULL <!-- 사용 금액  -->
-			, INCLUDED CHAR(1) NOT NULL CHECK(INCLUDED IN ('T', 'F'))
-			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O'))
-			, BANK_CARD_NO INTEGER NOT NULL
-			, CARD_ITEM_NO INTEGER DEFAULT -1 
-			, CATEGORY_NO INTEGER NOT NULL
-			, SUB_CATEGORY_NO INTEGER NOT NULL
-			, STORE_NO INTEGER DEFAULT -1
-			, CONTENT TEXT(128) DEFAULT NULL
-			, DESCRIPTION TEXT(256) DEFAULT NULL
-			, HASH INTEGER DEFAULT 0
+			, INCLUDED CHAR(1) NOT NULL CHECK(INCLUDED IN ('T', 'F'))  <!--  포함 여부 T:포함, F:미포함 --> 
+			, IN_OUT CHAR(1) NOT NULL CHECK(IN_OUT IN ('I', 'O')) <!-- 입/출금 I 입금, O 출금  -->
+			, BANK_CARD_NO INTEGER NOT NULL <!-- 입출금 은행/카드 번호  -->
+			, CARD_ITEM_NO INTEGER DEFAULT -1 <!-- 카드사의 HH_CARD_ITEM 번호 --> 
+			, CATEGORY_NO INTEGER NOT NULL <!-- 대분류 사용처 고유 번호  -->
+			, SUB_CATEGORY_NO INTEGER NOT NULL <!-- 소분류 사용처 고유 번호  -->
+			, STORE_NO INTEGER DEFAULT -1 <!-- 사용처 고유 번호 -->
+			, CONTENT TEXT(128) DEFAULT NULL <!-- 사용처  -->
+			, DESCRIPTION TEXT(256) DEFAULT NULL <!-- 비고  -->
+			, HASH INTEGER DEFAULT 0 <!-- 데이터 유니크 보장  -->
 		)
 	</insert>
 	
@@ -61,20 +63,20 @@
 	<insert id="insertHouseholdTempData" parameterType="com.utime.household.dataIO.vo.HouseholdDataVO">
 		INSERT INTO HH_RECORD_TEMP (
 			DEAL_DATE 
-			, ORIGIN_AMOUNT
+			, ORIGIN_AMOUNT 
 			, USE_AMOUNT
-			, INCLUDED
-			, IN_OUT
+			, INCLUDED  
+			, IN_OUT 
 			, BANK_CARD_NO 
-			, BANK_CARD_SUB_NO
-			, CATEGORY_NO
-			, SUB_CATEGORY_NO
-			, STORE_NO
-			, CONTENT
+			, CARD_ITEM_NO  
+			, CATEGORY_NO 
+			, SUB_CATEGORY_NO 
+			, STORE_NO 
+			, CONTENT 
 			<if test="dscr != null and dscr != '' ">
-			, DESCRIPTION
+			, DESCRIPTION 
 			</if>
-			, HASH
+			, HASH 
 		) VALUES (
 			DATETIME(#{dealDate, typeHandler=com.utime.household.dataIO.handler.DealDateTypeHandler})
 			, #{originAmount}
@@ -82,8 +84,8 @@
 			, #{included, typeHandler=com.utime.household.dataIO.handler.IncludedTypeHandler}
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
 			, #{bcVo.no}
-			,  <choose>
-				<when test="bcVo.bc.code = 'C' "> #{bcVo.card.no} </when>
+			, <choose>
+				<when test="bcVo.bc.name() == 'Card' "> #{bcVo.card.no} </when>
 				<otherwise> #{bcVo.bank.no} </otherwise>
 			</choose>
 			, #{categoryOwner.no}
@@ -103,7 +105,8 @@
 		, ${Header}USE_AMOUNT
 		, ${Header}INCLUDED
 		, ${Header}IN_OUT
-		, ${Header}BANK_CARD_NO
+		, ${Header}BANK_CARD_NO 
+		, ${Header}CARD_ITEM_NO  
 		, ${Header}BANK_CARD_SUB_NO
 		, ${Header}CATEGORY_NO
 		, ${Header}SUB_CATEGORY_NO
@@ -205,7 +208,7 @@
 			, #{io, typeHandler=com.utime.household.dataIO.handler.InoutTypeHandler}
 			, #{bcVo.no}
 			, <choose>
-				<when test="bcVo.bc.code = 'C' "> #{bcVo.card.no} </when>
+				<when test="bcVo.bc.code == 'C' "> #{bcVo.card.no} </when>
 				<otherwise> #{bcVo.bank.no} </otherwise>
 			</choose>
 			, #{categoryOwner.no}

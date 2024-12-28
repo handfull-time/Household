@@ -39,7 +39,6 @@ class BankCardExtractKdbDataService implements BankCardExtractDataService{
 
 	private final BankCardDao bcDao;
 	
-	@SuppressWarnings("unused")
 	private static class TKdbDataVO{
 		/** 거래일시 */
 		Date transactionDate;
@@ -76,8 +75,8 @@ class BankCardExtractKdbDataService implements BankCardExtractDataService{
 		result.transactionDate = transactionDate;
 		result.transactionType = tmpSplit[0].trim();
 		result.description = tmpSplit[1].trim();
-		result.withdrawal = PoiUtil.getIntegerCellValue( row.getCell(2) );
-		result.deposit = PoiUtil.getIntegerCellValue( row.getCell(3) );
+		result.withdrawal = PoiUtil.getIntegerCellValue( row.getCell(4) );
+		result.deposit = PoiUtil.getIntegerCellValue( row.getCell(6) );
 		
 		return result;
 	}
@@ -114,9 +113,9 @@ class BankCardExtractKdbDataService implements BankCardExtractDataService{
 	    
 	    {
 	    	List<BankCardVO> cardList = bcDao.getCardFromBankNo( bcVo.getNo() );
-	    	if( HouseholdUtils.isNotEmpty(cardList) ) {
+	    	if( HouseholdUtils.isEmpty(cardList) ) {
 	    		log.error("데이터가 없다.");
-		    	result.setCodeMessage("EFXK002","카드 등록 필요");
+		    	result.setCodeMessage("EFXK003","카드 등록 필요");
 		    	return result;
 	    	}
 	    	
@@ -164,7 +163,7 @@ class BankCardExtractKdbDataService implements BankCardExtractDataService{
 			}else {
 				addItem.setDscr( kdbVo.transactionType + ", "  + kdbVo.description );	
 			}			
-			addItem.setIo( (addItem.getUseAmount() > 0)? EInOut.Out:EInOut.In );
+			addItem.setIo( (kdbVo.deposit < kdbVo.withdrawal)? EInOut.Out:EInOut.In );
 			addItem.setIncluded(addItem.getUseAmount() != 0);
 			
 			list.add(addItem);

@@ -163,6 +163,11 @@ public class PoiUtil {
     			result = formatterYearMonthDay.parse(numData);
     			break;
     		}
+    		case 12 : {
+    			// 년월일시분
+    			result = formatter.parse(numData+"00");
+    			break;
+    		}
     		case 14 :{
     			//년월일시분초
     			result = formatter.parse(numData);

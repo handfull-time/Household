@@ -75,25 +75,38 @@
 <div layout:fragment="content">
 
 	<div class="card shadow mb-4">
-        <div class="card-body">
-            <form id="FormFileUpload" th:action="@{/IO/UploadResult.html}" method="post" enctype="multipart/form-data">
-	            <div class="form-group">
-		            <label for="exampleSelect">은행/카드 선택</label>
-		            <select name="bankCard" class="form-control" id="exampleSelect">
-		            	<option th:each="item : ${bankCards}" 
-						th:value="${item.no}" 
-						th:text="${item.name}" ></option>
-		            </select>
-		        </div>
-                <div class="form-group">
-                    <input type="file" class="btn btn-info" name="uploadFile" id="InputFileSource" accept=".xlsx, .xls" aria-describedby="fileHelp" required >
-                    <small id="fileHelp" class="form-text text-muted">카드 사용 또는 은행 입출금 내역 엑셀 파일을 올려주세요.</small>
-                </div>
-            	<button type="submit" class="btn btn-primary" >파일 분석</button>
-            </form>
-            <!-- <button class="btn btn-primary" onclick="uploadFile()">Upload</button> -->
-        </div>
-    </div>
+	    <div class="card-body">
+	        <form id="FormFileUpload" th:action="@{/IO/UploadResult.html}" method="post" enctype="multipart/form-data">
+	            <div class="row">
+	                <div class="col-md-4">
+	                    <div class="form-group">
+	                        <label for="exampleSelect">은행/카드 선택</label>
+	                        <select name="bankCard" class="form-control" id="exampleSelect">
+	                            <option th:each="item : ${bankCards}" 
+	                                    th:value="${item.no}" 
+	                                    th:text="${item.name}" ></option>
+	                        </select>
+	                    </div>
+	                </div>
+	                
+	                <div class="col-md-4">
+	                    <div class="form-group">
+	                        <label for="InputFileSource">파일 업로드</label>
+	                        <input type="file" class="btn btn-info" name="uploadFile" id="InputFileSource" accept=".xlsx, .xls" aria-describedby="fileHelp" required>
+	                        <small id="fileHelp" class="form-text text-muted">카드 사용 또는 은행 입출금 내역 엑셀 파일을 올려주세요.</small>
+	                    </div>
+	                </div>
+					<div class="col-md-4">
+					    <div class="form-group">
+					        <button type="submit" class="btn btn-primary">파일 분석</button>
+					    </div>
+					</div>
+	            </div>
+
+	        </form>
+	    </div>
+	</div>
+
 </div>
 
 </html>

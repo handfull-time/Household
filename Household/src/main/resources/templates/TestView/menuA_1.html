@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{TestView/LayoutMain}">
+    
+    <th:block layout:fragment="title">
+    	A - 1
+    </th:block>
+    
+    <th:block layout:fragment="css">
+    </th:block>
+    
+    <th:block layout:fragment="script">
+        <script>
+		    document.getElementById('excelFile').addEventListener('change', function() {
+		        document.getElementById('excelFileName').textContent = this.files.length ? this.files[0].name : '선택된 파일 없음';
+		    });
+		
+		    document.getElementById('imageFile').addEventListener('change', function() {
+		        document.getElementById('imageFileName').textContent = this.files.length ? this.files[0].name : '선택된 파일 없음';
+		    });
+		</script>
+    </th:block>
+
+    <div layout:fragment="content">
+		<h2 class="text-2xl font-bold mb-4">메뉴-A-1 입력 폼 1</h2>
+
+        <form action="#" method="post" class="bg-white p-6 shadow-md rounded-md">
+            <!-- 텍스트 입력 -->
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 font-bold mb-2">이름</label>
+                <input type="text" id="name" name="name" placeholder="이름을 입력하세요"
+                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- 이메일 입력 -->
+            <div class="mb-4">
+                <label for="email" class="block text-gray-700 font-bold mb-2">이메일</label>
+                <input type="email" id="email" name="email" placeholder="이메일을 입력하세요"
+                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- 선택 박스 -->
+            <div class="mb-4">
+                <label for="category" class="block text-gray-700 font-bold mb-2">카테고리</label>
+                <select id="category" name="category"
+                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="option1">옵션 1</option>
+                    <option value="option2">옵션 2</option>
+                    <option value="option3">옵션 3</option>
+                </select>
+            </div>
+
+            <!-- 라디오 버튼 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">성별</label>
+                <div class="flex space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="gender" value="male" class="form-radio text-blue-500">
+                        <span class="ml-2">남성</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="gender" value="female" class="form-radio text-blue-500">
+                        <span class="ml-2">여성</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 체크박스 -->
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">관심 분야</label>
+                <div class="flex space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="interest" value="tech" class="form-checkbox text-blue-500">
+                        <span class="ml-2">기술</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="interest" value="sports" class="form-checkbox text-blue-500">
+                        <span class="ml-2">스포츠</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="interest" value="music" class="form-checkbox text-blue-500">
+                        <span class="ml-2">음악</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 날짜 선택 -->
+            <div class="mb-4">
+                <label for="date" class="block text-gray-700 font-bold mb-2">날짜 선택</label>
+                <input type="date" id="date" name="date"
+                    class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <!-- 텍스트 영역 (textarea) -->
+			<div class="mt-4">
+			    <label for="description" class="text-gray-700 font-bold">설명</label>
+			    <textarea id="description" name="description" rows="3" placeholder="설명을 입력하세요..."
+			        class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"></textarea>
+			</div>
+
+            <!-- 제출 버튼 -->
+            <div class="mt-6">
+                <button type="submit"
+                    class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">제출</button>
+            </div>
+        </form>
+        <BR/>
+        <BR/>
+        <BR/>
+        <h2 class="text-2xl font-bold mb-4">메뉴-A-1 입력 폼 2</h2>
+        <form action="#" method="post" class="bg-white p-6 shadow-md rounded-md">
+            <!-- 텍스트 입력 -->
+            <div class="mb-4 flex items-center">
+                <label for="name" class="w-32 text-gray-700 font-bold">이름</label>
+                <input type="text" id="name" name="name" placeholder="이름을 입력하세요"
+                    class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- 이메일 입력 -->
+            <div class="mb-4 flex items-center">
+                <label for="email" class="w-32 text-gray-700 font-bold">이메일</label>
+                <input type="email" id="email" name="email" placeholder="이메일을 입력하세요"
+                    class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- 선택 박스 -->
+            <div class="mb-4 flex items-center">
+                <label for="category" class="w-32 text-gray-700 font-bold">카테고리</label>
+                <select id="category" name="category"
+                    class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="option1">옵션 1</option>
+                    <option value="option2">옵션 2</option>
+                    <option value="option3">옵션 3</option>
+                </select>
+            </div>
+
+            <!-- 라디오 버튼 -->
+            <div class="mb-4 flex items-center">
+                <label class="w-32 text-gray-700 font-bold">성별</label>
+                <div class="flex space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="gender" value="male" class="form-radio text-blue-500">
+                        <span class="ml-2">남성</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="gender" value="female" class="form-radio text-blue-500">
+                        <span class="ml-2">여성</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 체크박스 -->
+            <div class="mb-4 flex items-center">
+                <label class="w-32 text-gray-700 font-bold">관심 분야</label>
+                <div class="flex space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="interest" value="tech" class="form-checkbox text-blue-500">
+                        <span class="ml-2">기술</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="interest" value="sports" class="form-checkbox text-blue-500">
+                        <span class="ml-2">스포츠</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="interest" value="music" class="form-checkbox text-blue-500">
+                        <span class="ml-2">음악</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 날짜 선택 -->
+            <div class="mb-4 flex items-center">
+                <label for="date" class="w-32 text-gray-700 font-bold">날짜 선택</label>
+                <input type="date" id="date" name="date"
+                    class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <!-- 파일 업로드 (엑셀) -->
+			<div class="flex items-center space-x-4 mt-4">
+			    <label class="text-gray-700 font-bold">엑셀 파일</label>
+			    <div class="relative">
+			        <input type="file" id="excelFile" name="excelFile" accept=".xls,.xlsx" class="hidden">
+			        <span id="excelFileName" class="text-gray-600">선택된 파일 없음</span>
+			        <button type="button" onclick="document.getElementById('excelFile').click();"
+			            class="ml-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">파일 선택</button>
+			    </div>
+			</div>
+			
+			<!-- 파일 업로드 (이미지) -->
+			<div class="flex items-center space-x-4 mt-4">
+			    <label class="text-gray-700 font-bold">이미지 파일</label>
+			    <div class="relative">
+			        <input type="file" id="imageFile" name="imageFile" accept="image/png, image/jpeg, image/jpg, image/gif" class="hidden">
+			        <span id="imageFileName" class="text-gray-600">선택된 파일 없음</span>
+			        <button type="button" onclick="document.getElementById('imageFile').click();"
+			            class="ml-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">파일 선택</button>
+			    </div>
+			</div>
+			
+			<!-- 텍스트 영역 (textarea) -->
+			<div class="mb-4 flex items-center">
+			    <label for="description" class="w-32 text-gray-700 font-bold">설명</label>
+			    <textarea id="description" name="description" rows="3" placeholder="설명을 입력하세요..."
+			        class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"></textarea>
+			</div>
+
+            <!-- 제출 버튼 -->
+            <div class="mt-6 text-center">
+                <button type="submit"
+                    class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">제출</button>
+            </div>
+        </form>
+        
+		flex items-center를 사용하여 label과 입력 필드를 한 줄에 배치<BR/>
+		<BR/>
+		label의 너비를 w-32로 고정하여 균형을 맞춤.<BR/>
+		input과 select는 flex-1을 사용하여 너비를 자동 조절.<BR/>
+		라디오 버튼과 체크박스도 한 줄 배치<BR/>
+		<BR/>
+		label을 좌측에 고정 (w-32)<BR/>
+		flex space-x-4를 적용하여 선택 요소들이 한 줄로 나열되도록 설정.<BR/>
+		날짜 입력 필드도 한 줄에 정렬<BR/>
+		<BR/>
+		input[type="date"]가 flex-1을 가지도록 설정.<BR/>
+        <BR/>
+        <BR/>
+        <BR/>
+        
+        <h2 class="text-2xl font-bold mb-4">메뉴-A-1 입력 폼 3</h2>
+
+        <form action="#" method="post" class="bg-white p-6 shadow-md rounded-md">
+            <!-- 모든 항목을 한 줄에 정렬 -->
+            <div class="flex items-center space-x-4">
+                <!-- 이름 -->
+                <label for="name" class="text-gray-700 font-bold">이름</label>
+                <input type="text" id="name" name="name" placeholder="이름"
+                    class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-40">
+                
+                <!-- 이메일 -->
+                <label for="email" class="text-gray-700 font-bold">이메일</label>
+                <input type="email" id="email" name="email" placeholder="이메일"
+                    class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-60">
+                
+                <!-- 카테고리 -->
+                <label for="category" class="text-gray-700 font-bold">카테고리</label>
+                <select id="category" name="category"
+                    class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-40">
+                    <option value="option1">옵션 1</option>
+                    <option value="option2">옵션 2</option>
+                    <option value="option3">옵션 3</option>
+                </select>
+                
+                <!-- 성별 -->
+                <label class="text-gray-700 font-bold">성별</label>
+                <label class="inline-flex items-center">
+                    <input type="radio" name="gender" value="male" class="form-radio text-blue-500">
+                    <span class="ml-1">남성</span>
+                </label>
+                <label class="inline-flex items-center ml-2">
+                    <input type="radio" name="gender" value="female" class="form-radio text-blue-500">
+                    <span class="ml-1">여성</span>
+                </label>
+            </div>
+
+            <!-- 관심 분야 및 날짜 선택 -->
+            <div class="flex items-center space-x-4 mt-4">
+                <!-- 관심 분야 -->
+                <label class="text-gray-700 font-bold">관심 분야</label>
+                <label class="inline-flex items-center">
+                    <input type="checkbox" name="interest" value="tech" class="form-checkbox text-blue-500">
+                    <span class="ml-1">기술</span>
+                </label>
+                <label class="inline-flex items-center ml-2">
+                    <input type="checkbox" name="interest" value="sports" class="form-checkbox text-blue-500">
+                    <span class="ml-1">스포츠</span>
+                </label>
+                <label class="inline-flex items-center ml-2">
+                    <input type="checkbox" name="interest" value="music" class="form-checkbox text-blue-500">
+                    <span class="ml-1">음악</span>
+                </label>
+
+                <!-- 날짜 선택 -->
+                <label for="date" class="text-gray-700 font-bold ml-6">날짜 선택</label>
+                <input type="date" id="date" name="date"
+                    class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-40">
+            </div>
+
+            <!-- 제출 버튼 -->
+            <div class="mt-6 text-center">
+                <button type="submit"
+                    class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">제출</button>
+            </div>
+        </form>
+        한 줄 정렬 (flex items-center space-x-4)<BR/>
+		<BR/>
+		모든 입력 항목을 한 줄에 배치하도록 flex를 사용.<BR/>
+		항목 간 간격을 space-x-4로 조정하여 적절한 여백 추가.<BR/>
+		입력 필드 크기 조정 (w-40, w-60)<BR/>
+		<BR/>
+		이름과 카테고리는 w-40 (적절한 크기).<BR/>
+		이메일은 상대적으로 길게 w-60.<BR/>
+		날짜 선택도 w-40로 조정하여 정렬이 맞도록 함.<BR/>
+		체크박스와 라디오 버튼 정렬<BR/>
+		<BR/>
+		체크박스는 ml-2를 사용하여 적절한 간격 유지.<BR/>
+		라디오 버튼(성별 선택)도 같은 라인에 배치하여 균형을 맞춤.<BR/>
+		제출 버튼 위치 조정<BR/>
+		<BR/>
+		mt-6 text-center를 사용하여 버튼을 중앙 정렬.
+    </div>
+    
+</html>

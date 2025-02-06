@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{TestView/LayoutMain}">
+    
+    <th:block layout:fragment="title">
+    	메뉴-A-2 버튼 & 프로그래스바
+    </th:block>
+    
+    <th:block layout:fragment="css">
+    	<style>
+		    /* 애니메이션 프로그래스 바 */
+		    .progress-bar {
+		        width: 0%;
+		        animation: progress-animation 2s ease-in-out forwards;
+		    }
+		
+		    @keyframes progress-animation {
+		        from {
+		            width: 0%;
+		        }
+		        to {
+		            width: 80%;
+		        }
+		    }
+		</style>
+    </th:block>
+    
+    <th:block layout:fragment="script">
+
+		<script>
+		    document.getElementById('progressInput').addEventListener('input', function() {
+		        let value = this.value;
+		        if (value < 0) value = 0;
+		        if (value > 100) value = 100;
+		        document.getElementById('progressBar').style.width = value + "%";
+		        document.getElementById('progressBar2').style.width = value + "%";
+		        document.getElementById('progressText').textContent = value + "%";
+		    });
+		</script>
+		            
+    </th:block>
+
+    <div layout:fragment="content">
+		<h2 class="text-2xl font-bold mb-4">메뉴-A-2 버튼 & 프로그래스바</h2>
+
+         <!-- 버튼 샘플 -->
+        <div class="bg-white p-6 shadow-md rounded-md">
+            <h3 class="text-lg font-bold mb-3">버튼 스타일</h3>
+            <div class="flex flex-wrap gap-4">
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">기본 버튼</button>
+                <button class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition">성공 버튼</button>
+                <button class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition">경고 버튼</button>
+                <button class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition">중립 버튼</button>
+                <button class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition">주의 버튼</button>
+            </div>
+
+            <h3 class="text-lg font-bold mt-6 mb-3">아웃라인 버튼</h3>
+            <div class="flex flex-wrap gap-4">
+                <button class="border border-blue-500 text-blue-500 px-4 py-2 rounded-md hover:bg-blue-500 hover:text-white transition">기본 버튼</button>
+                <button class="border border-green-500 text-green-500 px-4 py-2 rounded-md hover:bg-green-500 hover:text-white transition">성공 버튼</button>
+                <button class="border border-red-500 text-red-500 px-4 py-2 rounded-md hover:bg-red-500 hover:text-white transition">경고 버튼</button>
+                <button class="border border-gray-500 text-gray-500 px-4 py-2 rounded-md hover:bg-gray-500 hover:text-white transition">중립 버튼</button>
+                <button class="border border-yellow-500 text-yellow-500 px-4 py-2 rounded-md hover:bg-yellow-500 hover:text-white transition">주의 버튼</button>
+            </div>
+
+            <h3 class="text-lg font-bold mt-6 mb-3">비활성화 버튼</h3>
+            <div class="flex flex-wrap gap-4">
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-md opacity-50 cursor-not-allowed">비활성 버튼</button>
+                <button class="border border-blue-500 text-blue-500 px-4 py-2 rounded-md opacity-50 cursor-not-allowed">비활성 아웃라인</button>
+            </div>
+            
+            <h3 class="text-lg font-bold mb-3">버튼 크기 고정</h3>
+            <div class="flex flex-wrap gap-4">
+                <button class="bg-blue-500 text-white px-6 py-3 text-lg rounded-md hover:bg-blue-600 transition w-48 h-14">큰 버튼</button>
+                <button class="bg-blue-500 text-white px-4 py-2 text-base rounded-md hover:bg-blue-600 transition w-36 h-10">중간 버튼</button>
+                <button class="bg-blue-500 text-white px-3 py-1 text-sm rounded-md hover:bg-blue-600 transition w-24 h-8">작은 버튼</button>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">버튼 크기 텍스크 크기로 자동 조절</h3>
+            <div class="flex flex-wrap gap-4">
+			    <button class="bg-green-500 text-white px-6 py-3 text-lg rounded-md hover:bg-green-500 transition">
+			        큰 버튼
+			    </button>
+			</div>
+            <div class="flex flex-wrap gap-4">
+			    <button class="bg-red-500 text-white px-4 py-2 text-base rounded-md hover:bg-red-500 transition">
+			        중간 버튼
+			    </button>
+			</div>
+            <div class="flex flex-wrap gap-4">
+			    <button class="bg-yellow-500 text-white px-3 py-1 text-sm rounded-md hover:bg-yellow-500 transition">
+			        작은 버튼
+			    </button>
+			</div>
+            
+            <h3 class="text-lg font-bold mt-6 mb-3">아이콘 포함 버튼</h3>
+            <div class="flex flex-wrap gap-4">
+                <button class="bg-green-500 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-green-600 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    확인
+                </button>
+
+                <button class="bg-red-500 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-red-600 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    삭제
+                </button>
+
+                <button class="bg-yellow-500 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-yellow-600 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3m0 0l3-3m-3 3V4m0 6l-3 3m6-3l-3 3" />
+                    </svg>
+                    업로드
+                </button>
+            </div>   
+        </div>
+
+        <!-- 프로그래스 바 샘플 -->
+        <div class="bg-white p-6 shadow-md rounded-md mt-6">
+            <h3 class="text-lg font-bold mb-3">프로그래스 바 스타일</h3>
+
+            <p class="text-gray-600 mb-2">기본 프로그래스 바</p>
+            <div class="w-full bg-gray-200 rounded-full h-4">
+                <div class="bg-blue-500 h-4 rounded-full" style="width: 60%;"></div>
+            </div>
+
+            <p class="text-gray-600 mt-4 mb-2">다양한 색상</p>
+            <div class="space-y-2">
+                <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div class="bg-green-500 h-4 rounded-full" style="width: 75%;"></div>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div class="bg-red-500 h-4 rounded-full" style="width: 45%;"></div>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full">
+                    <div class="bg-yellow-500 h-4 rounded-full" style="width: 90%;"></div>
+                </div>
+            </div>
+
+            <p class="text-gray-600 mt-4 mb-2">애니메이션 프로그래스 바</p>
+            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                <div class="bg-blue-500 h-4 rounded-full progress-bar"></div>
+            </div>
+            
+            <!-- 프로그래스 바 컨트롤 -->
+			<div class="flex items-center space-x-4 mt-6">
+			    <label for="progressInput" class="text-gray-700 font-bold">진행률</label>
+			    <input type="number" id="progressInput" min="0" max="100" value="80"
+			        class="w-20 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+			</div>
+			
+			<!-- 프로그래스 바 -->
+			<div class="w-full bg-gray-200 rounded-full h-4 mt-4">
+			    <div id="progressBar" class="bg-blue-500 h-4 rounded-full" style="width: 80%;"></div>
+			</div>
+			
+			<!-- 프로그래스 바 -->
+			<div class="relative w-full bg-gray-200 rounded-full h-6 mt-4">
+			    <div id="progressBar2" class="bg-red-500 h-6 rounded-full flex items-center justify-center"
+			        style="width: 80%;">
+			        <span id="progressText" class="text-white font-bold text-sm">80%</span>
+			    </div>
+			</div>
+        </div>
+    </div>
+</html>

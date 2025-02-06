@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{TestView/LayoutMain}">
+    
+    <th:block layout:fragment="title">
+    	메뉴-A-0 Color
+    </th:block>
+    
+    <th:block layout:fragment="css">
+    	<style>
+		    .text-shadow {
+		        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+		    }
+		    .text-shadow-md {
+		        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6);
+		    }
+		    .text-shadow-lg {
+		        text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.7);
+		    }
+		</style>
+    </th:block>
+    
+    <th:block layout:fragment="script">
+    	<script>
+		    document.getElementById("colorBox").addEventListener("click", function(event) {
+		        const colorBox = event.target;
+
+		        const colorClasses = colorBox.classList; // 현재 div의 class 목록 가져오기
+		        let baseColor = "";
+		
+		        // 클래스에서 bg- 색상 추출
+		        colorClasses.forEach(cls => {
+		            if (cls.startsWith("bg-") && cls.match(/^bg-\w+-\d+$/)) {
+		                baseColor = cls.split("-").slice(1, -1).join("-");
+		            }
+		        });
+		
+		        if (!baseColor) return; // 색상이 없으면 실행 안 함
+		
+		        const colorShades = document.getElementById("colorShades");
+		        colorShades.innerHTML = ""; // 기존 색상 초기화
+		
+		        // 100 ~ 900까지 100 단위로 색상 추가
+		        for (let i = 100; i <= 900; i += 100) {
+		            const div = document.createElement("div");
+		            div.className = `bg-${baseColor}-${i} p-2 text-center text-white text-shadow-md rounded-md`;
+		            div.textContent = `${baseColor}-${i}`;
+		            colorShades.appendChild(div);
+		        }
+		    });
+		</script>
+    </th:block>
+
+    <div layout:fragment="content">
+		<h2 class="text-2xl font-bold mb-4">메뉴-A-0 Color</h2>
+
+        <div class="bg-white p-6 shadow-md rounded-md mt-6">
+	        Tailwind CSS는 색상을 100 ~ 950 범위의 숫자로 나누어, 밝기(명도, 채도)를 조절할 수 있도록 합니다.<br/>
+			<br/>
+			100 → 가장 연한 색<br/>
+			500 → 기본 색상 (중간 정도)<br/>
+			900 → 가장 진한 색<br/>
+			<div class="bg-blue-100 p-4 text-blue-900">100 연한 파란색</div>
+			<div class="bg-blue-500 p-4 text-white">500 기본 파란색</div>
+			<div class="bg-blue-900 p-4 text-white">900 진한 파란색</div>
+        </div>
+        
+        <div class="bg-white p-6 shadow-md rounded-md mt-6">
+	        <!-- 색상 변화를 표시할 컨테이너 -->
+        	<div id="colorShades" class="grid grid-cols-5 gap-4 mt-6"></div>
+        	<div id="colorBox">
+				<div class="bg-slate-500 p-4 text-white">Slate (slate)</div>
+				<div class="bg-gray-500 p-4 text-white">Gray (gray)</div>
+				<div class="bg-zinc-500 p-4 text-white">Zinc (zinc)</div>
+				<div class="bg-neutral-500 p-4 text-white">Neutral (neutral)</div>
+				<div class="bg-stone-500 p-4 text-white">Stone (stone)</div>
+				<div class="bg-red-500 p-4 text-white">Red (red)</div>
+				<div class="bg-orange-500 p-4 text-white">Orange (orange)</div>
+				<div class="bg-amber-500 p-4 text-white">Amber (amber)</div>
+				<div class="bg-yellow-500 p-4 text-white">Yellow (yellow)</div>
+				<div class="bg-lime-500 p-4 text-white">Lime (lime)</div>
+				<div class="bg-green-500 p-4 text-white">Green (green)</div>
+				<div class="bg-emerald-500 p-4 text-white">Emerald (emerald)</div>
+				<div class="bg-teal-500 p-4 text-white">Teal (teal)</div>
+				<div class="bg-cyan-500 p-4 text-white">Cyan (cyan)</div>
+				<div class="bg-sky-500 p-4 text-white">Sky (sky)</div>
+				<div class="bg-blue-500 p-4 text-white">Blue (blue)</div>
+				<div class="bg-indigo-500 p-4 text-white">Indigo (indigo)</div>
+				<div class="bg-violet-500 p-4 text-white">Violet (violet)</div>
+				<div class="bg-purple-500 p-4 text-white">Purple (purple)</div>
+				<div class="bg-fuchsia-500 p-4 text-white">Fuchsia (fuchsia)</div>
+				<div class="bg-pink-500 p-4 text-white">Pink (pink)</div>
+				<div class="bg-rose-500 p-4 text-white">Rose (rose)</div>
+			</div>
+        </div>
+        
+    </div>
+</html>

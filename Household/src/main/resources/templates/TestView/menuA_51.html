@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{TestView/LayoutMain}">
+    
+    <th:block layout:fragment="title">
+    	메뉴-A-5 Table
+    </th:block>
+    
+    <th:block layout:fragment="css">
+    </th:block>
+    
+    <th:block layout:fragment="script">
+    	<script>
+	        // 샘플 데이터
+	        const users = [
+	            { id: 2541, name: "홍길동", email: "hong@test.com", age: 24, gender: "남성", note: "모범학생" },
+	            { id: 2542, name: "김철수", email: "kim@test.com", age: 30, gender: "남성", note: "좋은 성과" },
+	            { id: 2543, name: "이영희", email: "lee@test.com", age: 27, gender: "여성", note: "우수한 참여" },
+	            { id: 2544, name: "박지수", email: "park@test.com", age: 22, gender: "여성", note: "적극적" },
+	            { id: 2545, name: "최민호", email: "choi@test.com", age: 35, gender: "남성", note: "책임감 있음" },
+	            { id: 2546, name: "정소영", email: "jung@test.com", age: 29, gender: "여성", note: "성실함" },
+	            { id: 2547, name: "한상우", email: "han@test.com", age: 40, gender: "남성", note: "팀워크 우수" },
+	            { id: 2546, name: "아무개", email: "jung333@test.com", age: 29, gender: "여성", note: "성실함" },
+	            { id: 2547, name: "누구나", email: "han222@test.com", age: 40, gender: "남성", note: "팀워크 우수" },
+	            { id: 2544, name: "사오정", email: "par33k@test.com", age: 22, gender: "여성", note: "적극적" },
+	            { id: 2545, name: "최민수", email: "ch2oi@test.com", age: 35, gender: "남성", note: "책임감 있음" },
+	            { id: 2548, name: "오수진", email: "oh@test.com", age: 26, gender: "여성", note: "창의적" }
+	        ];
+	
+	        const rowsPerPage = 4; // 한 페이지당 표시할 개수
+	        let currentPage = 1; // 현재 페이지
+	
+	        // 데이터 필터링 및 페이징
+	        function renderTable() {
+	            const searchValue = document.getElementById("searchInput").value.toLowerCase();
+	            const filteredUsers = users.filter(user =>
+	                Object.values(user).some(value => value.toString().toLowerCase().includes(searchValue))
+	            );
+	
+	            const start = (currentPage - 1) * rowsPerPage;
+	            const paginatedUsers = filteredUsers.slice(start, start + rowsPerPage);
+	
+	            const tableBody = document.getElementById("tableBody");
+	            tableBody.innerHTML = ""; // 기존 내용 초기화
+	
+	            paginatedUsers.forEach(user => {
+	                const row = document.createElement("tr");
+	                row.className = "hover:bg-gray-100";
+	
+	                row.innerHTML = `
+	                    <td class="px-4 py-2">${user.id}</td>
+	                    <td class="px-4 py-2">${user.name}</td>
+	                    <td class="px-4 py-2">${user.email}</td>
+	                    <td class="px-4 py-2 text-right">${user.age}</td>
+	                    <td class="px-4 py-2 text-center">${user.gender}</td>
+	                    <td class="px-4 py-2">${user.note}</td>
+	                `;
+	
+	                tableBody.appendChild(row);
+	            });
+	
+	            // 페이징 정보 업데이트
+	            document.getElementById("pageInfo").innerText = `${currentPage} / ${Math.ceil(filteredUsers.length / rowsPerPage)}`;
+	
+	            // 이전/다음 버튼 활성화 여부 설정
+	            document.getElementById("prevPage").disabled = currentPage === 1;
+	            document.getElementById("nextPage").disabled = currentPage === Math.ceil(filteredUsers.length / rowsPerPage);
+	        }
+	
+	        // 검색 이벤트
+	        document.getElementById("searchInput").addEventListener("input", () => {
+	            currentPage = 1; // 검색 시 첫 페이지로 이동
+	            renderTable();
+	        });
+	
+	        // 페이징 버튼 이벤트
+	        document.getElementById("prevPage").addEventListener("click", () => {
+	            if (currentPage > 1) {
+	                currentPage--;
+	                renderTable();
+	            }
+	        });
+	
+	        document.getElementById("nextPage").addEventListener("click", () => {
+	            currentPage++;
+	            renderTable();
+	        });
+	
+	        // 초기 테이블 렌더링
+	        renderTable();
+	    </script>
+    </th:block>
+
+    <div layout:fragment="content">
+		<h2 class="text-2xl font-bold mb-4">메뉴-A-51</h2>
+		<!-- 검색 입력창 -->
+        <input type="text" id="searchInput" class="border p-2 w-full mb-4" placeholder="검색어 입력...">
+
+        <!-- 테이블 -->
+        <table class="w-full border border-gray-300 rounded-lg shadow-md">
+            <thead class="bg-gray-700 text-white uppercase text-sm">
+                <tr>
+                    <th class="px-4 py-2 text-center">ID</th>
+                    <th class="px-4 py-2 text-center">이름</th>
+                    <th class="px-4 py-2 text-center">이메일</th>
+                    <th class="px-4 py-2 text-center">나이</th>
+                    <th class="px-4 py-2 text-center">성별</th>
+                    <th class="px-4 py-2 text-center">비고</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody" class="divide-y divide-gray-300"></tbody>
+        </table>
+
+        <!-- 페이징 컨트롤 -->
+        <div class="flex justify-center mt-4 space-x-2">
+            <button id="prevPage" class="bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600">이전</button>
+            <span id="pageInfo" class="px-3 py-1">1 / 1</span>
+            <button id="nextPage" class="bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600">다음</button>
+        </div>
+    </div>
+</html>

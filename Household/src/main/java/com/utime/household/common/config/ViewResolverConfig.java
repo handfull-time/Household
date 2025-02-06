@@ -106,7 +106,7 @@ public class ViewResolverConfig implements WebMvcConfigurer {
     public SpringResourceTemplateResolver templateResolver() {
         final SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver ();
         
-        templateResolver.setPrefix("classpath:templates/Household/");
+        templateResolver.setPrefix("classpath:templates/");
         templateResolver.setCharacterEncoding("UTF-8");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode(TemplateMode.HTML);

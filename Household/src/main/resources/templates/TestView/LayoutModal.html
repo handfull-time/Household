@@ -1,0 +1,89 @@
+<div xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+    <th:block layout:fragment="modalCss"></th:block>
+
+    <!-- 팝업 레이어 -->
+    
+     <!-- 제목 영역 -->
+     <div id="popupHeader" class="bg-gray-700 text-white text-center p-3 cursor-move">
+         <span class="font-bold"><th:block layout:fragment="modalTitle"></th:block></span>
+         <button onclick="closePopup()" class="absolute top-2 right-2 text-white hover:text-gray-300 text-xl">×</button>
+     </div>
+
+     <!-- 내용 영역 -->
+     <div class="p-4"> 
+     	<th:block layout:fragment="modalContent"></th:block>
+     </div> 
+
+     <!-- 하단 버튼 -->
+     <div class="p-4 flex justify-end space-x-2">
+         <button onclick="saveData()" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition">
+             저장
+         </button>
+         <button onclick="closePopup()" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition">
+             취소
+         </button>
+     </div>
+    
+    <th:block layout:fragment="modalScript"></th:block>
+
+    <script>
+        // 팝업 닫기
+        function closePopup() {
+		    const popupOverlay = document.getElementById("popupOverlay");
+		
+		    // 팝업 숨기기
+		    if (popupOverlay){
+			    popupOverlay.classList.add("hidden");
+		    }
+		
+		    // 이벤트 리스너 제거 (드래그 관련)
+		    const popupHeader = document.getElementById("popupHeader");
+		    if (popupHeader) {
+		        popupHeader.removeEventListener("mousedown", startDrag);
+		        popupHeader.dataset.dragAdded = "false"; // 이벤트 제거 후 상태 초기화
+		    }
+		    
+		    document.removeEventListener("mousemove", doDrag);
+		    document.removeEventListener("mouseup", stopDrag);
+		    
+		    delete window.dragOjb;
+		
+		    // 팝업 내용 초기화 (불필요한 스크립트 실행 방지)
+		    document.getElementById("popupContentContainer").innerHTML = "";
+		}
+
+
+        // 팝업 드래그 이동
+        // let isDragging = false, offsetX = 0, offsetY = 0;
+        window.dragOjb = {isDragging:false, offsetX:0, offsetY:0};
+        
+        document.getElementById("popupHeader").addEventListener("mousedown", startDrag);
+        document.addEventListener("mousemove", doDrag);
+        document.addEventListener("mouseup", stopDrag);
+        
+        // 드래그 이벤트 핸들러 (한 번만 추가되도록 관리)
+        function startDrag(e) {
+        	window.dragOjb.isDragging = true;
+        	
+            const popupWindow = document.getElementById("popupWindow");
+            window.dragOjb.offsetX = e.clientX - popupWindow.offsetLeft;
+            window.dragOjb.offsetY = e.clientY - popupWindow.offsetTop;
+        }
+
+        function doDrag(e) {
+            if (!window.dragOjb.isDragging) return;
+            const popup = document.getElementById("popupWindow");
+            popup.style.position = "absolute";
+            popup.style.left = e.clientX - window.dragOjb.offsetX + "px";
+            popup.style.top = e.clientY - window.dragOjb.offsetY + "px";
+        }
+
+        function stopDrag() {
+        	window.dragOjb.isDragging = false;
+        }
+        
+    </script>
+
+</div>

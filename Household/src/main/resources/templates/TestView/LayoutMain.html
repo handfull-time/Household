@@ -42,10 +42,9 @@
     </style>
 	<th:block layout:fragment="css"></th:block>
 </head>
-<body class="bg-gray-100 h-screen flex">
-
+<body class="bg-gray-100 min-h-screen flex">
     <!-- Sidebar -->
-    <div id="sidebar" class="bg-blue-900 text-white flex flex-col p-4">
+    <div id="sidebar" class="bg-blue-900 text-white w-64 min-h-screen p-4 flex flex-col">
         <h2 class="text-lg font-bold mb-4">Admin Panel</h2>
 
         <div class="space-y-2">
@@ -60,6 +59,8 @@
 					<li><a th:href="@{/View/menuA_5.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_5.html'} ? 'selected'">table</a></li>
 					<li><a th:href="@{/View/menuA_51.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_51.html'} ? 'selected'">table-1</a></li>
 					<li><a th:href="@{/View/menuA_6.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_6.html'} ? 'selected'">chart</a></li>
+					<li><a th:href="@{/View/menuA_7.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_7.html'} ? 'selected'">alert</a></li>
+					<li><a th:href="@{/View/menuA_8.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_8.html'} ? 'selected'">profile</a></li>
                 </ul>
             </div>
 
@@ -82,35 +83,44 @@
         <!-- Top Bar -->
         <div class="bg-white shadow-md p-4 flex justify-between items-center">
             <h1 class="text-xl font-bold"><th:block layout:fragment="title"></th:block></h1>
+            
+            <!-- 오른쪽 사용자 메뉴 -->
             <div class="relative">
+		        <!-- 사용자 아이콘 버튼 -->
                 <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
-                    <img src="https://via.placeholder.com/40" alt="User" class="w-10 h-10 rounded-full">
-                    <span>▼</span>
+		            <img th:src="@{/images/undraw_profile.svg}" alt="User" class="w-10 h-10 rounded-full">
                 </button>
-                <!-- Dropdown -->
-                <div id="userMenu" class="hidden absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md">
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100">Logout</a>
+		
+		        <!-- Dropdown 메뉴 -->
+		        <div id="userMenu" class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md opacity-0 scale-95 transform transition-all duration-200 hidden">
+		            <button class="menuItem flex items-center px-4 py-2 hover:bg-gray-100 w-full">
+		                <svg class="w-5 h-5 mr-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10 10a4 4 0 110-8 4 4 0 010 8zm0 2c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"></path></svg>
+		                Profile
+		            </button>
+		            <button class="menuItem flex items-center px-4 py-2 hover:bg-gray-100 w-full">
+		                <svg class="w-5 h-5 mr-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 10a7 7 0 1114 0A7 7 0 013 10zm6-3a1 1 0 102 0 1 1 0 00-2 0zm-1 3a1 1 0 112 0v2a1 1 0 11-2 0v-2z" clip-rule="evenodd"></path></svg>
+		                Logout
+		            </button>
                 </div>
             </div>
         </div>
 
         <!-- Main Content Area -->
-        <div class="p-4">
+        <div class="flex-1 p-6 overflow-auto">
             <th:block layout:fragment="content"></th:block>
         </div>
         
-        <!-- 팝업을 위한 컨테이너 -->
-        <div id="popupContainer">
-            <div id="popupOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center">
-                <div id="popupWindow" class="bg-white rounded-lg shadow-lg w-96 relative">
-                    <div id="popupContentContainer">
-                        <!-- 서버에서 로드된 내용이 여기에 삽입됨 -->
-                    </div>
+    </div>
+
+    <!-- 팝업을 위한 컨테이너 -->
+    <div id="popupContainer">
+        <div id="popupOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center">
+            <div id="popupWindow" class="bg-white rounded-lg shadow-lg w-96 relative">
+                <div id="popupContentContainer">
+                    <!-- 서버에서 로드된 내용이 여기에 삽입됨 -->
                 </div>
             </div>
         </div>
-        
     </div>
 
     <script>
@@ -141,6 +151,46 @@
     </script>
     
     <script>
+    		
+        const userMenuButton = document.getElementById("userMenuButton");
+        const userMenu = document.getElementById("userMenu");
+        const menuItems = document.querySelectorAll(".menuItem");
+
+        function toggleMenu() {
+            if (userMenu.classList.contains("hidden")) {
+                userMenu.classList.remove("hidden");
+                setTimeout(() => {
+                    userMenu.classList.add("opacity-100", "scale-100");
+                    userMenu.classList.remove("opacity-0", "scale-95");
+                }, 10);
+            } else {
+                closeMenu();
+            }
+        }
+
+        function closeMenu() {
+            userMenu.classList.remove("opacity-100", "scale-100");
+            userMenu.classList.add("opacity-0", "scale-95");
+            setTimeout(() => userMenu.classList.add("hidden"), 200);
+        }
+
+        // 사용자 아이콘 클릭 시 메뉴 토글
+        userMenuButton.addEventListener("click", toggleMenu);
+
+        // 메뉴 항목 클릭 시 닫기
+        menuItems.forEach(item => {
+            item.addEventListener("click", closeMenu);
+                    });
+                    
+        // 메뉴 바깥을 클릭하면 닫기
+        document.addEventListener("click", (event) => {
+            if (!userMenu.contains(event.target) && !userMenuButton.contains(event.target)) {
+                closeMenu();
+        }
+        });
+	</script>
+	
+	<script>
     	// 팝업 열기 함수
         function openPopup(url, width = "800px") {
     		

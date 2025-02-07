@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{TestView/LayoutMain}">
+    
+    <th:block layout:fragment="title">
+    	메뉴-A-7 회원 정보
+    </th:block>
+    
+    <th:block layout:fragment="css">
+    </th:block>
+    
+    <th:block layout:fragment="script">
+	<script>
+        // 프로필 이미지 미리보기
+        document.getElementById("profileImageInput").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("profilePreview").src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+    </th:block>
+
+    <div layout:fragment="content">
+		<h2 class="text-2xl font-bold mb-4">메뉴-A-8</h2>
+	
+    <h1 class="text-3xl font-bold text-blue-600 mb-4">House</h1>
+    <div class="w-full max-w-lg bg-white p-6 shadow-md rounded-lg">
+        <h2 class="text-2xl font-semibold text-gray-800 text-center mb-6">회원 정보 변경</h2>
+
+	<!-- <body class="flex flex-col items-center justify-center min-h-screen bg-gray-50"> -->
+        <form id="updateForm">
+            <div class="grid grid-cols-3 gap-4 items-center mb-6">
+                <!-- 프로필 이미지 -->
+                <label for="profileImageInput" class="col-span-1 cursor-pointer flex justify-center">
+                    <img id="profilePreview" th:src="@{/images/undraw_profile.svg}" class="w-24 h-24 rounded-full border" alt="프로필 이미지">
+                    <input type="file" id="profileImageInput" class="hidden" accept="image/png, image/jpeg, image/svg+xml">
+                </label>
+                <div class="col-span-2">
+                    <!-- 닉네임 변경 -->
+		            <div class="flex items-center mb-4">
+		                <label class="w-1/3 font-medium">닉네임</label>
+		                <input type="text" id="nickname" class="w-2/3 p-2 border rounded-md focus:ring-2 focus:ring-blue-400" minlength="1" maxlength="20" required>
+		            </div>
+                </div>
+            </div>
+
+            
+
+            <!-- 비밀번호 변경 -->
+            <div class="flex items-center mb-4">
+                <label class="w-1/3 font-medium">새 비밀번호</label>
+                <input type="password" id="newPassword" class="w-2/3 p-2 border rounded-md focus:ring-2 focus:ring-blue-400" minlength="6" maxlength="20" required>
+            </div>
+            <p id="passwordError" class="text-sm text-red-500 mt-1 hidden">비밀번호 규칙을 확인하세요.</p>
+
+            <!-- 비밀번호 확인 -->
+            <div class="flex items-center mb-6">
+                <label class="w-1/3 font-medium">비밀번호 확인</label>
+                <input type="password" id="confirmPassword" class="w-2/3 p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
+            </div>
+            <p id="confirmPasswordError" class="text-sm text-red-500 mt-1 hidden">비밀번호가 일치하지 않습니다.</p>
+
+            <!-- 저장 버튼 -->
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">저장</button>
+        </form>
+    </div>
+    </div>
+</html>
+
+
+
+
+
+
+
+

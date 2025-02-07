@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{TestView/LayoutMain}">
+    
+    <th:block layout:fragment="title">
+    	메뉴-A-7 alert, confirm, prompt 
+    </th:block>
+    
+    <th:block layout:fragment="css">
+    </th:block>
+    
+    <th:block layout:fragment="script">
+	<script>
+    let modalCallback = null;
+
+    function showCustomAlert(message, callback) {
+        document.getElementById("modalMessage").innerText = message;
+        document.getElementById("modalInput").classList.add("hidden"); // 입력 필드 숨김
+        document.getElementById("modalCancelButton").classList.add("hidden"); // 취소 버튼 숨김
+        document.getElementById("modalConfirmButton").innerText = "확인"; // 버튼 텍스트 설정
+        modalCallback = callback;
+        document.getElementById("customModal").classList.remove("hidden");
+    }
+
+    function showCustomConfirm(message, callback) {
+        document.getElementById("modalMessage").innerText = message;
+        document.getElementById("modalInput").classList.add("hidden");
+        document.getElementById("modalCancelButton").classList.remove("hidden");
+        document.getElementById("modalConfirmButton").innerText = "확인";
+        modalCallback = callback;
+        document.getElementById("customModal").classList.remove("hidden");
+    }
+
+    function showCustomPrompt(message, callback) {
+        document.getElementById("modalMessage").innerText = message;
+        document.getElementById("modalInput").classList.remove("hidden");
+        document.getElementById("modalCancelButton").classList.remove("hidden");
+        document.getElementById("modalConfirmButton").innerText = "입력";
+        modalCallback = callback;
+        document.getElementById("customModal").classList.remove("hidden");
+    }
+
+    document.getElementById("modalConfirmButton").addEventListener("click", function () {
+        document.getElementById("customModal").classList.add("hidden");
+        if (modalCallback) {
+            if (!document.getElementById("modalInput").classList.contains("hidden")) {
+                modalCallback(document.getElementById("modalInput").value);
+            } else {
+                modalCallback(true);
+            }
+            modalCallback = null;
+        }
+    });
+
+    document.getElementById("modalCancelButton").addEventListener("click", function () {
+        document.getElementById("customModal").classList.add("hidden");
+        if (modalCallback) {
+        	modalCallback(false);
+            modalCallback = null;
+        }
+    });
+	</script>
+    </th:block>
+
+    <div layout:fragment="content">
+		<h2 class="text-2xl font-bold mb-4">메뉴-A-6</h2>
+
+           <button onclick="showCustomAlert('이것은 Alert입니다.')" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Alert</button>
+		   <button onclick="showCustomConfirm('정말로 진행하시겠습니까?', result => alert(result ? '확인됨' : '취소됨'))" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 ml-2">Confirm</button>
+		   <button onclick="showCustomPrompt('이름을 입력하세요:', result => alert(result ? `입력한 값: ${result}` : '취소됨'))" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 ml-2">Prompt</button>
+		
+		    <!-- 공통 모달 -->
+			<div id="customModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+			    <div class="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
+			        <p id="modalMessage" class="mb-4"></p>
+			        <input type="text" id="modalInput" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 mb-4 hidden">
+			        <div id="modalButtons" class="flex justify-center space-x-2">
+			            <button id="modalConfirmButton" class="w-1/2 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">확인</button>
+			            <button id="modalCancelButton" class="w-1/2 bg-gray-500 text-white py-2 rounded-md hover:bg-gray-600 hidden">취소</button>
+			        </div>
+			    </div>
+			</div>
+    </div>
+</html>
+
+
+
+
+
+
+

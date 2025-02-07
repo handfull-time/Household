@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Main</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
+    
+    <style>
+    /* 흔들리는 애니메이션 (3번 실행 후 멈춤) */
+    @keyframes wiggle {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(-2deg); }
+        50% { transform: rotate(2deg); }
+        75% { transform: rotate(-1deg); }
+    }
+
+    .animate-wiggle {
+        animation: wiggle 1s ease-in-out 1; /* 3번만 실행 후 멈춤 */
+    }
+
+    /* 화려한 그림자 효과 */
+    .shadow-text {
+        text-shadow: 
+            2px 2px 4px rgba(0, 0, 255, 0.1),  /* 파란색 그림자 */
+            -2px -2px 4px rgba(255, 0, 255, 0.1), /* 핑크색 그림자 */
+            3px -3px 4px rgba(255, 255, 0, 0.1); /* 노란색 그림자 */
+    }
+    
+    /* 별 회전 애니메이션 */
+    @keyframes rotateStar {
+        0% { opacity: 1; transform: rotate(0deg) scale(1); }
+        100% { opacity: 0; transform: rotate(720deg) scale(1.5); } /* 2바퀴 돌고 사라짐 */
+    }
+
+    .animate-star {
+        animation: rotateStar 2s ease-in-out forwards;
+    }
+    </style>
+</head>
+<body class="h-screen flex items-center justify-center bg-gray-100">
+    <div class="bg-white p-8 shadow-lg rounded-lg w-96 text-center">
+        <!-- 제목 -->
+        <h1 id="houseTitle" class="text-5xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-pink-500 to-yellow-500 animate-wiggle shadow-text">
+        	House
+		</h1>
+		
+		 <!-- 별 (기본적으로 숨김) -->
+		    <span id="star" class="absolute text-yellow-400 text-2xl font-bold opacity-0 transform origin-center">
+		        ★
+		    </span>
+
+        <!-- 입력 필드 -->
+        <input type="text" placeholder="ID" class="w-full p-3 border rounded-md mb-3 focus:ring-2 focus:ring-blue-400">
+        <input type="password" placeholder="Password" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-400">
+
+        <!-- 숨겨진 버튼 -->
+        <div class="mt-6 opacity-0 transition-opacity duration-300" id="hiddenButtons">
+            <button class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">로그인</button>
+            <div class="flex justify-between mt-2 text-sm text-blue-500 cursor-pointer">
+                <span class="hover:underline">비밀번호 찾기</span>
+                <span class="hover:underline">회원가입</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const inputs = document.querySelectorAll("input");
+        const hiddenButtons = document.getElementById("hiddenButtons");
+
+        // 입력 필드에 포커스 또는 입력 시 버튼 표시
+        inputs.forEach(input => {
+            input.addEventListener("focus", () => {
+                hiddenButtons.classList.remove("opacity-0");
+            });
+
+            input.addEventListener("input", () => {
+                hiddenButtons.classList.remove("opacity-0");
+            });
+        });
+
+        // 입력 필드에서 벗어나고 내용이 없으면 버튼 숨김
+        document.addEventListener("click", (event) => {
+            if (!event.target.closest(".bg-white")) {
+                if (!inputs[0].value && !inputs[1].value) {
+                    hiddenButtons.classList.add("opacity-0");
+                }
+            }
+        });
+    </script>
+    
+    <script>
+    // 흔들림 애니메이션이 끝난 후 별 애니메이션 실행
+    setTimeout(() => {
+        const star = document.getElementById("star");
+        const houseTitle = document.getElementById("houseTitle");
+
+        // 제목의 위치 및 크기 계산
+        const rect = houseTitle.getBoundingClientRect();
+        
+        const offsetX = rect.x + (rect.width);
+        const offsetY = rect.top -10;
+
+        // 별 위치 조정
+        star.style.top = `${offsetY}px`;
+        star.style.left = `${offsetX}px`;
+        
+        // 별 애니메이션 실행
+        star.classList.add("animate-star");
+
+        // 애니메이션이 끝나면 제거
+        setTimeout(() => {
+            star.remove();
+        }, 2000);
+    }, 1000); 
+</script>
+</body>
+</html>
+
+
+

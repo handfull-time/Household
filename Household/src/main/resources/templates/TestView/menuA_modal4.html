@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{TestView/LayoutModal2}">
+
+    <th:block layout:fragment="modalTitle">
+        메뉴-A-Modal
+    </th:block>
+
+    <th:block layout:fragment="modalContent">
+       <!-- 팝업을 여는 버튼 -->
+		<button th:onclick="|openPopup('@{/View/menuA_modal4.layer}', '600px')|"  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
+		    팝업 모달 열기
+		</button>
+    </th:block>
+
+    <th:block layout:fragment="modalScript">
+        
+    </th:block>
+
+</html>

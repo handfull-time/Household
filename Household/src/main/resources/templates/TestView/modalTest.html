@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Panel</title>
+    <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
+</head>    
+        
+    
+<body>
+
+<!-- 팝업을 여는 버튼 -->
+		<button th:onclick="|openPopup('@{/View/menuA_modal4.layer}', '300px')|"  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
+		    팝업 모달 열기
+		</button>
+
+		<button th:onclick="|openPopup('@{/View/menuA_modal4.layer}', '1000px')|"  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
+		    팝업 모달 열기
+		</button>
+<!-- 팝업을 위한 컨테이너 -->
+<div id="popupContainer">
+    <div id="popupOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center">
+        <div id="popupWindow" class="modalTop bg-white rounded-lg shadow-lg relative">
+            <div id="popupContentContainer">
+                <!-- 서버에서 로드된 내용이 여기에 삽입됨 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let popupIndex = 0; // 중첩 모달을 위한 고유 ID
+
+    function openPopup(url, width = "800px") {
+        popupIndex++; // 새로운 팝업 ID 증가
+
+        // 기존 팝업 컨테이너 복제
+        const originalPopup = document.getElementById("popupOverlay");
+        const newPopup = originalPopup.cloneNode(true);
+
+        // 새로운 팝업 ID 변경
+        const newPopupId = `popupOverlay_${popupIndex}`;
+        const newWindowId = `popupWindow_${popupIndex}`;
+        const newContentId = `popupContentContainer_${popupIndex}`;
+
+        newPopup.id = newPopupId;
+        const popupWindow = newPopup.querySelector("#popupWindow");
+        popupWindow.id = newWindowId;
+        // width 적용
+        popupWindow.style.width = width;
+        newPopup.querySelector("#popupContentContainer").id = newContentId;
+
+        // 모달 개별 드래그 객체 추가
+        popupWindow.dragObj = { isDragging: false, offsetX: 0, offsetY: 0 };
+
+        // 새 팝업 숨김 해제
+        newPopup.classList.remove("hidden");
+
+        // 새로운 팝업 추가
+        document.getElementById("popupContainer").appendChild(newPopup);
+
+
+        // 데이터 로드
+        fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            const container = document.getElementById(newContentId);
+            container.innerHTML = html;
+            
+            // 새로 추가된 script 태그 실행 (Thymeleaf script 실행)
+            container.querySelectorAll("script").forEach(oldScript => {
+                const newScript = document.createElement("script");
+                newScript.textContent = oldScript.textContent;
+                document.body.appendChild(newScript);
+                oldScript.remove();
+            });
+        })
+        .catch(error => alert("데이터 로드 실패: " + error));
+    }
+
+
+
+
+
+    // 팝업 닫기 함수 (해당 모달만 닫기)
+    function closePopup(buttonElement) {
+        const modal = buttonElement.closest(".fixed");
+        if (modal) {
+            modal.remove();
+        }
+    }
+ // 드래그 시작 함수 (각 모달별 dragObj 사용)
+    function startDrag(event, headerElement) {
+        const popup = headerElement.closest(".modalTop"); // 현재 모달 찾기
+        if (!popup) return;
+
+        popup.dragObj.isDragging = true;
+        popup.dragObj.offsetX = event.clientX - popup.offsetLeft;
+        popup.dragObj.offsetY = event.clientY - popup.offsetTop;
+
+        // 개별 모달에 이벤트 등록
+        document.addEventListener("mousemove", (e) => doDrag(e, popup));
+        document.addEventListener("mouseup", (e) => stopDrag(e, popup));
+    }
+
+    // 드래그 중 (각 모달별 dragObj 참조)
+    function doDrag(event, popup) {
+        if (!popup.dragObj.isDragging) return;
+        popup.style.position = "absolute";
+        popup.style.left = event.clientX - popup.dragObj.offsetX + "px";
+        popup.style.top = event.clientY - popup.dragObj.offsetY + "px";
+    }
+
+    // 드래그 종료 (각 모달별 이벤트 제거)
+    function stopDrag(event, popup) {
+        popup.dragObj.isDragging = false;
+        document.removeEventListener("mousemove", (e) => doDrag(e, popup));
+        document.removeEventListener("mouseup", (e) => stopDrag(e, popup));
+    }
+
+
+
+</script>
+
+</body>
+</html>

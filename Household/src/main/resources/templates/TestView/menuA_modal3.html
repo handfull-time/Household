@@ -4,18 +4,16 @@
      layout:decorate="~{TestView/LayoutModal}">
 
     <th:block layout:fragment="modalTitle">
-        메뉴-A-Modal
+        메뉴-A-Modal3 멀티
     </th:block>
 
     <th:block layout:fragment="modalContent">
-       <!-- 팝업을 여는 버튼 -->
-		<button th:onclick="|openPopup('@{/View/menuA_modal3.layer}')|"  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
-		    팝업 모달 열기
+        <button th:onclick="|openPopup({url: '@{/View/menuA_modal3.layer}', method: MethodType.Get, width:'400px'})|"  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
+		    팝업 모달 열기 - 멀티
 		</button>
     </th:block>
 
     <th:block layout:fragment="modalScript">
-        
     </th:block>
 
 </html>

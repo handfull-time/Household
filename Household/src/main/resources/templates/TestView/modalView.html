@@ -1,21 +1,7 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Admin Panel</title>
-    <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
-</head>    
-        
-    
-<body>
 
-<!-- 팝업을 여는 버튼 -->
-		<button th:onclick="|openPopup('@{/View/menuA_modal4.layer}', '300px')|"  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
-		    팝업 모달 열기
-		</button>
+<div xmlns:th="http://www.thymeleaf.org"
+	th:fragment="modalView" >
 
-		<button th:onclick="|openPopup('@{/View/menuA_modal4.layer}', '1000px')|"  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
-		    팝업 모달 열기
-		</button>
 <!-- 팝업을 위한 컨테이너 -->
 <div id="popupContainer">
     <div id="popupOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center">
@@ -30,7 +16,35 @@
 <script>
     let popupIndex = 0; // 중첩 모달을 위한 고유 ID
 
-    function openPopup(url, width = "800px") {
+	// Method 종류
+	const MethodType = Object.freeze({
+		Get: "GET",
+		Post: "POST"
+	});
+
+	// ContentsType 종류
+	const ContentsType = Object.freeze({
+		Form: "x-www-form-urlencoded",
+		Json: "application/json",
+		Multipart:"multipart/form-data"
+	});
+
+    function openPopup(sendObj) {
+    	
+    	if( ! sendObj.url ){
+			throw new Error("❌ [useCall Error] 'url' 값이 필수입니다.");
+		}
+		
+		const defaults = {
+		        method: MethodType.Post, // 기본값: POST
+		        contentType: ContentsType.Json, // 기본값: JSON
+		        data:null,
+		        width: '800px'
+		    };
+		
+		const finalValue = { ...defaults, ...sendObj };
+		const width = finalValue.width;
+		
         popupIndex++; // 새로운 팝업 ID 증가
 
         // 기존 팝업 컨테이너 복제
@@ -60,8 +74,12 @@
 
 
         // 데이터 로드
-        fetch(url)
-        .then(response => response.text())
+        fetch(finalValue.url, {
+	            method: finalValue.method,
+	            headers: { "Content-Type": finalValue.contentType },
+	            body: finalValue.data
+	        }
+        ).then(response => response.text())
         .then(html => {
             const container = document.getElementById(newContentId);
             container.innerHTML = html;
@@ -77,10 +95,6 @@
         .catch(error => alert("데이터 로드 실패: " + error));
     }
 
-
-
-
-
     // 팝업 닫기 함수 (해당 모달만 닫기)
     function closePopup(buttonElement) {
         const modal = buttonElement.closest(".fixed");
@@ -88,7 +102,8 @@
             modal.remove();
         }
     }
- // 드래그 시작 함수 (각 모달별 dragObj 사용)
+    
+	// 드래그 시작 함수 (각 모달별 dragObj 사용)
     function startDrag(event, headerElement) {
         const popup = headerElement.closest(".modalTop"); // 현재 모달 찾기
         if (!popup) return;
@@ -116,10 +131,5 @@
         document.removeEventListener("mousemove", (e) => doDrag(e, popup));
         document.removeEventListener("mouseup", (e) => stopDrag(e, popup));
     }
-
-
-
 </script>
-
-</body>
-</html>
+</div>

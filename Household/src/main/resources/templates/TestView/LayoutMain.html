@@ -5,258 +5,28 @@
     <title>Admin Panel</title>
     <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
     <script type="text/javascript" th:src="@{/js/MyToast.js}"></script>
-    
-    <style>
-        #sidebar {
-            min-width: 100px;
-            max-width: 400px;
-            width: 250px;
-            position: relative;
-            user-select: none;
-            display: flex;
-            flex-direction: column;
-        }
-        #resizer {
-            width: 8px;
-            cursor: ew-resize;
-            background: gray;
-            position: absolute;
-            right: 0;
-            top: 0;
-            height: 100%;
-        }
-        
-        .menu-item {
-            padding: 8px;
-            display: block;
-            border-radius: 4px;
-        }
-        .menu-item:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .menu-item.selected {
-            background-color: rgba(255, 255, 255, 0.3);
-            font-weight: bold;
-        }
-        
-    </style>
 	<th:block layout:fragment="css"></th:block>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
+
     <!-- Sidebar -->
-    <div id="sidebar" class="bg-blue-900 text-white w-64 min-h-screen p-4 flex flex-col">
-        <h2 class="text-lg font-bold mb-4">Admin Panel</h2>
-
-        <div class="space-y-2">
-            <div>
-                <p class="text-lg font-semibold">메뉴-A</p>
-                <ul class="pl-4 space-y-1">
-                    <li><a th:href="@{/View/menuA_0.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_0.html'} ? 'selected'">color</a></li>
-                    <li><a th:href="@{/View/menuA_1.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_1.html'} ? 'selected'">input sample</a></li>
-					<li><a th:href="@{/View/menuA_2.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_2.html'} ? 'selected'">button progressbar</a></li>
-					<li><a th:href="@{/View/menuA_3.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_3.html'} ? 'selected'">layer popup</a></li>
-					<li><a th:href="@{/View/menuA_31.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_31.html'} ? 'selected'">layer multi popup</a></li>
-					<li><a th:href="@{/View/menuA_4.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_4.html'} ? 'selected'">toast</a></li>
-					<li><a th:href="@{/View/menuA_5.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_5.html'} ? 'selected'">table</a></li>
-					<li><a th:href="@{/View/menuA_51.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_51.html'} ? 'selected'">table-1</a></li>
-					<li><a th:href="@{/View/menuA_6.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_6.html'} ? 'selected'">chart</a></li>
-					<li><a th:href="@{/View/menuA_7.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_7.html'} ? 'selected'">alert</a></li>
-					<li><a th:href="@{/View/menuA_8.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_8.html'} ? 'selected'">profile</a></li>
-                </ul>
-            </div>
-
-            <div>
-                <p class="text-lg font-semibold">메뉴-B</p>
-                <ul class="pl-4 space-y-1">
-                    <li><a th:href="@{/View/menuB_1.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_1.html'} ? 'selected'">메뉴-B-1</a></li>
-					<li><a th:href="@{/View/menuB_2.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_2.html'} ? 'selected'">메뉴-B-2</a></li>
-					<li><a th:href="@{/View/menuB_3.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_3.html'} ? 'selected'">메뉴-B-3</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Resizer -->
-        <div id="resizer"></div>
-    </div>
+    <div th:replace="~{TestView/sideView :: sideView}"></div>
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col">
         <!-- Top Bar -->
-        <div class="bg-white shadow-md p-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold"><th:block layout:fragment="title"></th:block></h1>
-            
-            <!-- 오른쪽 사용자 메뉴 -->
-            <div class="relative">
-		        <!-- 사용자 아이콘 버튼 -->
-                <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
-		            <img th:src="@{/images/undraw_profile.svg}" alt="User" class="w-10 h-10 rounded-full">
-                </button>
-		
-		        <!-- Dropdown 메뉴 -->
-		        <div id="userMenu" class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md opacity-0 scale-95 transform transition-all duration-200 hidden">
-		            <button class="menuItem flex items-center px-4 py-2 hover:bg-gray-100 w-full">
-		                <svg class="w-5 h-5 mr-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10 10a4 4 0 110-8 4 4 0 010 8zm0 2c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"></path></svg>
-		                Profile
-		            </button>
-		            <button class="menuItem flex items-center px-4 py-2 hover:bg-gray-100 w-full">
-		                <svg class="w-5 h-5 mr-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 10a7 7 0 1114 0A7 7 0 013 10zm6-3a1 1 0 102 0 1 1 0 00-2 0zm-1 3a1 1 0 112 0v2a1 1 0 11-2 0v-2z" clip-rule="evenodd"></path></svg>
-		                Logout
-		            </button>
-                </div>
-            </div>
-        </div>
+        <div th:replace="~{TestView/headerView :: headerView}"></div>
 
         <!-- Main Content Area -->
         <div class="flex-1 p-6 overflow-auto">
             <th:block layout:fragment="content"></th:block>
         </div>
-        
     </div>
 
-    <!-- 팝업을 위한 컨테이너 -->
-    <div id="popupContainer">
-        <div id="popupOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center">
-            <div id="popupWindow" class="bg-white rounded-lg shadow-lg w-96 relative">
-                <div id="popupContentContainer">
-                    <!-- 서버에서 로드된 내용이 여기에 삽입됨 -->
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- 모달창 -->
+    <div th:replace="~{TestView/modalView :: modalView}"></div>
 
-    <script>
-        const sidebar = document.getElementById("sidebar");
-        const resizer = document.getElementById("resizer");
-        let isResizing = false;
-
-        resizer.addEventListener("mousedown", (event) => {
-            isResizing = true;
-            document.addEventListener("mousemove", handleMouseMove);
-            document.addEventListener("mouseup", () => {
-                isResizing = false;
-                document.removeEventListener("mousemove", handleMouseMove);
-            });
-        });
-
-        function handleMouseMove(event) {
-            if (!isResizing) return;
-            let newWidth = event.clientX - sidebar.offsetLeft;
-            if (newWidth >= 100 && newWidth <= 400) {
-                sidebar.style.width = newWidth + "px";
-            }
-        }
-
-        document.getElementById("userMenuButton").addEventListener("click", function() {
-            document.getElementById("userMenu").classList.toggle("hidden");
-        });
-    </script>
-    
-    <script>
-    		
-        const userMenuButton = document.getElementById("userMenuButton");
-        const userMenu = document.getElementById("userMenu");
-        const menuItems = document.querySelectorAll(".menuItem");
-
-        function toggleMenu() {
-            if (userMenu.classList.contains("hidden")) {
-                userMenu.classList.remove("hidden");
-                setTimeout(() => {
-                    userMenu.classList.add("opacity-100", "scale-100");
-                    userMenu.classList.remove("opacity-0", "scale-95");
-                }, 10);
-            } else {
-                closeMenu();
-            }
-        }
-
-        function closeMenu() {
-            userMenu.classList.remove("opacity-100", "scale-100");
-            userMenu.classList.add("opacity-0", "scale-95");
-            setTimeout(() => userMenu.classList.add("hidden"), 200);
-        }
-
-        // 사용자 아이콘 클릭 시 메뉴 토글
-        userMenuButton.addEventListener("click", toggleMenu);
-
-        // 메뉴 항목 클릭 시 닫기
-        menuItems.forEach(item => {
-            item.addEventListener("click", closeMenu);
-                    });
-                    
-        // 메뉴 바깥을 클릭하면 닫기
-        document.addEventListener("click", (event) => {
-            if (!userMenu.contains(event.target) && !userMenuButton.contains(event.target)) {
-                closeMenu();
-        }
-        });
-	</script>
-	
-	<script>
-	
-		// Method 종류
-		const MethodType = Object.freeze({
-			Get: "GET",
-			Post: "POST"
-		});
-	
-		// ContentsType 종류
-		const ContentsType = Object.freeze({
-			Form: "x-www-form-urlencoded",
-			Json: "application/json",
-			Multipart:"multipart/form-data"
-		});
-	
-    	// 팝업 열기 함수
-        function openPopup( sendObj ) {
-    		
-    		if( ! sendObj.url ){
-    			throw new Error("❌ [useCall Error] 'url' 값이 필수입니다.");
-    		}
-    		
-    		const defaults = {
-   		        method: MethodType.Post, // 기본값: POST
-   		        contentType: ContentsType.Json, // 기본값: JSON
-   		        data:null,
-   		        width: '800px'
-   		    };
-    		
-    		const finalValue = { ...defaults, ...sendObj };
-    		const width = finalValue.width;
-    		
-    		const overlayElement = document.getElementById("popupOverlay");
-    		if( overlayElement ){
-    			overlayElement.classList.remove("hidden");
-    		}
-
-            fetch(finalValue.url, {
-                method: finalValue.method,
-                headers: { "Content-Type": finalValue.contentType },
-                body: finalValue.data
-            })
-                .then(response => response.text())
-                .then(html => {
-                	const container = document.getElementById("popupContentContainer");
-                    container.innerHTML = html;
-                    
-                    // 새로 추가된 script 태그 실행 (Thymeleaf script 실행)
-                    container.querySelectorAll("script").forEach(oldScript => {
-                        const newScript = document.createElement("script");
-                        newScript.textContent = oldScript.textContent;
-                        document.body.appendChild(newScript);
-                        oldScript.remove();
-                    });
-                    
-                 	// 팝업 가로 크기 동적 적용
-                    const popupWindow = document.getElementById("popupWindow");
-                    if (popupWindow) {
-                        popupWindow.style.width = width;
-                    }
-                })
-                .catch(error => alert("데이터 로드 실패: " + error));
-        }
-	</script>
-
-    <th:block layout:fragment="script"></th:block>
+	<th:block layout:fragment="script"></th:block>
 
 </body>
 </html>

@@ -4,18 +4,34 @@
      layout:decorate="~{TestView/LayoutModal}">
 
     <th:block layout:fragment="modalTitle">
-        메뉴-A-Modal
+        메뉴-A-Modal2
     </th:block>
 
     <th:block layout:fragment="modalContent">
-        <!-- 팝업을 여는 버튼 -->
-		<button th:onclick="|openPopup('@{/View/menuA_modal3.layer}')|"  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
-		    새로운 팝업 모달 열기
-		</button>
+        <form id="userForm">
+            <input type="hidden" id="userNo" name="userNo" th:value="${user.userNo}">
+            <div class="mb-2">
+                <label class="block text-gray-700" >이름</label><label class="block text-gray-700" th:text="${user.name}"></label>
+            </div>
+            <div class="mb-2">
+                <label class="block text-gray-700">이메일</label><label class="block text-gray-700" th:text="${user.email}"></label>
+            </div>
+            <div class="mb-2">
+                <label class="block text-gray-700">나이</label><label class="block text-gray-700" th:text="${user.age}"></label>
+            </div>
+            <div class="mb-2">
+                <label class="block text-gray-700">성별</label><label class="block text-gray-700" th:text="${user.gender}"></label>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">비고</label><label class="block text-gray-700" th:text="${user.note}"></label>
+            </div>
+        </form>
     </th:block>
 
     <th:block layout:fragment="modalScript">
-        
+        <script>
+       	document.getElementById("saveButton").style.display = "none";
+        </script>
     </th:block>
 
 </html>

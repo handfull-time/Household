@@ -1,0 +1,95 @@
+<div xmlns:th="http://www.thymeleaf.org"
+	th:fragment="sideView" 
+	id="sidebar" 
+	class="bg-blue-900 text-white w-64 min-h-screen p-4 flex flex-col">
+<style>
+    #sidebar {
+        min-width: 100px;
+        max-width: 400px;
+        width: 250px;
+        position: relative;
+        user-select: none;
+        display: flex;
+        flex-direction: column;
+    }
+    #resizer {
+        width: 8px;
+        cursor: ew-resize;
+        background: gray;
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+    }
+    
+    .menu-item {
+        padding: 8px;
+        display: block;
+        border-radius: 4px;
+    }
+    .menu-item:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    .menu-item.selected {
+        background-color: rgba(255, 255, 255, 0.3);
+        font-weight: bold;
+    }
+    
+</style>
+<h2 class="text-lg font-bold mb-4">Admin Panel</h2>
+
+<div class="space-y-2">
+	<div>
+		<p class="text-lg font-semibold">메뉴-A</p>
+		<ul class="pl-4 space-y-1">
+			<li><a th:href="@{/View/menuA_0.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_0.html'} ? 'selected'">color</a></li>
+			<li><a th:href="@{/View/menuA_1.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_1.html'} ? 'selected'">input sample</a></li>
+			<li><a th:href="@{/View/menuA_2.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_2.html'} ? 'selected'">button progressbar</a></li>
+			<li><a th:href="@{/View/menuA_3.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_3.html'} ? 'selected'">layer popup</a></li>
+			<li><a th:href="@{/View/menuA_31.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_31.html'} ? 'selected'">layer save x popup</a></li>
+			<li><a th:href="@{/View/menuA_32.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_32.html'} ? 'selected'">layer multi popup</a></li>
+			<li><a th:href="@{/View/menuA_4.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_4.html'} ? 'selected'">toast</a></li>
+			<li><a th:href="@{/View/menuA_5.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_5.html'} ? 'selected'">table</a></li>
+			<li><a th:href="@{/View/menuA_51.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_51.html'} ? 'selected'">table-1</a></li>
+			<li><a th:href="@{/View/menuA_6.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_6.html'} ? 'selected'">chart</a></li>
+			<li><a th:href="@{/View/menuA_7.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_7.html'} ? 'selected'">alert</a></li>
+			<li><a th:href="@{/View/menuA_8.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_8.html'} ? 'selected'">profile</a></li>
+		</ul>
+	</div>
+
+    <div>
+    	<p class="text-lg font-semibold">메뉴-B</p>
+    	<ul class="pl-4 space-y-1">
+    		<li><a th:href="@{/View/menuB_1.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_1.html'} ? 'selected'">메뉴-B-1</a></li>
+    		<li><a th:href="@{/View/menuB_2.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_2.html'} ? 'selected'">메뉴-B-2</a></li>
+    		<li><a th:href="@{/View/menuB_3.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_3.html'} ? 'selected'">메뉴-B-3</a></li>
+    	</ul>
+    </div>
+</div>
+
+<!-- Resizer -->
+<div id="resizer"></div>
+
+<script>
+     const sidebar = document.getElementById("sidebar");
+     const resizer = document.getElementById("resizer");
+     let isResizing = false;
+
+     resizer.addEventListener("mousedown", (event) => {
+         isResizing = true;
+         document.addEventListener("mousemove", handleMouseMove);
+         document.addEventListener("mouseup", () => {
+             isResizing = false;
+             document.removeEventListener("mousemove", handleMouseMove);
+         });
+     });
+
+     function handleMouseMove(event) {
+         if (!isResizing) return;
+         let newWidth = event.clientX - sidebar.offsetLeft;
+         if (newWidth >= 100 && newWidth <= 400) {
+             sidebar.style.width = newWidth + "px";
+         }
+     }
+ </script>
+</div>

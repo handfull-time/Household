@@ -23,7 +23,7 @@ public class TestViewController {
     }
 
     @GetMapping("View/{path}.html")
-    public String dynamicView(@PathVariable("path") String path, HttpServletRequest request, Model model) {
+    public String dynamicView(HttpServletRequest request, Model model, @PathVariable("path") String path) {
     	
     	final String uri = request.getRequestURI().substring(1);
         model.addAttribute("currentURI", uri.substring(uri.indexOf("/")) );
@@ -42,8 +42,8 @@ public class TestViewController {
     	String note;
     }
     
-    @GetMapping("View/Layer.layer")
-    public String layerView(Model model) {
+    @GetMapping("View/{path}.layer")
+    public String layerView(Model model, @PathVariable("path") String path) {
     	
     	User user = new User();
     	user.setUserNo(2541L);
@@ -55,7 +55,7 @@ public class TestViewController {
     	
         model.addAttribute("user", user );
         
-        return "TestView/menuA_modal";
+        return "TestView/" + path;
     }
     
     @Setter

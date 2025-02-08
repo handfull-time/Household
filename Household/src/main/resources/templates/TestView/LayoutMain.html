@@ -192,15 +192,47 @@
 	</script>
 	
 	<script>
+	
+		// Method 종류
+		const MethodType = Object.freeze({
+			Get: "GET",
+			Post: "POST"
+		});
+	
+		// ContentsType 종류
+		const ContentsType = Object.freeze({
+			Form: "x-www-form-urlencoded",
+			Json: "application/json",
+			Multipart:"multipart/form-data"
+		});
+	
     	// 팝업 열기 함수
-        function openPopup(url, width = "800px") {
+        function openPopup( sendObj ) {
+    		
+    		if( ! sendObj.url ){
+    			throw new Error("❌ [useCall Error] 'url' 값이 필수입니다.");
+    		}
+    		
+    		const defaults = {
+   		        method: MethodType.Post, // 기본값: POST
+   		        contentType: ContentsType.Json, // 기본값: JSON
+   		        data:null,
+   		        width: '800px'
+   		    };
+    		
+    		const finalValue = { ...defaults, ...sendObj };
+    		const width = finalValue.width;
     		
     		const overlayElement = document.getElementById("popupOverlay");
     		if( overlayElement ){
     			overlayElement.classList.remove("hidden");
     		}
 
-            fetch(url)
+            fetch(finalValue.url, {
+                method: finalValue.method,
+                headers: { "Content-Type": finalValue.contentType },
+                body: finalValue.data
+            })
                 .then(response => response.text())
                 .then(html => {
                 	const container = document.getElementById("popupContentContainer");

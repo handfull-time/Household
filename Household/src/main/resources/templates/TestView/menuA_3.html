@@ -18,7 +18,7 @@
 		<h2 class="text-2xl font-bold mb-4">메뉴-A-3</h2>
 		<!-- 팝업을 여는 버튼 -->
 		<!-- 팝업을 여는 버튼 -->
-		<button th:onclick="|openPopup('@{/View/menuA_modal.layer}')|" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
+		<button th:onclick="|openPopup({url: '@{/View/menuA_modal.layer}', method: MethodType.Get, width:'400px'})|"  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
 		    팝업 모달 열기
 		</button>
 

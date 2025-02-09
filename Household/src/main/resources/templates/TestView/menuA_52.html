@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{TestView/TableLayout}">
+
+    <th:block layout:fragment="tableTitle">사용자 정보</th:block>
+
+    <th:block layout:fragment="tableColumns">
+        <script th:inline="javascript">
+            const tableColumns = [
+                { key: "id", label: "ID" },
+                { key: "name", label: "이름" },
+                { key: "email", label: "이메일" },
+                { key: "age", label: "나이" },
+                { key: "gender", label: "성별" },
+                { key: "note", label: "비고" }
+            ];
+        </script>
+    </th:block>
+
+    <th:block layout:fragment="tableData">
+        <script th:inline="javascript">
+            const tableData = [
+                { id: 2541, name: "홍길동", email: "hong@test.com", age: 24, gender: "남성", note: "모범학생", address: "서울", phone: "010-1234-5678" },
+                { id: 2542, name: "김철수", email: "kim@test.com", age: 30, gender: "남성", note: "좋은 성과", address: "서울2", phone: "010-1234-5678" },
+                { id: 2543, name: "이영희", email: "lee@test.com", age: 27, gender: "여성", note: "우수한 참여", address: "서울3", phone: "010-1234-5678" },
+                { id: 2544, name: "박지수", email: "park@test.com", age: 22, gender: "여성", note: "적극적", address: "서울4", phone: "010-1234-5678" },
+                { id: 2545, name: "최민호", email: "choi@test.com", age: 35, gender: "남성", note: "책임감 있음", address: "서울5", phone: "010-1234-5678" },
+                { id: 2546, name: "정소영", email: "jung@test.com", age: 29, gender: "여성", note: "성실함", address: "서울6", phone: "010-1234-5678" },
+                { id: 2547, name: "한상우", email: "han@test.com", age: 40, gender: "남성", note: "팀워크 우수", address: "서울7", phone: "010-1234-5678" }
+            ];
+        </script>
+    </th:block>
+
+    <th:block layout:fragment="tableId">userTable</th:block>
+
+    <th:block layout:fragment="script">
+        <script>
+            function showDetail(item, trElement) {
+                console.info(item);
+            }
+        </script>
+    </th:block>
+</html>

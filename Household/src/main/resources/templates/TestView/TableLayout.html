@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{TestView/LayoutMain}">
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{TestView/LayoutMain}">
 
     <th:block layout:fragment="title">
         <th:block th:text="${tableTitle}">테이블</th:block>
@@ -11,12 +11,18 @@
     </th:block>
 
     <th:block layout:fragment="script">
-        <script>
-        	alert('aaa');
-            function initializeTable(tableId, columns, data, rowsPerPage = 4) {
+    
+        <script th:inline="javascript">
+
+        	function initializeTable(columns, data, rowsPerPage = 4) {
+            	
+            	
                 let currentPage = 1;
+                const tableId = /*[[${tableId}]]*/ null;
+                const tablePrimaryKey = /*[[${tablePrimaryKey}]]*/ null;
 
                 function renderTable() {
+                	
                     const searchValue = document.getElementById(tableId + "-search").value.toLowerCase();
                     const filteredData = data.filter(item =>
                         Object.values(item).some(value => value.toString().toLowerCase().includes(searchValue))
@@ -31,13 +37,17 @@
                     paginatedData.forEach(row => {
                         const tr = document.createElement("tr");
                         tr.className = "hover:bg-gray-100 cursor-pointer";
-                        tr.dataset.id = row.id; // row 고유 ID 저장
-                        tr.onclick = () => showDetail(row, tr); // 개별 페이지에서 showDetail 함수 호출
-
+                        
+                        const rowKey = row[tablePrimaryKey] || null;
+                        if (rowKey) {
+                            tr.dataset.id = rowKey;
+                            tr.onclick = () => showDetail(row, tr);
+                        }
+                        
                         columns.forEach(col => {
                             const td = document.createElement("td");
                             td.className = "px-4 py-2 text-center";
-                            td.textContent = row[col.key] || ""; // 매칭된 데이터 값 출력
+                            td.textContent = row[col.key] || "";
                             tr.appendChild(td);
                         });
 
@@ -47,6 +57,18 @@
                     document.getElementById(tableId + "-pageInfo").innerText = `${currentPage} / ${Math.ceil(filteredData.length / rowsPerPage)}`;
                     document.getElementById(tableId + "-prev").disabled = currentPage === 1;
                     document.getElementById(tableId + "-next").disabled = currentPage === Math.ceil(filteredData.length / rowsPerPage);
+                }
+                
+                function renderTableHeader() {
+                    const tableHead = document.getElementById(tableId + "-head").querySelector("tr");
+                    tableHead.innerHTML = "";
+
+                    columns.forEach(col => {
+                        const th = document.createElement("th");
+                        th.className = "px-6 py-3 text-center tracking-wide border-b";
+                        th.textContent = col.label;
+                        tableHead.appendChild(th);
+                    });
                 }
 
                 document.getElementById(tableId + "-search").addEventListener("input", () => {
@@ -66,51 +88,49 @@
                     renderTable();
                 });
 
+                renderTableHeader();
                 renderTable();
             }
-        </script>
-        
-        <script th:inline="javascript">
-        	alert('bbb');
-            /*<![CDATA[*/
-            const tableColumns = /*[[${tableColumns}]]*/ [];
-            const tableData = /*[[${tableData}]]*/ [];
-            const tableId = /*[[${tableId}]]*/ [];
-            initializeTable(tableId, tableColumns, tableData, /*[[${rowsPerPage} ?: 4]]*/ 4);
-            /*]]>*/
         </script>
     </th:block>
 
     <div layout:fragment="content">
-        <h2 class="text-2xl font-bold mb-4">
-            <th:block th:text="${tableTitle}">테이블 제목</th:block>
-        </h2>
+       	<th:block layout:fragment="tableFormHeader"></th:block>
 
         <!-- 검색 입력창 -->
-        <input type="text" th:id="${tableId + '-search'}" class="border p-2 w-full mb-4" placeholder="검색어 입력...">
+        <input type="text" th:id="${tableId + '-search'}" th:classappend="${searchView == 'false'} ? 'hidden' : ''"
+               class="border border-blue-400 bg-blue-50 text-blue-900 placeholder-blue-700 px-3 py-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-100"
+               placeholder="검색어 입력...">
 
         <!-- 테이블 -->
-        <table class="w-full border border-gray-300 rounded-lg shadow-md">
-            <thead class="bg-gray-700 text-white uppercase text-sm">
-                <tr>
-                    <th:block th:each="column : ${tableColumns}">
-                        <th class="px-4 py-2 text-center" th:text="${column.label}"></th>
-                    </th:block>
-                </tr>
-            </thead>
-            <tbody th:id="${tableId + '-body'}" class="divide-y divide-gray-300"></tbody>
-        </table>
-
-        <!-- 페이징 컨트롤 -->
-        <div class="flex justify-center mt-4 space-x-2">
-            <button th:id="${tableId + '-prev'}" class="bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600">이전</button>
-            <span th:id="${tableId + '-pageInfo'}" class="px-3 py-1">1 / 1</span>
-            <button th:id="${tableId + '-next'}" class="bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600">다음</button>
+        <div class="overflow-x-auto rounded-lg shadow-md mt-4">
+            <table class="w-full border border-blue-100 rounded-lg bg-white text-blue-700">
+                <thead th:id="${tableId + '-head'}" class="bg-blue-500 text-white text-base font-semibold">
+                    <tr></tr>
+                </thead>
+                <tbody th:id="${tableId + '-body'}" class="divide-y divide-blue-200">
+                </tbody>
+            </table>
         </div>
 
-        <!-- 상세 정보 영역 (개별 페이지에서 구현) -->
-        <div th:id="${tableId + '-detail'}" class="mt-6 p-4 border rounded-lg shadow-md bg-gray-50"></div>
+        <!-- 페이징 컨트롤 -->
+        <div class="flex justify-between items-center mt-4">
+            <button th:id="${tableId + '-prev'}"
+                    class="bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition">
+                이전
+            </button>
+            <span th:id="${tableId + '-pageInfo'}" class="px-4 py-2 text-blue-700">1 / 1</span>
+            <button th:id="${tableId + '-next'}"
+                    class="bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition">
+                다음
+            </button>
+        </div>
 
-        
+        <!-- 상세 정보 영역 -->
+        <div th:id="${tableId + '-detail'}" th:classappend="${detailView == 'false'} ? 'hidden' : ''"
+             class="mt-6 p-4 border border-blue-300 rounded-lg shadow-md bg-blue-50 text-blue-900">
+        </div>
+
+        <th:block layout:fragment="tableScript"></th:block>
     </div>
 </html>

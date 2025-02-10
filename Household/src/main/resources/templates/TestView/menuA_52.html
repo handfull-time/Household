@@ -1,13 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{TestView/TableLayout}">
+    layout:decorate="~{TestView/TableLayout}"
+    th:with="tableId='userTable', tablePrimaryKey='id', searchView='true', detailView='true'">
 
-    <th:block layout:fragment="tableTitle">사용자 정보</th:block>
+    <th:block layout:fragment="title">
+    	메뉴-A-5 Table layout
+    </th:block>
 
-    <th:block layout:fragment="tableColumns">
+    <!-- 검색 및 입력 폼 -->
+    <div layout:fragment="tableFormHeader" class="border border-blue-300 bg-blue-50 rounded-lg shadow-md p-4 mb-4">
+        <div class="flex flex-wrap items-center gap-4">
+            <label class="text-blue-800 font-semibold">회원 ID:</label>
+            <input type="text" id="memberId"
+                   class="border border-blue-400 bg-white text-blue-900 placeholder-blue-700 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-100"
+                   placeholder="회원 ID 입력...">
+
+            <label class="text-blue-800 font-semibold">전화번호:</label>
+            <input type="text" id="phoneNumber"
+                   class="border border-blue-400 bg-white text-blue-900 placeholder-blue-700 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-100"
+                   placeholder="전화번호 입력...">
+
+            <label class="text-blue-800 font-semibold">주소:</label>
+            <input type="text" id="address"
+                   class="border border-blue-400 bg-white text-blue-900 placeholder-blue-700 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-100"
+                   placeholder="주소 입력...">
+
+            <div class="ml-auto">
+                <button id="submitButton" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
+                    입력
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <th:block layout:fragment="tableScript">
+        
         <script th:inline="javascript">
-            const tableColumns = [
+            
+    		const tableColumns = [
                 { key: "id", label: "ID" },
                 { key: "name", label: "이름" },
                 { key: "email", label: "이메일" },
@@ -15,11 +46,7 @@
                 { key: "gender", label: "성별" },
                 { key: "note", label: "비고" }
             ];
-        </script>
-    </th:block>
 
-    <th:block layout:fragment="tableData">
-        <script th:inline="javascript">
             const tableData = [
                 { id: 2541, name: "홍길동", email: "hong@test.com", age: 24, gender: "남성", note: "모범학생", address: "서울", phone: "010-1234-5678" },
                 { id: 2542, name: "김철수", email: "kim@test.com", age: 30, gender: "남성", note: "좋은 성과", address: "서울2", phone: "010-1234-5678" },
@@ -29,15 +56,29 @@
                 { id: 2546, name: "정소영", email: "jung@test.com", age: 29, gender: "여성", note: "성실함", address: "서울6", phone: "010-1234-5678" },
                 { id: 2547, name: "한상우", email: "han@test.com", age: 40, gender: "남성", note: "팀워크 우수", address: "서울7", phone: "010-1234-5678" }
             ];
+
+         	// 테이블 초기화 호출 (이제 개별 페이지에서 실행)
+            document.addEventListener("DOMContentLoaded", function () {
+                initializeTable(tableColumns, tableData, 4);
+            });
         </script>
-    </th:block>
 
-    <th:block layout:fragment="tableId">userTable</th:block>
-
-    <th:block layout:fragment="script">
         <script>
             function showDetail(item, trElement) {
                 console.info(item);
+                
+                const detailContainer = document.getElementById("userTable-detail");
+                detailContainer.innerHTML = `
+                    <h3 class="text-xl font-bold mb-2">상세 정보</h3>
+                    <p><strong>ID:</strong> ${item.id}</p>
+                    <p><strong>이름:</strong> ${item.name}</p>
+                    <p><strong>이메일:</strong> ${item.email}</p>
+                    <p><strong>나이:</strong> ${item.age}</p>
+                    <p><strong>성별:</strong> ${item.gender}</p>
+                    <p><strong>비고:</strong> ${item.note}</p>
+                    <p><strong>주소:</strong> ${item.address}</p>
+                    <p><strong>전화번호:</strong> ${item.phone}</p>
+                `;
             }
         </script>
     </th:block>

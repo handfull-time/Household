@@ -88,6 +88,7 @@ public class ViewResolverConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/css/**").addResourceLocations("classpath:/static/css/");
         registry.addResourceHandler("/js/**").addResourceLocations("classpath:/static/js/");
         registry.addResourceHandler("/vendor/**").addResourceLocations("classpath:/static/vendor/");
+        registry.addResourceHandler("/html/**").addResourceLocations("classpath:/static/html/");
     }
 	
 //	@Resource(name="MemberInfoArgumentResolver")

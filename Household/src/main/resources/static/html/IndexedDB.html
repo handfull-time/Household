@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>IndexedDB</title>
+	<style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+
+    <h2>IndexedDB 데이터 검색</h2>
+    <label for="flagInput">Flag: </label>
+    <input type="text" id="flagInput">
+    <button onclick="searchData()">검색</button>
+
+    <h3>검색 결과</h3>
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Text</th>
+                <th>Meaning</th>
+                <th>Grammar</th>
+                <th>Flag</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 검색된 데이터가 여기에 표시됨 -->
+        </tbody>
+    </table>
+
+<script>
+class DatabaseManager {
+	
+    constructor(dbName, storeName, version = 1) {
+        this.dbName = dbName;
+        this.storeName = storeName;
+        this.version = version;
+        this.db = null;
+    }
+
+    // **1. IndexedDB 연결 (초기화)**
+    async connect() {
+        return new Promise((resolve, reject) => {
+            
+        	if (this.db) {
+                resolve(this.db);
+                return;
+            }
+
+            const request = indexedDB.open(this.dbName, this.version);
+
+            request.onupgradeneeded = (event) => {
+                this.db = event.target.result;
+
+                if (!this.db.objectStoreNames.contains(this.storeName)) {
+                    let objectStore = this.db.createObjectStore(this.storeName, { keyPath: "id", autoIncrement: true });
+
+                    // 인덱스 생성
+                    objectStore.createIndex("grammar", "grammar", { unique: false });
+                    objectStore.createIndex("flag", "flag", { unique: false });
+                    objectStore.createIndex("grammar_flag", ["grammar", "flag"], { unique: false });
+                }
+            };
+
+            request.onsuccess = (event) => {
+                this.db = event.target.result;
+                resolve(this.db);
+            };
+
+            request.onerror = (event) => {
+                reject("IndexedDB 연결 오류: " + event.target.error);
+            };
+        });
+    }
+
+    // **2. 데이터 추가 (INSERT)**
+    async addData(data) {
+        return new Promise(async (resolve, reject) => {
+            const db = await this.connect();
+            const transaction = db.transaction([this.storeName], "readwrite");
+            const objectStore = transaction.objectStore(this.storeName);
+
+            const request = objectStore.add(data);
+
+            request.onsuccess = () => resolve("데이터 추가 성공!");
+            request.onerror = (event) => reject("데이터 추가 오류: " + event.target.error);
+        });
+    }
+
+    // **3. 모든 데이터 조회 (SELECT ALL)**
+    async getAllData() {
+        return new Promise(async (resolve, reject) => {
+            const db = await this.connect();
+            const transaction = db.transaction([this.storeName], "readonly");
+            const objectStore = transaction.objectStore(this.storeName);
+
+            const request = objectStore.getAll();
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = (event) => reject("조회 오류: " + event.target.error);
+        });
+    }
+    
+    // ✅ 특정 flag 값으로 데이터 검색
+    async getByFlag(flag) {
+        return new Promise(async (resolve, reject) => {
+        	const db = await this.connect();
+            const transaction = db.transaction([this.storeName], "readonly");
+            const objectStore = transaction.objectStore(this.storeName);
+            const index = objectStore.index("flag");
+
+            const request = index.getAll(flag);
+
+            request.onsuccess = function () {
+                resolve(request.result);
+            };
+
+            request.onerror = function () {
+                reject("조회 오류: " + request.error);
+            };
+        });
+    }
+
+    // 첫 데이터 조회 
+    async getFirstData() {
+        return new Promise(async (resolve, reject) => {
+            const db = await this.connect();
+            const transaction = db.transaction([this.storeName], "readonly");
+            const objectStore = transaction.objectStore(this.storeName);
+
+            const request = objectStore.openCursor(); // 첫 번째 데이터만 가져옴
+
+            request.onsuccess = function (event) {
+                const cursor = event.target.result;
+                if (cursor) {
+                    resolve(cursor.value); // 첫 번째 데이터 반환
+                } else {
+                    resolve(null); // 데이터가 없음
+                }
+            };
+
+            request.onerror = function () {
+                reject("조회 오류!");
+            };
+        });
+    }
+
+
+
+    // **4. 특정 데이터 조회 (grammar & flag 일치)**
+    async getByGrammarAndflag(grammar, flag) {
+        return new Promise(async (resolve, reject) => {
+            const db = await this.connect();
+            const transaction = db.transaction([this.storeName], "readonly");
+            const objectStore = transaction.objectStore(this.storeName);
+
+            const index = objectStore.index("grammar_flag");
+            const request = index.getAll([grammar, flag]);
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = (event) => reject("조회 오류: " + event.target.error);
+        });
+    }
+
+    // **5. 특정 데이터 수정 (UPDATE)**
+    async updateData(id, newData) {
+        return new Promise(async (resolve, reject) => {
+            const db = await this.connect();
+            const transaction = db.transaction([this.storeName], "readwrite");
+            const objectStore = transaction.objectStore(this.storeName);
+
+            const request = objectStore.get(id);
+
+            request.onsuccess = () => {
+                let data = request.result;
+                if (data) {
+                    Object.assign(data, newData);
+                    const updateRequest = objectStore.put(data);
+
+                    updateRequest.onsuccess = () => resolve("데이터 수정 완료!");
+                    updateRequest.onerror = (event) => reject("수정 오류: " + event.target.error);
+                } else {
+                    reject("ID를 찾을 수 없음.");
+                }
+            };
+
+            request.onerror = (event) => reject("조회 오류: " + event.target.error);
+        });
+    }
+
+    // **6. 특정 데이터 삭제 (DELETE)**
+    async deleteData(id) {
+        return new Promise(async (resolve, reject) => {
+            const db = await this.connect();
+            const transaction = db.transaction([this.storeName], "readwrite");
+            const objectStore = transaction.objectStore(this.storeName);
+
+            const request = objectStore.delete(id);
+
+            request.onsuccess = () => resolve(`ID ${id} 데이터 삭제 완료!`);
+            request.onerror = (event) => reject("삭제 오류: " + event.target.error);
+        });
+    }
+
+    // **7. IndexedDB 삭제 (RESET)**
+    static async deleteDatabase(dbName) {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.deleteDatabase(dbName);
+
+            request.onsuccess = () => resolve("IndexedDB 삭제 완료!");
+            request.onerror = (event) => reject("데이터베이스 삭제 오류: " + event.target.error);
+        });
+    }
+}
+</script>
+
+<!-- <script>
+(async function () {
+	console.info('1');
+    const dbManager = new DatabaseManager("LanguageDB", "sentences");
+	console.info('1-1');
+
+    // 1. 데이터 추가
+    await dbManager.addData({ text: "I run.", meaning: "나는 달린다.", grammar: "sv", flag: "none" });
+    await dbManager.addData({ text: "He eats.", meaning: "그는 먹는다.", grammar: "sv", flag: "flag1" });
+
+    // 2. 모든 데이터 조회
+    console.log("모든 데이터:", await dbManager.getAllData());
+
+    // 3. 특정 grammar & flag 조회
+    console.log("조회 결과:", await dbManager.getByGrammarAndflag("sv", "none"));
+
+    // 4. 데이터 수정
+    await dbManager.updateData(1, { text: "I jog.", meaning: "나는 조깅한다." });
+
+    // 5. 데이터 삭제
+    await dbManager.deleteData(2);
+
+    // 6. 전체 데이터 조회
+    console.log("수정 후 데이터:", await dbManager.getAllData());
+})();
+</script> -->
+
+	<script>
+        // ✅ IndexedDB 연결
+        const dbManager = new DatabaseManager("LanguageDB", "sentences");
+
+        // ✅ 검색 버튼 클릭 시 실행
+        async function searchData() {
+            const flagValue = document.getElementById("flagInput").value.trim();
+
+            if (!flagValue) {
+                alert("Flag 값을 입력하세요.");
+                return;
+            }
+
+            try {
+                const results = await dbManager.getByFlag(flagValue);
+                updateTable(results);
+            } catch (error) {
+                console.error("조회 오류:", error);
+            }
+        }
+
+        // ✅ 검색 결과를 테이블에 표시
+        function updateTable(data) {
+            const tbody = document.querySelector("#resultTable tbody");
+            tbody.innerHTML = ""; // 기존 내용 삭제
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">검색 결과 없음</td></tr>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const row = `<tr>
+                    <td>${item.id}</td>
+                    <td>${item.text}</td>
+                    <td>${item.meaning}</td>
+                    <td>${item.grammar}</td>
+                    <td>${item.flag}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // ✅ 예제 데이터 추가 (최초 실행 시)
+        async function initData() {
+        	const firstData = await dbManager.getFirstData();
+        	if( firstData ){
+        		console.info('데이터 있음');
+        		return;
+        	}
+        	
+            await dbManager.addData({ text: "I run.", meaning: "나는 달린다.", grammar: "sv", flag: "none" });
+            await dbManager.addData({ text: "She eats.", meaning: "그녀는 먹는다.", grammar: "sv", flag: "flag1" });
+            await dbManager.addData({ text: "He sleeps.", meaning: "그는 잔다.", grammar: "sv", flag: "none" });
+            await dbManager.addData({ text: "It barks.", meaning: "그것은 짖는다.", grammar: "svo", flag: "flag2" });
+        }
+
+        // ✅ IndexedDB 초기화 및 예제 데이터 추가
+        (async function () {
+            await initData();
+            
+            const allData = await dbManager.getAllData();
+            
+            updateTable(allData);
+        })();
+    </script>    
+</body>
+</html>

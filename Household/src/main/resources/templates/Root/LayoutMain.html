@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Budget Tracker</title>
+    <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/MyToast.js}"></script>
+	<th:block layout:fragment="css"></th:block>
+</head>
+<body class="bg-gray-100 min-h-screen flex">
+
+	<div th:replace="~{Root/alertView :: alertView}"></div>
+    <!-- Sidebar -->
+    <div th:replace="~{Root/sideView :: sideView}"></div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <!-- Top Bar -->
+        <div th:replace="~{Root/headerView :: headerView}"></div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 p-6 overflow-auto">
+            <th:block layout:fragment="content"></th:block>
+        </div>
+    </div>
+
+    <!-- 모달창 -->
+    <div th:replace="~{Root/modalView :: modalView}"></div>
+
+	<th:block layout:fragment="script"></th:block>
+
+</body>
+</html>

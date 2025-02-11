@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영어 문장 공부</title><!-- 봄이야 사랑해~ -->
+	<script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        let sentences = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadSettings();
+            displaySentence();
+        });
+
+        function firstLoad(){
+
+            if (localStorage.getItem("sentenceData") === null) {
+                localStorage.setItem("sentenceData", JSON.stringify([
+                { "text": "The boy cries.", "meaning": "그 소년은 운다.", "grammar": "sv" },
+  { "text": "The girl smiles.", "meaning": "그 소녀는 미소 짓는다.", "grammar": "sv" },
+  { "text": "The dog barks.", "meaning": "그 개는 짖는다.", "grammar": "sv" },
+  { "text": "The cat sleeps.", "meaning": "그 고양이는 잔다.", "grammar": "sv" },
+  { "text": "The fish swims.", "meaning": "그 물고기는 수영한다.", "grammar": "sv" },
+  { "text": "The bird flies.", "meaning": "그 새는 난다.", "grammar": "sv" },
+  { "text": "The sun shines.", "meaning": "태양은 빛난다.", "grammar": "sv" },
+  { "text": "The wind blows.", "meaning": "바람이 분다.", "grammar": "sv" },
+  { "text": "The baby sleeps.", "meaning": "아기는 잔다.", "grammar": "sv" },
+  { "text": "The clock ticks.", "meaning": "시계가 똑딱거린다.", "grammar": "sv" },
+  { "text": "The bell rings.", "meaning": "종이 울린다.", "grammar": "sv" },
+  { "text": "The kite flies.", "meaning": "연이 난다.", "grammar": "sv" },
+  { "text": "The flag waves.", "meaning": "깃발이 흔들린다.", "grammar": "sv" },
+  { "text": "The car moves.", "meaning": "차가 움직인다.", "grammar": "sv" },
+  { "text": "The train runs.", "meaning": "기차가 달린다.", "grammar": "sv" },
+  { "text": "The water flows.", "meaning": "물이 흐른다.", "grammar": "sv" },
+  { "text": "The stars shine.", "meaning": "별들이 빛난다.", "grammar": "sv" },
+  { "text": "The baby cries.", "meaning": "아기가 운다.", "grammar": "sv" },
+  { "text": "The monkey climbs.", "meaning": "원숭이가 올라간다.", "grammar": "sv" },
+  { "text": "The elephant walks.", "meaning": "코끼리가 걷는다.", "grammar": "sv" },
+  { "text": "The giraffe stands.", "meaning": "기린이 서 있다.", "grammar": "sv" },
+  { "text": "The crab crawls.", "meaning": "게가 기어간다.", "grammar": "sv" },
+  { "text": "The duck swims.", "meaning": "오리가 헤엄친다.", "grammar": "sv" },
+  { "text": "The frog jumps.", "meaning": "개구리가 뛴다.", "grammar": "sv" },
+  { "text": "The cow eats.", "meaning": "소가 먹는다.", "grammar": "sv" },
+  { "text": "The sheep runs.", "meaning": "양이 달린다.", "grammar": "sv" },
+  { "text": "The lion roars.", "meaning": "사자가 으르렁거린다.", "grammar": "sv" },
+  { "text": "The tiger growls.", "meaning": "호랑이가 으르렁거린다.", "grammar": "sv" },
+  { "text": "The snake crawls.", "meaning": "뱀이 기어간다.", "grammar": "sv" },
+  { "text": "The rabbit hops.", "meaning": "토끼가 깡충 뛴다.", "grammar": "sv" },
+  { "text": "The spider crawls.", "meaning": "거미가 기어간다.", "grammar": "sv" },
+  { "text": "The fish jumps.", "meaning": "물고기가 뛴다.", "grammar": "sv" },
+  { "text": "The bear sleeps.", "meaning": "곰이 잔다.", "grammar": "sv" },
+  { "text": "I see a bird.", "meaning": "나는 새를 본다.", "grammar": "svo" },
+  { "text": "She sings a song.", "meaning": "그녀는 노래를 부른다.", "grammar": "svo" },
+  { "text": "He kicks the ball.", "meaning": "그는 공을 찬다.", "grammar": "svo" },
+  { "text": "We watch a movie.", "meaning": "우리는 영화를 본다.", "grammar": "svo" },
+  { "text": "They eat an apple.", "meaning": "그들은 사과를 먹는다.", "grammar": "svo" },
+  { "text": "You read a book.", "meaning": "너는 책을 읽는다.", "grammar": "svo" },
+  { "text": "The boy draws a picture.", "meaning": "그 소년은 그림을 그린다.", "grammar": "svo" },
+  { "text": "The girl makes a cake.", "meaning": "그 소녀는 케이크를 만든다.", "grammar": "svo" },
+  { "text": "The cat catches a mouse.", "meaning": "그 고양이는 쥐를 잡는다.", "grammar": "svo" },
+  { "text": "The dog chases a rabbit.", "meaning": "그 개는 토끼를 쫓는다.", "grammar": "svo" },
+  { "text": "The teacher writes a word.", "meaning": "선생님은 단어를 쓴다.", "grammar": "svo" },
+  { "text": "The baby holds a toy.", "meaning": "아기는 장난감을 잡는다.", "grammar": "svo" },
+  { "text": "I open the door.", "meaning": "나는 문을 연다.", "grammar": "svo" },
+  { "text": "She closes the window.", "meaning": "그녀는 창문을 닫는다.", "grammar": "svo" },
+  { "text": "He washes his hands.", "meaning": "그는 손을 씻는다.", "grammar": "svo" },
+  { "text": "We build a sandcastle.", "meaning": "우리는 모래성을 만든다.", "grammar": "svo" },
+  { "text": "They drink water.", "meaning": "그들은 물을 마신다.", "grammar": "svo" },
+  { "text": "You buy a gift.", "meaning": "너는 선물을 산다.", "grammar": "svo" },
+  { "text": "The baby drops a spoon.", "meaning": "아기가 숟가락을 떨어뜨린다.", "grammar": "svo" },
+  { "text": "The monkey eats a banana.", "meaning": "원숭이가 바나나를 먹는다.", "grammar": "svo" },
+  { "text": "The elephant carries a log.", "meaning": "코끼리가 통나무를 나른다.", "grammar": "svo" },
+  { "text": "The giraffe eats leaves.", "meaning": "기린이 나뭇잎을 먹는다.", "grammar": "svo" },
+  { "text": "The duck swims in the pond.", "meaning": "오리가 연못에서 헤엄친다.", "grammar": "svo" },
+  { "text": "The frog catches a fly.", "meaning": "개구리가 파리를 잡는다.", "grammar": "svo" },
+  { "text": "The cow gives milk.", "meaning": "소가 우유를 준다.", "grammar": "svo" },
+  { "text": "The lion hunts a deer.", "meaning": "사자가 사슴을 사냥한다.", "grammar": "svo" },
+  { "text": "The tiger bites the meat.", "meaning": "호랑이가 고기를 문다.", "grammar": "svo" },
+  { "text": "The snake eats a mouse.", "meaning": "뱀이 쥐를 먹는다.", "grammar": "svo" },
+  { "text": "The rabbit finds a carrot.", "meaning": "토끼가 당근을 찾는다.", "grammar": "svo" },
+  { "text": "The spider spins a web.", "meaning": "거미가 거미줄을 친다.", "grammar": "svo" },
+  { "text": "I pack my bag.", "meaning": "나는 가방을 싼다.", "grammar": "svo" },
+  { "text": "She washes the dishes.", "meaning": "그녀는 설거지를 한다.", "grammar": "svo" },
+  { "text": "He fixes his bike.", "meaning": "그는 자전거를 고친다.", "grammar": "svo" },
+  { "text": "We take a picture.", "meaning": "우리는 사진을 찍는다.", "grammar": "svo" },
+  { "text": "They light a candle.", "meaning": "그들은 촛불을 켠다.", "grammar": "svo" },
+  { "text": "You feed the fish.", "meaning": "너는 물고기에게 먹이를 준다.", "grammar": "svo" },
+  { "text": "The boy kicks a stone.", "meaning": "그 소년은 돌을 찬다.", "grammar": "svo" },
+  { "text": "The girl braids her hair.", "meaning": "그 소녀는 머리를 땋는다.", "grammar": "svo" },
+  { "text": "The teacher explains a lesson.", "meaning": "선생님이 수업을 설명한다.", "grammar": "svo" },  
+  { "text": "I am happy.", "meaning": "나는 행복하다.", "grammar": "sva" },
+  { "text": "She is sad.", "meaning": "그녀는 슬프다.", "grammar": "sva" },
+  { "text": "He is tall.", "meaning": "그는 키가 크다.", "grammar": "sva" },
+  { "text": "We are strong.", "meaning": "우리는 강하다.", "grammar": "sva" },
+  { "text": "They are kind.", "meaning": "그들은 친절하다.", "grammar": "sva" },
+  { "text": "You are smart.", "meaning": "너는 똑똑하다.", "grammar": "sva" },
+  { "text": "The boy is shy.", "meaning": "그 소년은 수줍어한다.", "grammar": "sva" },
+  { "text": "The girl is pretty.", "meaning": "그 소녀는 예쁘다.", "grammar": "sva" },
+  { "text": "The dog is big.", "meaning": "그 개는 크다.", "grammar": "sva" },
+  { "text": "The cat is small.", "meaning": "그 고양이는 작다.", "grammar": "sva" },
+  { "text": "The fish is fast.", "meaning": "그 물고기는 빠르다.", "grammar": "sva" },
+  { "text": "The bird is free.", "meaning": "그 새는 자유롭다.", "grammar": "sva" },
+  { "text": "The sun is bright.", "meaning": "태양은 밝다.", "grammar": "sva" },
+  { "text": "The sky is blue.", "meaning": "하늘은 파랗다.", "grammar": "sva" },
+  { "text": "The baby is cute.", "meaning": "아기는 귀엽다.", "grammar": "sva" },
+  { "text": "The clock is old.", "meaning": "그 시계는 오래되었다.", "grammar": "sva" },
+  { "text": "The bell is loud.", "meaning": "그 종은 크다.", "grammar": "sva" },
+  { "text": "The kite is high.", "meaning": "연이 높다.", "grammar": "sva" },
+  { "text": "The flag is red.", "meaning": "깃발은 빨갛다.", "grammar": "sva" },
+  { "text": "The car is slow.", "meaning": "그 차는 느리다.", "grammar": "sva" },
+  { "text": "The train is long.", "meaning": "그 기차는 길다.", "grammar": "sva" },
+  { "text": "The water is cold.", "meaning": "물이 차갑다.", "grammar": "sva" },
+  { "text": "The stars are shiny.", "meaning": "별들이 반짝인다.", "grammar": "sva" },
+  { "text": "The baby is sleepy.", "meaning": "아기는 졸리다.", "grammar": "sva" },
+  { "text": "The monkey is funny.", "meaning": "원숭이는 웃기다.", "grammar": "sva" },
+  { "text": "The elephant is heavy.", "meaning": "그 코끼리는 무겁다.", "grammar": "sva" },
+  { "text": "The giraffe is tall.", "meaning": "기린은 키가 크다.", "grammar": "sva" },
+  { "text": "The crab is small.", "meaning": "게는 작다.", "grammar": "sva" },
+  { "text": "The duck is cute.", "meaning": "오리는 귀엽다.", "grammar": "sva" },
+  { "text": "The frog is green.", "meaning": "개구리는 초록색이다.", "grammar": "sva" },
+  { "text": "The cow is fat.", "meaning": "소는 뚱뚱하다.", "grammar": "sva" },
+  { "text": "The sheep is white.", "meaning": "양은 하얗다.", "grammar": "sva" },
+  { "text": "The lion is brave.", "meaning": "사자는 용감하다.", "grammar": "sva" },
+  { "text": "The tiger is strong.", "meaning": "호랑이는 강하다.", "grammar": "sva" },
+  { "text": "The snake is long.", "meaning": "뱀은 길다.", "grammar": "sva" },
+  { "text": "The rabbit is fast.", "meaning": "토끼는 빠르다.", "grammar": "sva" },
+  { "text": "The spider is scary.", "meaning": "거미는 무섭다.", "grammar": "sva" },
+  { "text": "The fish is beautiful.", "meaning": "물고기는 아름답다.", "grammar": "sva" },
+  { "text": "The bear is sleepy.", "meaning": "곰은 졸리다.", "grammar": "sva" },
+  { "text": "I run in the park.", "meaning": "나는 공원에서 달린다.", "grammar": "svp" },
+  { "text": "She plays in the playground.", "meaning": "그녀는 놀이터에서 논다.", "grammar": "svp" },
+  { "text": "He swims in the pool.", "meaning": "그는 수영장에서 수영한다.", "grammar": "svp" },
+  { "text": "We eat in the kitchen.", "meaning": "우리는 부엌에서 먹는다.", "grammar": "svp" },
+  { "text": "They study in the library.", "meaning": "그들은 도서관에서 공부한다.", "grammar": "svp" },
+  { "text": "You sleep in the bedroom.", "meaning": "너는 침실에서 잔다.", "grammar": "svp" },
+  { "text": "The boy sits on the chair.", "meaning": "그 소년은 의자에 앉는다.", "grammar": "svp" },
+  { "text": "The girl dances in the room.", "meaning": "그 소녀는 방에서 춤춘다.", "grammar": "svp" },
+  { "text": "The dog runs in the yard.", "meaning": "그 개는 마당에서 달린다.", "grammar": "svp" },
+  { "text": "The cat sleeps on the sofa.", "meaning": "그 고양이는 소파에서 잔다.", "grammar": "svp" },
+  { "text": "The fish swims in the pond.", "meaning": "그 물고기는 연못에서 수영한다.", "grammar": "svp" },
+  { "text": "The bird flies in the sky.", "meaning": "그 새는 하늘을 난다.", "grammar": "svp" },
+  { "text": "The sun rises in the east.", "meaning": "태양은 동쪽에서 뜬다.", "grammar": "svp" },
+  { "text": "The baby crawls on the floor.", "meaning": "아기는 바닥에서 기어간다.", "grammar": "svp" },
+  { "text": "The clock hangs on the wall.", "meaning": "그 시계는 벽에 걸려 있다.", "grammar": "svp" },
+  { "text": "The kite flies over the trees.", "meaning": "연이 나무 위로 난다.", "grammar": "svp" },
+  { "text": "The flag waves in the wind.", "meaning": "깃발이 바람 속에서 흔들린다.", "grammar": "svp" },
+  { "text": "The car stops at the traffic light.", "meaning": "그 차는 신호등에서 멈춘다.", "grammar": "svp" },
+  { "text": "The train arrives at the station.", "meaning": "그 기차는 역에 도착한다.", "grammar": "svp" },
+  { "text": "The water flows in the river.", "meaning": "물이 강에서 흐른다.", "grammar": "svp" },
+  { "text": "The stars shine in the night sky.", "meaning": "별들이 밤하늘에서 빛난다.", "grammar": "svp" },
+  { "text": "The baby sleeps in the crib.", "meaning": "아기는 요람에서 잔다.", "grammar": "svp" },
+  { "text": "The monkey climbs on the tree.", "meaning": "원숭이는 나무 위로 올라간다.", "grammar": "svp" },
+  { "text": "The elephant walks in the jungle.", "meaning": "코끼리는 정글에서 걷는다.", "grammar": "svp" },
+  { "text": "The giraffe stands near the tree.", "meaning": "기린은 나무 근처에 서 있다.", "grammar": "svp" },
+  { "text": "The crab crawls on the beach.", "meaning": "게는 해변에서 기어간다.", "grammar": "svp" },
+  { "text": "The duck swims in the lake.", "meaning": "오리는 호수에서 헤엄친다.", "grammar": "svp" },
+  { "text": "The frog jumps in the grass.", "meaning": "개구리는 풀밭에서 뛴다.", "grammar": "svp" },
+  { "text": "The cow rests in the barn.", "meaning": "소는 헛간에서 쉰다.", "grammar": "svp" },
+  { "text": "The sheep runs in the field.", "meaning": "양은 들판에서 달린다.", "grammar": "svp" },
+  { "text": "The lion sleeps under the tree.", "meaning": "사자는 나무 아래에서 잔다.", "grammar": "svp" },
+  { "text": "The tiger hides in the bushes.", "meaning": "호랑이는 덤불 속에 숨는다.", "grammar": "svp" },
+  { "text": "The snake moves on the rock.", "meaning": "뱀은 바위 위를 움직인다.", "grammar": "svp" },
+  { "text": "The rabbit hops in the garden.", "meaning": "토끼는 정원에서 깡충깡충 뛴다.", "grammar": "svp" },
+  { "text": "The spider crawls on the web.", "meaning": "거미는 거미줄 위를 기어간다.", "grammar": "svp" },
+  { "text": "The fish jumps in the water.", "meaning": "물고기가 물속에서 뛴다.", "grammar": "svp" },
+  { "text": "The bear sleeps in the cave.", "meaning": "곰은 동굴에서 잔다.", "grammar": "svp" },
+  { "text": "The doctor works in the hospital.", "meaning": "의사는 병원에서 일한다.", "grammar": "svp" },
+  { "text": "The teacher teaches in the classroom.", "meaning": "선생님은 교실에서 가르친다.", "grammar": "svp" },
+  { "text": "Where do you live?", "meaning": "너는 어디에 사니?", "grammar": "question" },
+  { "text": "Where does she play?", "meaning": "그녀는 어디에서 놀아요?", "grammar": "question" },
+  { "text": "Where is the cat sleeping?", "meaning": "고양이는 어디에서 자고 있나요?", "grammar": "question" },
+  { "text": "What do you eat?", "meaning": "너는 무엇을 먹니?", "grammar": "question" },
+  { "text": "What does he read?", "meaning": "그는 무엇을 읽니?", "grammar": "question" },
+  { "text": "What is she writing?", "meaning": "그녀는 무엇을 쓰고 있나요?", "grammar": "question" },
+  { "text": "Why are you sad?", "meaning": "너는 왜 슬프니?", "grammar": "question" },
+  { "text": "Why is he happy?", "meaning": "그는 왜 행복하니?", "grammar": "question" },
+  { "text": "Why do they run?", "meaning": "그들은 왜 달리니?", "grammar": "question" },
+  { "text": "Who is calling me?", "meaning": "누가 나를 부르고 있니?", "grammar": "question" },
+  { "text": "Who plays in the park?", "meaning": "누가 공원에서 놀아요?", "grammar": "question" },
+  { "text": "Who helps you?", "meaning": "누가 너를 도와주니?", "grammar": "question" },
+  { "text": "When do you wake up?", "meaning": "너는 언제 일어나니?", "grammar": "question" },
+  { "text": "When does school start?", "meaning": "학교는 언제 시작하니?", "grammar": "question" },
+  { "text": "When is lunch?", "meaning": "점심은 언제야?", "grammar": "question" },
+  { "text": "How do you go to school?", "meaning": "너는 어떻게 학교에 가니?", "grammar": "question" },
+  { "text": "How does he make a cake?", "meaning": "그는 어떻게 케이크를 만드니?", "grammar": "question" },
+  { "text": "How is the weather?", "meaning": "날씨가 어때요?", "grammar": "question" },
+  { "text": "Do you like ice cream?", "meaning": "너는 아이스크림을 좋아하니?", "grammar": "question" },
+  { "text": "Does she play the piano?", "meaning": "그녀는 피아노를 치니?", "grammar": "question" },
+  { "text": "Is he your friend?", "meaning": "그는 너의 친구니?", "grammar": "question" },
+  { "text": "Are they at home?", "meaning": "그들은 집에 있니?", "grammar": "question" },
+  { "text": "Can you swim?", "meaning": "너는 수영할 수 있니?", "grammar": "question" },
+  { "text": "Can he ride a bike?", "meaning": "그는 자전거를 탈 수 있니?", "grammar": "question" },
+  { "text": "May I go outside?", "meaning": "제가 밖에 나가도 되나요?", "grammar": "question" },
+  { "text": "Should we study now?", "meaning": "우리 지금 공부해야 하나요?", "grammar": "question" },
+  { "text": "Must I do my homework?", "meaning": "나는 숙제를 꼭 해야 하나요?", "grammar": "question" },
+  { "text": "Will she come tomorrow?", "meaning": "그녀는 내일 오나요?", "grammar": "question" },
+  { "text": "Would you help me?", "meaning": "저를 도와주실래요?", "grammar": "question" },
+  { "text": "Did you see the movie?", "meaning": "너는 그 영화를 봤니?", "grammar": "question" },
+  { "text": "Was she at school yesterday?", "meaning": "그녀는 어제 학교에 있었니?", "grammar": "question" },
+  { "text": "Were they late for class?", "meaning": "그들은 수업에 늦었니?", "grammar": "question" },
+  { "text": "Have you finished your homework?", "meaning": "너는 숙제를 끝냈니?", "grammar": "question" },
+  { "text": "Has he ever been to Paris?", "meaning": "그는 파리에 가본 적 있니?", "grammar": "question" },
+  { "text": "What time is it now?", "meaning": "지금 몇 시예요?", "grammar": "question" },
+  { "text": "How many books do you have?", "meaning": "너는 책을 몇 권 가지고 있니?", "grammar": "question" },
+  { "text": "How much water do you drink?", "meaning": "너는 물을 얼마나 마시니?", "grammar": "question" },
+  { "text": "Whose bag is this?", "meaning": "이 가방은 누구의 것이니?", "grammar": "question" },
+  { "text": "Which color do you like?", "meaning": "너는 어떤 색을 좋아하니?", "grammar": "question" },
+  { "text": "Open the door.", "meaning": "문을 열어라.", "grammar": "imperative" },
+  { "text": "Close the window.", "meaning": "창문을 닫아라.", "grammar": "imperative" },
+  { "text": "Please sit down.", "meaning": "앉아 주세요.", "grammar": "imperative" },
+  { "text": "Stand up.", "meaning": "일어서라.", "grammar": "imperative" },
+  { "text": "Be quiet.", "meaning": "조용히 해라.", "grammar": "imperative" },
+  { "text": "Listen carefully.", "meaning": "잘 들어라.", "grammar": "imperative" },
+  { "text": "Look at the board.", "meaning": "칠판을 보아라.", "grammar": "imperative" },
+  { "text": "Read this book.", "meaning": "이 책을 읽어라.", "grammar": "imperative" },
+  { "text": "Write your name.", "meaning": "네 이름을 써라.", "grammar": "imperative" },
+  { "text": "Speak louder.", "meaning": "더 크게 말해라.", "grammar": "imperative" },
+  { "text": "Turn off the light.", "meaning": "불을 꺼라.", "grammar": "imperative" },
+  { "text": "Turn on the fan.", "meaning": "선풍기를 켜라.", "grammar": "imperative" },
+  { "text": "Come here.", "meaning": "이리 와라.", "grammar": "imperative" },
+  { "text": "Go outside.", "meaning": "밖으로 나가라.", "grammar": "imperative" },
+  { "text": "Don't be late.", "meaning": "늦지 마라.", "grammar": "imperative" },
+  { "text": "Hurry up.", "meaning": "서둘러라.", "grammar": "imperative" },
+  { "text": "Wait a minute.", "meaning": "잠시 기다려라.", "grammar": "imperative" },
+  { "text": "Wash your hands.", "meaning": "손을 씻어라.", "grammar": "imperative" },
+  { "text": "Brush your teeth.", "meaning": "이를 닦아라.", "grammar": "imperative" },
+  { "text": "Tie your shoes.", "meaning": "신발 끈을 묶어라.", "grammar": "imperative" },
+  { "text": "Eat your vegetables.", "meaning": "채소를 먹어라.", "grammar": "imperative" },
+  { "text": "Drink more water.", "meaning": "물을 더 마셔라.", "grammar": "imperative" },
+  { "text": "Do your homework.", "meaning": "숙제를 해라.", "grammar": "imperative" },
+  { "text": "Call me later.", "meaning": "나중에 전화해라.", "grammar": "imperative" },
+  { "text": "Send me a message.", "meaning": "메시지를 보내라.", "grammar": "imperative" },
+  { "text": "Tell me the truth.", "meaning": "진실을 말해라.", "grammar": "imperative" },
+  { "text": "Sing a song.", "meaning": "노래를 불러라.", "grammar": "imperative" },
+  { "text": "Dance with me.", "meaning": "나와 함께 춤춰라.", "grammar": "imperative" },
+  { "text": "Help your friend.", "meaning": "친구를 도와라.", "grammar": "imperative" },
+  { "text": "Don't touch that.", "meaning": "저것을 만지지 마라.", "grammar": "imperative" },
+  { "text": "Don't run in the hallway.", "meaning": "복도에서 뛰지 마라.", "grammar": "imperative" },
+  { "text": "Don't talk during the test.", "meaning": "시험 중에 말하지 마라.", "grammar": "imperative" },
+  { "text": "Please be careful.", "meaning": "조심해 주세요.", "grammar": "imperative" },
+  { "text": "Enjoy your meal.", "meaning": "식사를 즐겨라.", "grammar": "imperative" },
+  { "text": "Take a deep breath.", "meaning": "숨을 깊게 들이쉬어라.", "grammar": "imperative" },
+  { "text": "Smile for the camera.", "meaning": "카메라를 보고 웃어라.", "grammar": "imperative" },
+  { "text": "Follow me.", "meaning": "나를 따라와라.", "grammar": "imperative" },
+  { "text": "Stay inside.", "meaning": "안에 있어라.", "grammar": "imperative" },
+  { "text": "Keep the door closed.", "meaning": "문을 닫아 두어라.", "grammar": "imperative" },
+  { "text": "Do you like ice cream?", "meaning": "너는 아이스크림을 좋아하니?", "grammar": "yes/no question" },
+  { "text": "Can you swim?", "meaning": "너는 수영할 수 있니?", "grammar": "yes/no question" },
+  { "text": "Are you happy?", "meaning": "너는 행복하니?", "grammar": "yes/no question" },
+  { "text": "Is she your friend?", "meaning": "그녀는 너의 친구니?", "grammar": "yes/no question" },
+  { "text": "Do they live in this city?", "meaning": "그들은 이 도시에 사니?", "grammar": "yes/no question" },
+  { "text": "Does he play soccer?", "meaning": "그는 축구를 하니?", "grammar": "yes/no question" },
+  { "text": "Is it raining now?", "meaning": "지금 비가 오고 있니?", "grammar": "yes/no question" },
+  { "text": "Are they at home?", "meaning": "그들은 집에 있니?", "grammar": "yes/no question" },
+  { "text": "Do you have a pet?", "meaning": "너는 반려동물이 있니?", "grammar": "yes/no question" },
+  { "text": "Does she like chocolate?", "meaning": "그녀는 초콜릿을 좋아하니?", "grammar": "yes/no question" },
+  { "text": "Can he ride a bike?", "meaning": "그는 자전거를 탈 수 있니?", "grammar": "yes/no question" },
+  { "text": "Will you go to the party?", "meaning": "너는 파티에 갈 거니?", "grammar": "yes/no question" },
+  { "text": "May I open the window?", "meaning": "창문을 열어도 될까요?", "grammar": "yes/no question" },
+  { "text": "Is this your book?", "meaning": "이것은 네 책이니?", "grammar": "yes/no question" },
+  { "text": "Did you finish your homework?", "meaning": "너는 숙제를 끝냈니?", "grammar": "yes/no question" },
+  { "text": "Are you ready?", "meaning": "너 준비됐니?", "grammar": "yes/no question" },
+  { "text": "Do you like to sing?", "meaning": "너는 노래 부르는 것을 좋아하니?", "grammar": "yes/no question" },
+  { "text": "Does your brother play the piano?", "meaning": "네 형(오빠)은 피아노를 치니?", "grammar": "yes/no question" },
+  { "text": "Do you want some water?", "meaning": "너 물 좀 마실래?", "grammar": "yes/no question" },
+  { "text": "Can you help me?", "meaning": "너 나를 도와줄 수 있니?", "grammar": "yes/no question" },
+  { "text": "She is happy.", "meaning": "그녀는 행복하다.", "grammar": "svc" },
+  { "text": "He is sad.", "meaning": "그는 슬프다.", "grammar": "svc" },
+  { "text": "I am tired.", "meaning": "나는 피곤하다.", "grammar": "svc" },
+  { "text": "We are strong.", "meaning": "우리는 강하다.", "grammar": "svc" },
+  { "text": "They are kind.", "meaning": "그들은 친절하다.", "grammar": "svc" },
+  { "text": "The dog is big.", "meaning": "그 개는 크다.", "grammar": "svc" },
+  { "text": "The cat is small.", "meaning": "그 고양이는 작다.", "grammar": "svc" },
+  { "text": "The sky is blue.", "meaning": "하늘은 파랗다.", "grammar": "svc" },
+  { "text": "The sun is bright.", "meaning": "태양은 밝다.", "grammar": "svc" },
+  { "text": "The baby is cute.", "meaning": "아기는 귀엽다.", "grammar": "svc" },
+  { "text": "The cake is delicious.", "meaning": "그 케이크는 맛있다.", "grammar": "svc" },
+  { "text": "The book is interesting.", "meaning": "그 책은 재미있다.", "grammar": "svc" },
+  { "text": "The water is cold.", "meaning": "물이 차갑다.", "grammar": "svc" },
+  { "text": "The tea is hot.", "meaning": "차가 뜨겁다.", "grammar": "svc" },
+  { "text": "This bag is heavy.", "meaning": "이 가방은 무겁다.", "grammar": "svc" },
+  { "text": "That room is clean.", "meaning": "저 방은 깨끗하다.", "grammar": "svc" },
+  { "text": "The floor is dirty.", "meaning": "바닥이 더럽다.", "grammar": "svc" },
+  { "text": "His car is new.", "meaning": "그의 차는 새것이다.", "grammar": "svc" },
+  { "text": "Her shoes are old.", "meaning": "그녀의 신발은 오래되었다.", "grammar": "svc" },
+  { "text": "The river is long.", "meaning": "그 강은 길다.", "grammar": "svc" },
+  { "text": "This apple is red.", "meaning": "이 사과는 빨갛다.", "grammar": "svc" },
+  { "text": "My hands are warm.", "meaning": "내 손은 따뜻하다.", "grammar": "svc" },
+  { "text": "The bus is late.", "meaning": "버스가 늦었다.", "grammar": "svc" },
+  { "text": "The boy is tall.", "meaning": "그 소년은 키가 크다.", "grammar": "svc" },
+  { "text": "The girl is pretty.", "meaning": "그 소녀는 예쁘다.", "grammar": "svc" },
+  { "text": "The stars are bright.", "meaning": "별들이 빛난다.", "grammar": "svc" },
+  { "text": "The street is quiet.", "meaning": "그 거리는 조용하다.", "grammar": "svc" },
+  { "text": "My phone is broken.", "meaning": "내 전화기가 고장 났다.", "grammar": "svc" },
+  { "text": "His house is big.", "meaning": "그의 집은 크다.", "grammar": "svc" },
+  { "text": "The road is wide.", "meaning": "그 도로는 넓다.", "grammar": "svc" },
+  { "text": "The fish is fresh.", "meaning": "그 생선은 신선하다.", "grammar": "svc" },
+  { "text": "The weather is nice.", "meaning": "날씨가 좋다.", "grammar": "svc" },
+  { "text": "The monkey is funny.", "meaning": "원숭이는 재미있다.", "grammar": "svc" },
+  { "text": "This song is beautiful.", "meaning": "이 노래는 아름답다.", "grammar": "svc" },
+  { "text": "Your jacket is warm.", "meaning": "네 재킷은 따뜻하다.", "grammar": "svc" },
+  { "text": "The train is fast.", "meaning": "그 기차는 빠르다.", "grammar": "svc" },
+  { "text": "This problem is easy.", "meaning": "이 문제는 쉽다.", "grammar": "svc" },
+  { "text": "His story is true.", "meaning": "그의 이야기는 사실이다.", "grammar": "svc" },
+  { "text": "The answer is correct.", "meaning": "그 답은 맞다.", "grammar": "svc" },
+  { "text": "She gave me a gift.", "meaning": "그녀는 나에게 선물을 주었다.", "grammar": "sviodo" },
+  { "text": "He sent her a letter.", "meaning": "그는 그녀에게 편지를 보냈다.", "grammar": "sviodo" },
+  { "text": "I bought my friend a book.", "meaning": "나는 친구에게 책을 사주었다.", "grammar": "sviodo" },
+  { "text": "They offered us help.", "meaning": "그들은 우리에게 도움을 주었다.", "grammar": "sviodo" },
+  { "text": "She told me a secret.", "meaning": "그녀는 나에게 비밀을 말했다.", "grammar": "sviodo" },
+  { "text": "He showed us his drawing.", "meaning": "그는 우리에게 그의 그림을 보여주었다.", "grammar": "sviodo" },
+  { "text": "Mom made me a sandwich.", "meaning": "엄마는 나에게 샌드위치를 만들어 주었다.", "grammar": "sviodo" },
+  { "text": "Dad gave me a new bike.", "meaning": "아빠는 나에게 새 자전거를 주었다.", "grammar": "sviodo" },
+  { "text": "The teacher taught us math.", "meaning": "선생님은 우리에게 수학을 가르쳤다.", "grammar": "sviodo" },
+  { "text": "She handed him the keys.", "meaning": "그녀는 그에게 열쇠를 건넸다.", "grammar": "sviodo" },
+  { "text": "They passed us the ball.", "meaning": "그들은 우리에게 공을 패스했다.", "grammar": "sviodo" },
+  { "text": "I wrote her a note.", "meaning": "나는 그녀에게 쪽지를 썼다.", "grammar": "sviodo" },
+  { "text": "He cooked us dinner.", "meaning": "그는 우리에게 저녁을 요리해 주었다.", "grammar": "sviodo" },
+  { "text": "Grandma knitted me a scarf.", "meaning": "할머니는 나에게 스카프를 떠 주셨다.", "grammar": "sviodo" },
+  { "text": "She sent me an email.", "meaning": "그녀는 나에게 이메일을 보냈다.", "grammar": "sviodo" },
+  { "text": "He told them a joke.", "meaning": "그는 그들에게 농담을 말했다.", "grammar": "sviodo" },
+  { "text": "My boss gave me a bonus.", "meaning": "내 상사는 나에게 보너스를 주었다.", "grammar": "sviodo" },
+  { "text": "She lent me her pen.", "meaning": "그녀는 나에게 그녀의 펜을 빌려주었다.", "grammar": "sviodo" },
+  { "text": "I gave my cat some food.", "meaning": "나는 내 고양이에게 음식을 주었다.", "grammar": "sviodo" },
+  { "text": "They promised us a surprise.", "meaning": "그들은 우리에게 깜짝 선물을 약속했다.", "grammar": "sviodo" },
+  { "text": "She offered him a ride.", "meaning": "그녀는 그에게 태워주겠다고 했다.", "grammar": "sviodo" },
+  { "text": "He read me a story.", "meaning": "그는 나에게 이야기를 읽어 주었다.", "grammar": "sviodo" },
+  { "text": "I gave him a chance.", "meaning": "나는 그에게 기회를 주었다.", "grammar": "sviodo" },
+  { "text": "She made me a cake.", "meaning": "그녀는 나에게 케이크를 만들어 주었다.", "grammar": "sviodo" },
+  { "text": "The doctor gave her some medicine.", "meaning": "의사는 그녀에게 약을 주었다.", "grammar": "sviodo" },
+  { "text": "I sent my mom a postcard.", "meaning": "나는 엄마에게 엽서를 보냈다.", "grammar": "sviodo" },
+  { "text": "She offered me some coffee.", "meaning": "그녀는 나에게 커피를 권했다.", "grammar": "sviodo" },
+  { "text": "They sent us a package.", "meaning": "그들은 우리에게 소포를 보냈다.", "grammar": "sviodo" },
+  { "text": "She handed me a ticket.", "meaning": "그녀는 나에게 티켓을 건넸다.", "grammar": "sviodo" },
+  { "text": "I gave my brother a toy.", "meaning": "나는 내 동생에게 장난감을 주었다.", "grammar": "sviodo" },
+  { "text": "He sold me his old phone.", "meaning": "그는 나에게 그의 오래된 핸드폰을 팔았다.", "grammar": "sviodo" },
+  { "text": "She promised me a gift.", "meaning": "그녀는 나에게 선물을 약속했다.", "grammar": "sviodo" },
+  { "text": "My aunt made me a sweater.", "meaning": "내 이모는 나에게 스웨터를 떠 주었다.", "grammar": "sviodo" },
+  { "text": "He gave his dog a bath.", "meaning": "그는 그의 개를 목욕시켰다.", "grammar": "sviodo" },
+  { "text": "The chef cooked us a delicious meal.", "meaning": "셰프는 우리에게 맛있는 음식을 요리해 주었다.", "grammar": "sviodo" },
+  { "text": "She gave me a big hug.", "meaning": "그녀는 나를 꼭 안아 주었다.", "grammar": "sviodo" },
+  { "text": "They lent me some money.", "meaning": "그들은 나에게 돈을 빌려주었다.", "grammar": "sviodo" },
+  { "text": "I showed her my painting.", "meaning": "나는 그녀에게 내 그림을 보여 주었다.", "grammar": "sviodo" },
+  { "text": "Mom brought me a cup of tea.", "meaning": "엄마는 나에게 차 한 잔을 가져다 주었다.", "grammar": "sviodo" },
+  { "text": "They made him happy.", "meaning": "그들은 그를 행복하게 만들었다.", "grammar": "svoc" },
+  { "text": "We call her Jane.", "meaning": "우리는 그녀를 제인이라고 부른다.", "grammar": "svoc" },
+  { "text": "She found the book interesting.", "meaning": "그녀는 그 책이 재미있다고 생각했다.", "grammar": "svoc" },
+  { "text": "The news made us sad.", "meaning": "그 소식은 우리를 슬프게 만들었다.", "grammar": "svoc" },
+  { "text": "He painted the wall blue.", "meaning": "그는 벽을 파랗게 칠했다.", "grammar": "svoc" },
+  { "text": "They named the baby Tom.", "meaning": "그들은 아기의 이름을 톰이라고 지었다.", "grammar": "svoc" },
+  { "text": "She keeps her room clean.", "meaning": "그녀는 그녀의 방을 깨끗하게 유지한다.", "grammar": "svoc" },
+  { "text": "I found the movie boring.", "meaning": "나는 그 영화가 지루하다고 생각했다.", "grammar": "svoc" },
+  { "text": "He left the door open.", "meaning": "그는 문을 열린 채로 두었다.", "grammar": "svoc" },
+  { "text": "The teacher considers him smart.", "meaning": "선생님은 그를 똑똑하다고 여긴다.", "grammar": "svoc" },
+  { "text": "We elected him president.", "meaning": "우리는 그를 대통령으로 선출했다.", "grammar": "svoc" },
+  { "text": "The joke made everyone laugh.", "meaning": "그 농담은 모두를 웃게 만들었다.", "grammar": "svoc" },
+  { "text": "They called the dog Lucky.", "meaning": "그들은 그 개를 럭키라고 불렀다.", "grammar": "svoc" },
+  { "text": "She considers the problem serious.", "meaning": "그녀는 그 문제를 심각하다고 생각한다.", "grammar": "svoc" },
+  { "text": "I found the task easy.", "meaning": "나는 그 일이 쉽다고 생각했다.", "grammar": "svoc" },
+  { "text": "The sun makes the room warm.", "meaning": "태양은 방을 따뜻하게 만든다.", "grammar": "svoc" },
+  { "text": "The music keeps me awake.", "meaning": "그 음악은 나를 깨어 있게 한다.", "grammar": "svoc" },
+  { "text": "They voted him leader.", "meaning": "그들은 그를 리더로 뽑았다.", "grammar": "svoc" },
+  { "text": "We thought the idea good.", "meaning": "우리는 그 아이디어가 좋다고 생각했다.", "grammar": "svoc" },
+  { "text": "She got her hair cut short.", "meaning": "그녀는 머리를 짧게 잘랐다.", "grammar": "svoc" },
+  { "text": "The boss made us work late.", "meaning": "상사는 우리를 늦게까지 일하게 했다.", "grammar": "svoc" },
+  { "text": "His words made me angry.", "meaning": "그의 말은 나를 화나게 했다.", "grammar": "svoc" },
+  { "text": "She dyed her hair red.", "meaning": "그녀는 머리를 빨갛게 염색했다.", "grammar": "svoc" },
+  { "text": "They left the windows open.", "meaning": "그들은 창문을 열린 채로 두었다.", "grammar": "svoc" },
+  { "text": "The movie made her famous.", "meaning": "그 영화는 그녀를 유명하게 만들었다.", "grammar": "svoc" },
+  { "text": "He got his car fixed.", "meaning": "그는 차를 수리했다.", "grammar": "svoc" },
+  { "text": "The bad news made him cry.", "meaning": "그 나쁜 소식은 그를 울게 만들었다.", "grammar": "svoc" },
+  { "text": "They made the room bright.", "meaning": "그들은 방을 밝게 만들었다.", "grammar": "svoc" },
+  { "text": "She kept the children busy.", "meaning": "그녀는 아이들을 바쁘게 유지했다.", "grammar": "svoc" },
+  { "text": "He calls his car old.", "meaning": "그는 그의 차를 낡았다고 부른다.", "grammar": "svoc" },
+  { "text": "We found the road dangerous.", "meaning": "우리는 그 도로가 위험하다고 생각했다.", "grammar": "svoc" },
+  { "text": "She got her phone repaired.", "meaning": "그녀는 휴대폰을 수리했다.", "grammar": "svoc" },
+  { "text": "The story made him laugh.", "meaning": "그 이야기는 그를 웃게 만들었다.", "grammar": "svoc" },
+  { "text": "The game made us excited.", "meaning": "그 게임은 우리를 신나게 만들었다.", "grammar": "svoc" },
+  { "text": "They made the situation worse.", "meaning": "그들은 상황을 더 나쁘게 만들었다.", "grammar": "svoc" },
+  { "text": "The test made her nervous.", "meaning": "그 시험은 그녀를 긴장하게 만들었다.", "grammar": "svoc" },
+  { "text": "He found the box empty.", "meaning": "그는 그 상자가 비어 있다고 생각했다.", "grammar": "svoc" },
+  { "text": "She made the dress longer.", "meaning": "그녀는 드레스를 더 길게 만들었다.", "grammar": "svoc" },
+  { "text": "The teacher called him lazy.", "meaning": "선생님은 그를 게으르다고 불렀다.", "grammar": "svoc" },
+  { "text": "What a beautiful day!", "meaning": "정말 아름다운 날이야!", "grammar": "exclamatory" },
+  { "text": "How fast he runs!", "meaning": "그는 정말 빨리 달린다!", "grammar": "exclamatory" },
+  { "text": "What a big surprise!", "meaning": "정말 큰 놀라움이야!", "grammar": "exclamatory" },
+  { "text": "How lovely she looks!", "meaning": "그녀는 정말 사랑스럽다!", "grammar": "exclamatory" },
+  { "text": "What an amazing view!", "meaning": "정말 멋진 경치야!", "grammar": "exclamatory" },
+  { "text": "How delicious this food is!", "meaning": "이 음식 정말 맛있다!", "grammar": "exclamatory" },
+  { "text": "What a wonderful idea!", "meaning": "정말 멋진 생각이야!", "grammar": "exclamatory" },
+  { "text": "How cute that puppy is!", "meaning": "저 강아지 정말 귀엽다!", "grammar": "exclamatory" },
+  { "text": "What a funny joke!", "meaning": "정말 웃긴 농담이야!", "grammar": "exclamatory" },
+  { "text": "How cold it is today!", "meaning": "오늘 정말 춥다!", "grammar": "exclamatory" },
+  { "text": "What a nice teacher!", "meaning": "정말 좋은 선생님이야!", "grammar": "exclamatory" },
+  { "text": "How bright the stars are!", "meaning": "별들이 정말 밝다!", "grammar": "exclamatory" },
+  { "text": "What a strong wind!", "meaning": "정말 강한 바람이야!", "grammar": "exclamatory" },
+  { "text": "How wonderful this place is!", "meaning": "이곳 정말 멋지다!", "grammar": "exclamatory" },
+  { "text": "What a terrible storm!", "meaning": "정말 무서운 폭풍이야!", "grammar": "exclamatory" },
+  { "text": "How kind you are!", "meaning": "너 정말 친절하구나!", "grammar": "exclamatory" },
+  { "text": "What a big house!", "meaning": "정말 큰 집이야!", "grammar": "exclamatory" },
+  { "text": "How sweet this cake is!", "meaning": "이 케이크 정말 달다!", "grammar": "exclamatory" },
+  { "text": "What a fast car!", "meaning": "정말 빠른 차야!", "grammar": "exclamatory" },
+  { "text": "How high that mountain is!", "meaning": "저 산 정말 높다!", "grammar": "exclamatory" },
+  { "text": "What a smart child!", "meaning": "정말 똑똑한 아이야!", "grammar": "exclamatory" },
+  { "text": "How beautiful your dress is!", "meaning": "네 드레스 정말 예쁘다!", "grammar": "exclamatory" },
+  { "text": "What a lucky day!", "meaning": "정말 운 좋은 날이야!", "grammar": "exclamatory" },
+  { "text": "How noisy this street is!", "meaning": "이 거리 정말 시끄럽다!", "grammar": "exclamatory" },
+  { "text": "What a brave soldier!", "meaning": "정말 용감한 군인이야!", "grammar": "exclamatory" },
+  { "text": "How deep the river is!", "meaning": "강이 정말 깊다!", "grammar": "exclamatory" },
+  { "text": "What an interesting book!", "meaning": "정말 흥미로운 책이야!", "grammar": "exclamatory" },
+  { "text": "How soft this pillow is!", "meaning": "이 베개 정말 부드럽다!", "grammar": "exclamatory" },
+  { "text": "What a great movie!", "meaning": "정말 멋진 영화야!", "grammar": "exclamatory" },
+  { "text": "How scary that spider is!", "meaning": "저 거미 정말 무섭다!", "grammar": "exclamatory" },
+  { "text": "What a hot summer day!", "meaning": "정말 더운 여름날이야!", "grammar": "exclamatory" },
+  { "text": "How shiny your shoes are!", "meaning": "네 신발 정말 반짝인다!", "grammar": "exclamatory" },
+  { "text": "What a delicious smell!", "meaning": "정말 맛있는 냄새야!", "grammar": "exclamatory" },
+  { "text": "How friendly she is!", "meaning": "그녀는 정말 친절하다!", "grammar": "exclamatory" },
+  { "text": "What a fast runner he is!", "meaning": "그는 정말 빠른 주자야!", "grammar": "exclamatory" },
+  { "text": "How lucky we are!", "meaning": "우리는 정말 운이 좋다!", "grammar": "exclamatory" },
+  { "text": "What an exciting game!", "meaning": "정말 신나는 경기야!", "grammar": "exclamatory" },
+  { "text": "How tall that tree is!", "meaning": "저 나무 정말 크다!", "grammar": "exclamatory" },
+  { "text": "What a fun trip!", "meaning": "정말 재미있는 여행이야!", "grammar": "exclamatory" },
+  { "text": "If you study hard, you will pass.", "meaning": "네가 열심히 공부하면 합격할 거야.", "grammar": "conditional" },
+  { "text": "If it rains, we will stay home.", "meaning": "비가 오면 우리는 집에 있을 거야.", "grammar": "conditional" },
+  { "text": "If you eat too much, you will get sick.", "meaning": "너무 많이 먹으면 아플 거야.", "grammar": "conditional" },
+  { "text": "If I have time, I will help you.", "meaning": "내가 시간이 있으면 너를 도와줄게.", "grammar": "conditional" },
+  { "text": "If she calls, tell me.", "meaning": "그녀가 전화하면 나에게 말해줘.", "grammar": "conditional" },
+  { "text": "If you don’t hurry, you will be late.", "meaning": "서두르지 않으면 늦을 거야.", "grammar": "conditional" },
+  { "text": "If we leave now, we will arrive on time.", "meaning": "지금 떠나면 제시간에 도착할 거야.", "grammar": "conditional" },
+  { "text": "If you feel cold, wear a jacket.", "meaning": "추우면 재킷을 입어.", "grammar": "conditional" },
+  { "text": "If she studies more, she will improve.", "meaning": "그녀가 더 공부하면 실력이 좋아질 거야.", "grammar": "conditional" },
+  { "text": "If you press this button, the light will turn on.", "meaning": "이 버튼을 누르면 불이 켜질 거야.", "grammar": "conditional" },
+  { "text": "If you are tired, take a rest.", "meaning": "피곤하면 쉬어.", "grammar": "conditional" },
+  { "text": "If you don’t water the plant, it will die.", "meaning": "식물에 물을 주지 않으면 죽을 거야.", "grammar": "conditional" },
+  { "text": "If he doesn’t apologize, she will be upset.", "meaning": "그가 사과하지 않으면 그녀는 화낼 거야.", "grammar": "conditional" },
+  { "text": "If we practice more, we will win the game.", "meaning": "우리가 더 연습하면 경기에 이길 거야.", "grammar": "conditional" },
+  { "text": "If I find your book, I will return it to you.", "meaning": "네 책을 찾으면 돌려줄게.", "grammar": "conditional" },
+  { "text": "If you mix blue and yellow, you get green.", "meaning": "파랑과 노랑을 섞으면 초록이 돼.", "grammar": "conditional" },
+  { "text": "If you don’t sleep well, you will feel tired.", "meaning": "잘 자지 않으면 피곤할 거야.", "grammar": "conditional" },
+  { "text": "If she exercises daily, she will get stronger.", "meaning": "그녀가 매일 운동하면 더 강해질 거야.", "grammar": "conditional" },
+  { "text": "If you don’t wear a hat, you will get sunburn.", "meaning": "모자를 쓰지 않으면 햇볕에 탈 거야.", "grammar": "conditional" },
+  { "text": "If the alarm rings, wake me up.", "meaning": "알람이 울리면 나를 깨워줘.", "grammar": "conditional" },
+  { "text": "If you go outside, take an umbrella.", "meaning": "밖에 나가면 우산을 가져가.", "grammar": "conditional" },
+  { "text": "If we don’t book early, we won’t get tickets.", "meaning": "일찍 예약하지 않으면 표를 못 구할 거야.", "grammar": "conditional" },
+  { "text": "If the bus is late, take a taxi.", "meaning": "버스가 늦으면 택시를 타.", "grammar": "conditional" },
+  { "text": "If it gets dark, turn on the lights.", "meaning": "어두워지면 불을 켜.", "grammar": "conditional" },
+  { "text": "If you don’t understand, ask a question.", "meaning": "이해가 안 되면 질문해.", "grammar": "conditional" },
+  { "text": "If we leave early, we will avoid traffic.", "meaning": "일찍 출발하면 교통 체증을 피할 거야.", "grammar": "conditional" },
+  { "text": "If she doesn’t study, she won’t pass the test.", "meaning": "그녀가 공부하지 않으면 시험에 합격하지 못할 거야.", "grammar": "conditional" },
+  { "text": "If you help me, I will finish faster.", "meaning": "네가 도와주면 나는 더 빨리 끝낼 거야.", "grammar": "conditional" },
+  { "text": "If you practice every day, you will get better.", "meaning": "매일 연습하면 실력이 좋아질 거야.", "grammar": "conditional" },
+  { "text": "If I eat too much, I feel sleepy.", "meaning": "너무 많이 먹으면 졸려.", "grammar": "conditional" },
+  { "text": "If you don’t clean your room, it will get messy.", "meaning": "방을 청소하지 않으면 더러워질 거야.", "grammar": "conditional" },
+  { "text": "If we invite her, she will come.", "meaning": "우리가 그녀를 초대하면 그녀는 올 거야.", "grammar": "conditional" },
+  { "text": "If you drop the glass, it will break.", "meaning": "유리를 떨어뜨리면 깨질 거야.", "grammar": "conditional" },
+  { "text": "If he drinks coffee at night, he can’t sleep.", "meaning": "그는 밤에 커피를 마시면 잠을 잘 수 없어.", "grammar": "conditional" },
+  { "text": "If we don’t hurry, we will miss the bus.", "meaning": "서두르지 않으면 버스를 놓칠 거야.", "grammar": "conditional" },
+  { "text": "If you don’t call her, she will be angry.", "meaning": "그녀에게 전화하지 않으면 그녀는 화낼 거야.", "grammar": "conditional" },
+  { "text": "If the battery is low, charge your phone.", "meaning": "배터리가 부족하면 핸드폰을 충전해.", "grammar": "conditional" },
+  { "text": "If you don’t eat breakfast, you will be hungry.", "meaning": "아침을 먹지 않으면 배고플 거야.", "grammar": "conditional" },
+  { "text": "If you run too fast, you will get tired.", "meaning": "너무 빨리 달리면 피곤할 거야.", "grammar": "conditional" },
+  { "text": "I like swimming, running, and hiking.", "meaning": "나는 수영, 달리기, 하이킹을 좋아해.", "grammar": "parallel" },
+  { "text": "She is smart, kind, and funny.", "meaning": "그녀는 똑똑하고 친절하며 재미있다.", "grammar": "parallel" },
+  { "text": "He enjoys reading books, watching movies, and listening to music.", "meaning": "그는 책 읽기, 영화 보기, 음악 듣기를 즐긴다.", "grammar": "parallel" },
+  { "text": "We need to eat well, exercise regularly, and sleep enough.", "meaning": "우리는 잘 먹고, 규칙적으로 운동하고, 충분히 자야 한다.", "grammar": "parallel" },
+  { "text": "The car is fast, powerful, and reliable.", "meaning": "그 자동차는 빠르고, 강력하며, 믿을 만하다.", "grammar": "parallel" },
+  { "text": "She likes apples, oranges, and bananas.", "meaning": "그녀는 사과, 오렌지, 바나나를 좋아한다.", "grammar": "parallel" },
+  { "text": "He is tall, strong, and athletic.", "meaning": "그는 키가 크고, 강하며, 운동신경이 좋다.", "grammar": "parallel" },
+  { "text": "My hobbies are painting, singing, and dancing.", "meaning": "내 취미는 그림 그리기, 노래 부르기, 춤추기야.", "grammar": "parallel" },
+  { "text": "The teacher told us to sit down, be quiet, and listen carefully.", "meaning": "선생님은 우리에게 앉고, 조용히 하고, 잘 들으라고 하셨다.", "grammar": "parallel" },
+  { "text": "He wants to learn English, travel the world, and make new friends.", "meaning": "그는 영어를 배우고, 세계 여행을 하고, 새 친구를 사귀고 싶어 한다.", "grammar": "parallel" },
+  { "text": "The dog ran across the yard, jumped over the fence, and barked loudly.", "meaning": "그 개는 마당을 가로질러 달리고, 울타리를 뛰어넘고, 크게 짖었다.", "grammar": "parallel" },
+  { "text": "She bought a shirt, a skirt, and a pair of shoes.", "meaning": "그녀는 셔츠, 치마, 신발 한 켤레를 샀다.", "grammar": "parallel" },
+  { "text": "He is not only intelligent but also hardworking.", "meaning": "그는 똑똑할 뿐만 아니라 성실하기도 하다.", "grammar": "parallel" },
+  { "text": "I will either call you, text you, or email you.", "meaning": "나는 너에게 전화하거나, 문자하거나, 이메일을 보낼 거야.", "grammar": "parallel" },
+  { "text": "She is both talented and humble.", "meaning": "그녀는 재능 있고 겸손하다.", "grammar": "parallel" },
+  { "text": "We visited Paris, London, and Rome.", "meaning": "우리는 파리, 런던, 로마를 방문했다.", "grammar": "parallel" },
+  { "text": "He enjoys playing soccer, watching basketball, and running in the park.", "meaning": "그는 축구를 하고, 농구를 보고, 공원에서 달리는 것을 즐긴다.", "grammar": "parallel" },
+  { "text": "You should wake up early, eat breakfast, and go to school on time.", "meaning": "너는 일찍 일어나고, 아침을 먹고, 제시간에 학교에 가야 한다.", "grammar": "parallel" },
+  { "text": "She wants to be a doctor, a writer, or an artist.", "meaning": "그녀는 의사, 작가, 또는 예술가가 되고 싶어 한다.", "grammar": "parallel" },
+  { "text": "We cleaned the house, washed the dishes, and did the laundry.", "meaning": "우리는 집을 청소하고, 설거지를 하고, 빨래를 했다.", "grammar": "parallel" },
+  { "text": "I am excited about the trip, nervous about the flight, and curious about the hotel.", "meaning": "나는 여행이 기대되고, 비행기가 걱정되고, 호텔이 궁금하다.", "grammar": "parallel" },
+  { "text": "He is good at cooking, cleaning, and fixing things.", "meaning": "그는 요리, 청소, 물건 고치는 것을 잘한다.", "grammar": "parallel" },
+  { "text": "The park was quiet, peaceful, and beautiful.", "meaning": "그 공원은 조용하고, 평화롭고, 아름다웠다.", "grammar": "parallel" },
+  { "text": "I like people who are honest, kind, and respectful.", "meaning": "나는 정직하고, 친절하고, 존중할 줄 아는 사람들을 좋아한다.", "grammar": "parallel" },
+  { "text": "She spends her free time reading books, drawing pictures, and playing the piano.", "meaning": "그녀는 자유 시간을 독서, 그림 그리기, 피아노 연주에 쓴다.", "grammar": "parallel" },
+  { "text": "The teacher explained the rules clearly, patiently, and thoroughly.", "meaning": "선생님은 규칙을 명확하게, 인내심 있게, 철저하게 설명하셨다.", "grammar": "parallel" },
+  { "text": "I will study hard, take notes, and review my lessons.", "meaning": "나는 열심히 공부하고, 필기하고, 복습할 것이다.", "grammar": "parallel" },
+  { "text": "She writes stories, composes music, and paints pictures.", "meaning": "그녀는 이야기를 쓰고, 음악을 작곡하고, 그림을 그린다.", "grammar": "parallel" },
+  { "text": "The company values innovation, creativity, and teamwork.", "meaning": "그 회사는 혁신, 창의성, 팀워크를 중요하게 여긴다.", "grammar": "parallel" },
+  { "text": "He speaks fluently, listens carefully, and responds politely.", "meaning": "그는 유창하게 말하고, 주의 깊게 듣고, 공손하게 대답한다.", "grammar": "parallel" },
+  { "text": "She was not only tired but also hungry.", "meaning": "그녀는 피곤할 뿐만 아니라 배고프기도 했다.", "grammar": "parallel" },
+  { "text": "He is both a great leader and a kind friend.", "meaning": "그는 훌륭한 리더이자 친절한 친구다.", "grammar": "parallel" },
+  { "text": "I plan to visit the museum, explore the city, and try local food.", "meaning": "나는 박물관을 방문하고, 도시를 탐험하고, 현지 음식을 먹어볼 계획이다.", "grammar": "parallel" },
+  { "text": "She is intelligent, hardworking, and determined.", "meaning": "그녀는 똑똑하고, 성실하고, 결단력이 있다.", "grammar": "parallel" },
+  { "text": "I like to dance, to sing, and to act.", "meaning": "나는 춤추는 것, 노래하는 것, 연기하는 것을 좋아한다.", "grammar": "parallel" },
+  { "text": "He needs to pack his bags, check his flight, and leave for the airport.", "meaning": "그는 짐을 싸고, 비행편을 확인하고, 공항으로 떠나야 한다.", "grammar": "parallel" },
+  { "text": "She enjoys meeting new people, traveling to new places, and learning new languages.", "meaning": "그녀는 새로운 사람들을 만나고, 새로운 곳을 여행하고, 새로운 언어를 배우는 것을 즐긴다.", "grammar": "parallel" }
+]));
+
+            sentences = JSON.parse(localStorage.getItem("sentenceData")) || [];
+        }
+
+        const grammarExplanations = [
+            { "grammar": "sv", "name": "주어 + 동사", "description": "주어(S)와 동사(V)로 이루어진 가장 기본적인 문장 구조입니다." },
+            { "grammar": "svo", "name": "주어 + 동사 + 목적어", "description": "주어(S), 동사(V), 목적어(O)로 이루어진 문장 구조로, 동작의 대상을 포함합니다." },
+            { "grammar": "sva", "name": "주어 + 동사 + 형용사", "description": "주어(S), 동사(V), 형용사(Adj)로 이루어진 문장 구조로, 주어의 상태나 특성을 설명합니다." },
+            { "grammar": "svp", "name": "주어 + 동사 + 장소", "description": "주어(S), 동사(V), 장소(Place)로 이루어진 문장 구조로, 동작이 발생하는 장소를 포함합니다." },
+            { "grammar": "imperative", "name": "명령문", "description": "명령문으로, 상대방에게 지시하거나 요청하는 문장 형식입니다." },
+            { "grammar": "question", "name": "의문문", "description": "의문문으로, 정보를 묻거나 대답을 요구하는 문장 형식입니다." },
+            { "grammar": "yes/no question", "name": "Yes/No 질문", "description": "Yes 또는 No로 대답할 수 있는 의문문입니다." },
+            { "grammar": "svc", "name": "주어 + 동사 + 보어", "description": "주어(S), 동사(V), 보어(C)로 이루어진 문장 구조로, 주어를 보충 설명하는 요소를 포함합니다." },
+            { "grammar": "sviodo", "name": "주어 + 동사 + 간접목적어 + 직접목적어", "description": "주어(S), 동사(V), 간접목적어(IO), 직접목적어(DO)로 이루어진 문장 구조로, ‘누구에게’ + ‘무엇을’의 형태를 가집니다." },
+            { "grammar": "svoc", "name": "주어 + 동사 + 목적어 + 목적격보어", "description": "주어(S), 동사(V), 목적어(O), 목적격보어(C)로 이루어진 문장 구조로, 목적어를 보충 설명하는 요소를 포함합니다." },
+            { "grammar": "exclamatory", "name": "감탄문", "description": "감탄문으로, 감정을 강조하는 문장 형식입니다." },
+            { "grammar": "conditional", "name": "조건문", "description": "조건문으로, ‘만약 ~라면’의 의미를 포함하는 문장 형식입니다." },
+            { "grammar": "parallel", "name": "병렬 문장", "description": "병렬 구조로, 같은 문법적 요소를 나열하여 문장을 구성하는 형식입니다." }
+        ];
+		
+		const grammarTypes = grammarExplanations.map(g => g.grammar);
+		
+		let currentIndex = 0;
+        let filteredSentences = sentences;
+		
+		function loadSettings() {
+			if (localStorage.getItem("speekSpeed") === null) {
+                localStorage.setItem("speekSpeed", "1.0");
+            }
+			if (localStorage.getItem("gradation") === null) {
+                localStorage.setItem("gradation", "true");
+            }
+			if (localStorage.getItem("autoPlay") === null) {
+                localStorage.setItem("autoPlay", "true");
+            }
+			
+            const savedSpeed = localStorage.getItem("speekSpeed");
+            const savedGradation = localStorage.getItem("gradation");
+            const savedAutoPlay = localStorage.getItem("autoPlay");
+            
+            document.getElementById("speekSpeed").value = savedSpeed;
+            document.querySelector(`input[name='gradation'][value='${savedGradation}']`).checked = true;
+            document.querySelector(`input[name='autoPlay'][value='${savedAutoPlay}']`).checked = true;
+			
+			const selectedGrammars = JSON.parse(localStorage.getItem("selectedGrammars")) || grammarTypes;
+            document.querySelectorAll("input[name='grammarFilter']").forEach(input => {
+                input.checked = selectedGrammars.includes(input.value);
+            });
+			
+			const selectedFlags = JSON.parse(localStorage.getItem("selectedFlags")) || ["none", "red", "green", "blue", "black"];
+            document.querySelectorAll("input[name='flagFilter']").forEach(input => {
+                input.checked = selectedFlags.includes(input.value);
+            });
+
+			filterSentences();
+			applyGradation(savedGradation === "true");
+        }
+		
+		function filterSentences() {
+  			const selectedFlags = JSON.parse(localStorage.getItem("selectedFlags")) || ["none", "red", "green", "blue", "black"];
+			const selectedGrammars = JSON.parse(localStorage.getItem("selectedGrammars")) || grammarExplanations.map(g => g.grammar);
+			const storedFlags = JSON.parse(localStorage.getItem("sentenceFlags")) || {};
+
+			filteredSentences = sentences.filter((sentence, index) => 
+				selectedFlags.includes(storedFlags[index] || "none") && 
+				selectedGrammars.includes(sentence.grammar)
+			);
+
+			if (filteredSentences.length === 0) {
+				alert("선택한 필터에 해당하는 문장이 없습니다. 모든 문장을 다시 표시합니다.");
+				filteredSentences = [...sentences]; // 필터 해제
+			}
+            
+            currentIndex = 0;
+        }
+		
+		function saveSettings() {
+            const selectedSpeed = document.getElementById("speekSpeed").value;
+            const selectedGradation = document.querySelector("input[name='gradation']:checked").value;
+            const selectedAutoPlay = document.querySelector("input[name='autoPlay']:checked").value;
+            
+            localStorage.setItem("speekSpeed", selectedSpeed);
+            localStorage.setItem("gradation", selectedGradation);
+            localStorage.setItem("autoPlay", selectedAutoPlay);
+			
+			const selectedGrammars = Array.from(document.querySelectorAll("input[name='grammarFilter']:checked"))
+                .map(input => input.value);
+            localStorage.setItem("selectedGrammars", JSON.stringify(selectedGrammars));
+			
+			if (!selectedGrammars.includes(filteredSentences[currentIndex]?.grammar)) {
+                currentIndex = 0;
+            }
+			
+			const selectedFlags = Array.from(document.querySelectorAll("input[name='flagFilter']:checked"))
+                .map(input => input.value);
+            localStorage.setItem("selectedFlags", JSON.stringify(selectedFlags));
+            
+			filterSentences();
+			displaySentence();
+            closeSettings();
+        }
+		
+		function applyGradation(isGradation) {
+            const sentenceText = document.getElementById("sentenceText");
+            if (isGradation) {
+                sentenceText.style.background = "linear-gradient(to bottom, rgba(10,10,10,1) 5%, rgba(255,255,255,0) 65%)";
+                sentenceText.style.webkitBackgroundClip = "text";
+                sentenceText.style.webkitTextFillColor = "transparent";
+            } else {
+                sentenceText.style.background = "none";
+                sentenceText.style.webkitTextFillColor = "black";
+            }
+        }
+		
+		function openSettings() {
+            document.getElementById("settingsModal").classList.remove("hidden");
+        }
+
+        function closeSettings() {
+            document.getElementById("settingsModal").classList.add("hidden");
+        }
+		
+        function speakSentence() {
+			if (filteredSentences.length === 0) return;
+		
+            const sentence = filteredSentences[currentIndex].text;
+			
+			const utterance = new SpeechSynthesisUtterance(sentence);
+            utterance.lang = "en-US";
+			utterance.rate = parseFloat(localStorage.getItem("speekSpeed")) || 1.0;
+            speechSynthesis.speak(utterance);
+        }
+        
+        function prevSentence() {
+            if (filteredSentences.length === 0) return;
+			currentIndex = (currentIndex - 1 + filteredSentences.length) % filteredSentences.length;
+			displaySentence();
+        }
+
+        function nextSentence() {
+			if (filteredSentences.length === 0) return;
+            currentIndex = (currentIndex + 1) % filteredSentences.length;
+            displaySentence();
+        }
+
+        function randomSentence() {
+           if (filteredSentences.length === 0) return;
+			let randomIndex;
+			do {
+				randomIndex = Math.floor(Math.random() * filteredSentences.length);
+			} while (randomIndex === currentIndex);
+			currentIndex = randomIndex;
+			displaySentence();
+        }
+
+        function displaySentence() {
+			if (filteredSentences.length === 0) return;
+
+		    if( ! meaningText.classList.contains("hidden") ){
+				toggleMeans();
+			}
+
+			const sentence = filteredSentences[currentIndex];
+			
+            document.getElementById("index").innerText = `${currentIndex + 1} / ${sentences.length}`;
+            document.getElementById("sentenceText").innerText = sentence.text;
+            document.getElementById("meaningText").innerText = sentence.meaning;
+            
+			const grammarInfo = grammarExplanations.find(g => g.grammar === sentence.grammar);
+            document.getElementById("grammarText").innerText = grammarInfo ? grammarInfo.description : "";
+            document.getElementById("meaningText").classList.add("hidden");
+            document.getElementById("grammarText").classList.add("hidden");
+			
+			if (localStorage.getItem("autoPlay") === "true") {
+                speakSentence();
+            }
+			displayFlag();
+        }
+
+        function toggleMeans() {
+            const meaningText = document.getElementById("meaningText");
+            const grammarText = document.getElementById("grammarText");
+            const isHidden = meaningText.classList.contains("hidden");
+            
+            meaningText.classList.toggle("hidden");
+            grammarText.classList.toggle("hidden");
+            applyGradation(!isHidden);
+        }
+		
+		function toggleFlagMenu() {
+            document.getElementById("flagMenu").classList.toggle("hidden");
+        }
+
+        function setFlag(flag) {
+            const sentence = filteredSentences[currentIndex];
+            const sentenceIndex = sentences.indexOf(sentence);
+            const storedFlags = JSON.parse(localStorage.getItem("sentenceFlags")) || {};
+            
+            if (flag === "none") {
+                delete storedFlags[sentenceIndex];
+            } else {
+                storedFlags[sentenceIndex] = flag;
+            }
+            
+            localStorage.setItem("sentenceFlags", JSON.stringify(storedFlags));
+            displayFlag();
+			toggleFlagMenu();
+        }
+
+        function displayFlag() {
+            const sentence = filteredSentences[currentIndex];
+            const sentenceIndex = sentences.indexOf(sentence);
+            const storedFlags = JSON.parse(localStorage.getItem("sentenceFlags")) || {};
+            const flagButton = document.getElementById("flagButton");
+            const flag = storedFlags[sentenceIndex] || "none";
+            
+            const flagIcons = {
+                "none": "⚪",
+                "red": "🔴",
+                "green": "🟢",
+                "blue": "🔵",
+                "black": "⚫"
+            };
+            
+            flagButton.innerText = flagIcons[flag];
+        }
+    </script>
+</head>
+<body class="flex flex-col items-center justify-center h-screen bg-gray-100">
+	<div class="relative w-full h-full max-w-4xl max-h-screen bg-white shadow-md p-4 rounded-lg flex flex-col items-center">
+        <div class="w-full flex justify-between items-center">
+            <p id="index" class="text-sm text-gray-500"></p>
+            <button class="w-6 h-6 cursor-pointer text-xl" onclick="openSettings()">⚙️</button>
+        </div>
+        <div class="mt-2 flex justify-between items-center w-full px-8">
+            <button onclick="speakSentence()" class="text-blue-500 text-2xl">🔊</button>
+            <button id="flagButton" onclick="toggleFlagMenu()" class="w-6 h-6 text-lg">⚪</button>
+        </div>
+		<div id="flagMenu" class="hidden flex space-x-2 mt-2 justify-end w-full">
+			<button onclick="setFlag('none')">⚪</button>
+			<button onclick="setFlag('red')">🔴</button>
+			<button onclick="setFlag('green')">🟢</button>
+			<button onclick="setFlag('blue')">🔵</button>
+			<button onclick="setFlag('black')">⚫</button>
+		</div>
+        <div class="mt-4 text-center">
+            <p id="sentenceText" class="text-2xl font-bold"></p>
+        </div>
+        <p id="meaningText" class="hidden text-gray-700 mt-2"></p>
+        <p id="grammarText" class="hidden text-gray-500 text-sm mt-1"></p>
+        <button id="toggleButton" onclick="toggleMeans()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Show Means</button>
+    </div>
+
+	<div class="absolute bottom-4 w-full max-w-md flex justify-between px-4">
+		<button onclick="prevSentence()" class="bg-gray-300 px-6 py-2 rounded">Previous</button>
+		<button onclick="randomSentence()" class="bg-green-500 text-white px-6 py-2 rounded">Random</button>
+		<button onclick="nextSentence()" class="bg-gray-300 px-6 py-2 rounded">Next</button>
+	</div>
+	
+	<div id="settingsModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden text-sm">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-[640px] max-w-2xl">
+			<h2 class="text-lg font-bold mb-4">설정</h2>
+			<div class="mb-4">
+				<label class="block font-bold">문법 유형:</label>
+				<div class="grid grid-cols-2 gap-2 w-full">
+					<script>
+						document.write(grammarExplanations.map(g => `
+							<label class='flex items-center space-x-3 bg-gray-100 p-2 rounded-lg shadow-sm hover:bg-gray-200 transition'>
+								<input type='checkbox' name='grammarFilter' value='${g.grammar}' class='form-checkbox text-blue-600 min-w-[20px] min-h-[20px]'>
+								<span class='text-gray-800 font-medium'>${g.name}</span>
+							</label>
+						`).join(''));
+					</script>
+				</div>
+			</div>
+			<div class="mb-4">
+                <label class="flex items-center space-x-2">
+                    <span class="font-bold">속도:</span>
+                    <select id="speekSpeed" class="border p-2 rounded">
+                        <option value="0.6">매우 느리게</option>
+                        <option value="0.8">느리게</option>
+                        <option value="1.0" selected>보통</option>
+                        <option value="1.2">빠르게</option>
+                        <option value="1.4">매우 빠르게</option>
+                    </select>
+                </label>
+                <label class="flex items-center space-x-2">
+                    <span class="font-bold">흐릿하게:</span>
+                    <label class="cursor-pointer flex items-center space-x-1">
+						<input type="radio" name="gradation" value="true" checked class="mr-1"> 흐릿하게
+					</label>
+					<label class="cursor-pointer flex items-center space-x-1">
+						<input type="radio" name="gradation" value="false" class="ml-2"> 선명하게
+					</label>
+                </label>
+                <label class="flex items-center space-x-2">
+                    <span class="font-bold">자동 재생:</span>
+                    <label class="cursor-pointer flex items-center space-x-1">
+						<input type="radio" name="autoPlay" value="true" checked class="mr-1"> 자동 재생
+					</label>
+					<label class="cursor-pointer flex items-center space-x-1">
+						<input type="radio" name="autoPlay" value="false" class="ml-2"> 중지
+					</label>
+                </label>
+            </div>
+			<div class="mb-4">
+				<label class="block font-bold">Flag 필터:</label>
+				<div class="flex space-x-4">
+					<label class='flex items-center space-x-2'>
+						<input type='checkbox' name='flagFilter' value='none' class='form-checkbox text-gray-600 h-5 w-5' checked>
+						<span class='text-gray-800'>⚪ 없음</span>
+					</label>
+					<label class='flex items-center space-x-2'>
+						<input type='checkbox' name='flagFilter' value='red' class='form-checkbox text-red-600 h-5 w-5' checked>
+						<span class='text-red-600'>🔴 빨강</span>
+					</label>
+					<label class='flex items-center space-x-2'>
+						<input type='checkbox' name='flagFilter' value='green' class='form-checkbox text-green-600 h-5 w-5' checked>
+						<span class='text-green-600'>🟢 초록</span>
+					</label>
+					<label class='flex items-center space-x-2'>
+						<input type='checkbox' name='flagFilter' value='blue' class='form-checkbox text-blue-600 h-5 w-5' checked>
+						<span class='text-blue-600'>🔵 파랑</span>
+					</label>
+					<label class='flex items-center space-x-2'>
+						<input type='checkbox' name='flagFilter' value='black' class='form-checkbox text-black h-5 w-5' checked>
+						<span class='text-black'>⚫ 검정</span>
+					</label>
+				</div>
+			</div>
+			<div class="flex justify-end space-x-4 mt-6">
+                <button onclick="closeSettings()" class="bg-gray-300 px-4 py-2 rounded">취소</button>
+                <button onclick="saveSettings()" class="bg-blue-500 text-white px-4 py-2 rounded">저장</button>
+            </div>
+		</div>
+	</div>
+</body>
+</html>

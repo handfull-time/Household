@@ -19,6 +19,9 @@ class ViewHandlerInterceptor implements AsyncHandlerInterceptor {
 			final String path = req.getServletPath();
 			if( path.lastIndexOf(".html") > 0 ){
 				view.getModelMap().addAttribute("CurrentTime", System.currentTimeMillis());
+				
+				final String uri = req.getRequestURI().substring(1);
+				view.getModelMap().addAttribute("currentURI", uri.substring(uri.indexOf("/")) );
 			}
 		}
 		

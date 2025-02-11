@@ -9,6 +9,8 @@ import java.security.NoSuchAlgorithmException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public class HouseholdUtils {
 	/**
 	 * obj 값이 비었는가? 
@@ -96,4 +98,38 @@ public class HouseholdUtils {
     public static String toString( Object obj) {
     	return obj.getClass().getName() + "\n" + HouseholdUtils.gson.toJson(obj) + "\n";
     }
+    
+private static final String UnknownIp = "unknown";
+	
+	/**
+	 * 접근한 IP Address를 반환한다.
+	 * @param request
+	 * @return Real Remote Address
+	 */
+	public static String getRemoteAddress( final HttpServletRequest request ) {
+		
+		String result = request.getHeader("X-Forwarded-For");
+        if (result == null || result.length() == 0 || UnknownIp.equalsIgnoreCase(result)) {  
+            result = request.getHeader("Proxy-Client-IP");  
+        }  
+        if (result == null || result.length() == 0 || UnknownIp.equalsIgnoreCase(result)) {  
+            result = request.getHeader("WL-Proxy-Client-IP");  
+        }  
+        if (result == null || result.length() == 0 || UnknownIp.equalsIgnoreCase(result)) {  
+            result = request.getHeader("HTTP_CLIENT_IP");  
+        }  
+        if (result == null || result.length() == 0 || UnknownIp.equalsIgnoreCase(result)) {  
+            result = request.getHeader("HTTP_X_FORWARDED_FOR");  
+        }  
+        if (result == null || result.length() == 0 || UnknownIp.equalsIgnoreCase(result)) {  
+            result = request.getRemoteAddr();  
+        }
+        
+        if( result != null && result.indexOf(",") > 0 ){
+        	// ELB 접근 했을 때와 EC2 접근 IP가 [,]를 구분으로 넘어 온다.
+        	result = result.split(",")[0];
+        }
+        
+        return result;
+	}
 }

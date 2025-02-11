@@ -25,8 +25,8 @@ public class TestViewController {
     @GetMapping("View/{path}.html")
     public String dynamicView(HttpServletRequest request, Model model, @PathVariable("path") String path) {
     	
-    	final String uri = request.getRequestURI().substring(1);
-        model.addAttribute("currentURI", uri.substring(uri.indexOf("/")) );
+//    	final String uri = request.getRequestURI().substring(1);
+//        model.addAttribute("currentURI", uri.substring(uri.indexOf("/")) );
         
         return "TestView/" + path;  // templates/View/{path}.html 를 렌더링
     }

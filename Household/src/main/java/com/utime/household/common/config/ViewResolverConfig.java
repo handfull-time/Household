@@ -1,17 +1,12 @@
 package com.utime.household.common.config;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.Ordered;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -19,8 +14,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
-import jakarta.annotation.Resource;
-import jakarta.servlet.Filter;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 
 /**
@@ -30,14 +23,14 @@ import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 @PropertySource("classpath:/application.properties")
 public class ViewResolverConfig implements WebMvcConfigurer { 
     
-	@Autowired
-	private Filter transactionFilter;
+//	@Autowired
+//	private Filter transactionFilter;
 	
-	@Resource(name="LogInterceptor")
-	private AsyncHandlerInterceptor interceptorLog;
-	
-	@Resource(name="ViewInterceptor")
-	private AsyncHandlerInterceptor interceptorView;
+//	@Resource(name="LogInterceptor")
+//	private AsyncHandlerInterceptor interceptorLog;
+//	
+//	@Resource(name="ViewInterceptor")
+//	private AsyncHandlerInterceptor interceptorView;
 	
 	/**
 	 * 인터셉터 추가.
@@ -45,37 +38,37 @@ public class ViewResolverConfig implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		
-		final List<String> patterns = new ArrayList<>();
-		patterns.add("/css/**");
-		patterns.add("/js/**");
-		patterns.add("/images/**");
-		patterns.add("/vendor/**");
-		
-		// 로그
-		registry.addInterceptor( this.interceptorLog ).excludePathPatterns(patterns);
-		registry.addInterceptor( this.interceptorView ).addPathPatterns("/**/*.html");
+//		final List<String> patterns = new ArrayList<>();
+//		patterns.add("/css/**");
+//		patterns.add("/js/**");
+//		patterns.add("/images/**");
+//		patterns.add("/vendor/**");
+//		
+//		// 로그
+//		registry.addInterceptor( this.interceptorLog ).excludePathPatterns(patterns);
+//		registry.addInterceptor( this.interceptorView ).addPathPatterns("/**/*.html");
 		
 	}
 
-	/**
-	 * 로그 포함될 주소 입력<P>
-	 *  /Member/Join.json 과 같이 Full 주소를 입력 하거나
-	 *  /Member/*  처럼 [*] 처리를 한다. 
-	 * @return
-	 */
-	@Bean
-	public FilterRegistrationBean<Filter> logFilter() {
-		
-		final List<String> patterns = new ArrayList<>();
-		
-	    final FilterRegistrationBean<Filter> result = new FilterRegistrationBean<>();
-	    result.setOrder(Ordered.HIGHEST_PRECEDENCE);
-	    
-	    result.setFilter( this.transactionFilter );
-	    result.addUrlPatterns( patterns.toArray(new String[patterns.size()]) );
-	    
-	    return result;
-	}
+//	/**
+//	 * 로그 포함될 주소 입력<P>
+//	 *  /Member/Join.json 과 같이 Full 주소를 입력 하거나
+//	 *  /Member/*  처럼 [*] 처리를 한다. 
+//	 * @return
+//	 */
+//	@Bean
+//	public FilterRegistrationBean<Filter> logFilter() {
+//		
+//		final List<String> patterns = new ArrayList<>();
+//		
+//	    final FilterRegistrationBean<Filter> result = new FilterRegistrationBean<>();
+//	    result.setOrder(Ordered.HIGHEST_PRECEDENCE);
+//	    
+//	    result.setFilter( this.transactionFilter );
+//	    result.addUrlPatterns( patterns.toArray(new String[patterns.size()]) );
+//	    
+//	    return result;
+//	}
 
 		 
 	/**

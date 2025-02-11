@@ -34,11 +34,13 @@
     </table>
 
 <script>
+
 class DatabaseManager {
 	
     constructor(dbName, storeName, version = 1) {
         this.dbName = dbName;
-        this.storeName = storeName;
+        this.storeNameSsentences = "sentences";
+        this.storeNameFlags = "flags";
         this.version = version;
         this.db = null;
     }
@@ -57,13 +59,20 @@ class DatabaseManager {
             request.onupgradeneeded = (event) => {
                 this.db = event.target.result;
 
-                if (!this.db.objectStoreNames.contains(this.storeName)) {
-                    let objectStore = this.db.createObjectStore(this.storeName, { keyPath: "id", autoIncrement: true });
+                if (!this.db.objectStoreNames.contains(this.storeNameSsentences)) {
+                    let objectStore = this.db.createObjectStore(this.storeNameSsentences, { keyPath: "id", autoIncrement: true });
 
                     // 인덱스 생성
                     objectStore.createIndex("grammar", "grammar", { unique: false });
                     objectStore.createIndex("flag", "flag", { unique: false });
                     objectStore.createIndex("grammar_flag", ["grammar", "flag"], { unique: false });
+                }
+
+                if (!this.db.objectStoreNames.contains(this.storeNameFlags)) {
+                    let objectStore = this.db.createObjectStore(this.storeNameFlags, { keyPath: "id", autoIncrement: true });
+
+                    // 인덱스 생성
+                    objectStore.createIndex("flag", "flag", { unique: false });
                 }
             };
 
@@ -82,8 +91,8 @@ class DatabaseManager {
     async addData(data) {
         return new Promise(async (resolve, reject) => {
             const db = await this.connect();
-            const transaction = db.transaction([this.storeName], "readwrite");
-            const objectStore = transaction.objectStore(this.storeName);
+            const transaction = db.transaction([this.storeNameSsentences], "readwrite");
+            const objectStore = transaction.objectStore(this.storeNameSsentences);
 
             const request = objectStore.add(data);
 
@@ -96,8 +105,8 @@ class DatabaseManager {
     async getAllData() {
         return new Promise(async (resolve, reject) => {
             const db = await this.connect();
-            const transaction = db.transaction([this.storeName], "readonly");
-            const objectStore = transaction.objectStore(this.storeName);
+            const transaction = db.transaction([this.storeNameSsentences], "readonly");
+            const objectStore = transaction.objectStore(this.storeNameSsentences);
 
             const request = objectStore.getAll();
 
@@ -110,8 +119,8 @@ class DatabaseManager {
     async getByFlag(flag) {
         return new Promise(async (resolve, reject) => {
         	const db = await this.connect();
-            const transaction = db.transaction([this.storeName], "readonly");
-            const objectStore = transaction.objectStore(this.storeName);
+            const transaction = db.transaction([this.storeNameSsentences], "readonly");
+            const objectStore = transaction.objectStore(this.storeNameSsentences);
             const index = objectStore.index("flag");
 
             const request = index.getAll(flag);
@@ -130,8 +139,8 @@ class DatabaseManager {
     async getFirstData() {
         return new Promise(async (resolve, reject) => {
             const db = await this.connect();
-            const transaction = db.transaction([this.storeName], "readonly");
-            const objectStore = transaction.objectStore(this.storeName);
+            const transaction = db.transaction([this.storeNameSsentences], "readonly");
+            const objectStore = transaction.objectStore(this.storeNameSsentences);
 
             const request = objectStore.openCursor(); // 첫 번째 데이터만 가져옴
 
@@ -156,8 +165,8 @@ class DatabaseManager {
     async getByGrammarAndflag(grammar, flag) {
         return new Promise(async (resolve, reject) => {
             const db = await this.connect();
-            const transaction = db.transaction([this.storeName], "readonly");
-            const objectStore = transaction.objectStore(this.storeName);
+            const transaction = db.transaction([this.storeNameSsentences], "readonly");
+            const objectStore = transaction.objectStore(this.storeNameSsentences);
 
             const index = objectStore.index("grammar_flag");
             const request = index.getAll([grammar, flag]);
@@ -171,8 +180,8 @@ class DatabaseManager {
     async updateData(id, newData) {
         return new Promise(async (resolve, reject) => {
             const db = await this.connect();
-            const transaction = db.transaction([this.storeName], "readwrite");
-            const objectStore = transaction.objectStore(this.storeName);
+            const transaction = db.transaction([this.storeNameSsentences], "readwrite");
+            const objectStore = transaction.objectStore(this.storeNameSsentences);
 
             const request = objectStore.get(id);
 
@@ -197,8 +206,8 @@ class DatabaseManager {
     async deleteData(id) {
         return new Promise(async (resolve, reject) => {
             const db = await this.connect();
-            const transaction = db.transaction([this.storeName], "readwrite");
-            const objectStore = transaction.objectStore(this.storeName);
+            const transaction = db.transaction([this.storeNameSsentences], "readwrite");
+            const objectStore = transaction.objectStore(this.storeNameSsentences);
 
             const request = objectStore.delete(id);
 
@@ -214,6 +223,41 @@ class DatabaseManager {
 
             request.onsuccess = () => resolve("IndexedDB 삭제 완료!");
             request.onerror = (event) => reject("데이터베이스 삭제 오류: " + event.target.error);
+        });
+    }
+    
+    async getSentencesWithFlags() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const db = await this.connect();
+                const transaction = db.transaction([this.storeNameSentences, this.storeNameFlags], "readonly");
+                const sentencesStore = transaction.objectStore(this.storeNameSentences);
+                const flagsStore = transaction.objectStore(this.storeNameFlags);
+
+                const sentencesRequest = sentencesStore.getAll();
+                const flagsRequest = flagsStore.getAll();
+
+                const [sentences, flags] = await Promise.all([
+                    new Promise((resolve, reject) => {
+                        sentencesRequest.onsuccess = () => resolve(sentencesRequest.result);
+                        sentencesRequest.onerror = () => reject(sentencesRequest.error);
+                    }),
+                    new Promise((resolve, reject) => {
+                        flagsRequest.onsuccess = () => resolve(flagsRequest.result);
+                        flagsRequest.onerror = () => reject(flagsRequest.error);
+                    })
+                ]);
+
+                // ✅ sentences와 flags를 매칭하여 `JOIN`과 유사한 결과 생성
+                const result = sentences.map(sentence => ({
+                    ...sentence,
+                    flag: flags.find(f => f.id === sentence.flagId) || null // `flagId`에 해당하는 flag 찾기
+                }));
+
+                resolve(result);
+            } catch (error) {
+                reject("데이터 조회 중 오류 발생: " + error);
+            }
         });
     }
 }
@@ -248,7 +292,7 @@ class DatabaseManager {
 
 	<script>
         // ✅ IndexedDB 연결
-        const dbManager = new DatabaseManager("LanguageDB", "sentences");
+        const dbManager = new DatabaseManager("LanguageDB");
 
         // ✅ 검색 버튼 클릭 시 실행
         async function searchData() {

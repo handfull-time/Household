@@ -41,32 +41,25 @@
 
 <div class="space-y-2">
 	<div>
-		<p class="text-lg font-semibold">메뉴-A</p>
+		<p class="text-lg font-semibold">거래</p>
 		<ul class="pl-4 space-y-1">
-			<li><a th:href="@{/View/menuA_0.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_0.html'} ? 'selected'">color</a></li>
-			<li><a th:href="@{/View/menuA_1.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_1.html'} ? 'selected'">input sample</a></li>
-			<li><a th:href="@{/View/menuA_2.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_2.html'} ? 'selected'">button progressbar</a></li>
-			<li><a th:href="@{/View/menuA_3.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_3.html'} ? 'selected'">layer popup</a></li>
-			<li><a th:href="@{/View/menuA_31.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_31.html'} ? 'selected'">layer save x popup</a></li>
-			<li><a th:href="@{/View/menuA_32.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_32.html'} ? 'selected'">layer multi popup</a></li>
-			<li><a th:href="@{/View/menuA_4.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_4.html'} ? 'selected'">toast</a></li>
-			<li><a th:href="@{/View/menuA_5.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_5.html'} ? 'selected'">table</a></li>
-			<li><a th:href="@{/View/menuA_51.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_51.html'} ? 'selected'">table-1</a></li>
-			<li><a th:href="@{/View/menuA_52.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_52.html'} ? 'selected'">table-2</a></li>
-			<li><a th:href="@{/View/menuA_6.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_6.html'} ? 'selected'">chart</a></li>
-			<li><a th:href="@{/View/menuA_7.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_7.html'} ? 'selected'">alert</a></li>
-			<li><a th:href="@{/View/menuA_8.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_8.html'} ? 'selected'">profile</a></li>
-			<li><a th:href="@{/View/menuA_9.html}" class="menu-item" th:classappend="${currentURI == '/View/menuA_9.html'} ? 'selected'">css</a></li>
+			<li><a th:href="@{/Trade/Record.html}" class="menu-item" th:classappend="${currentURI == '/Trade/Record.html'} ? 'selected'">입출금 목록</a></li>
+			<li><a th:href="@{/View/menuA_0.html}" class="menu-item" th:classappend="${currentURI == '/Trade/IO.html'} ? 'selected'">내역 입력</a></li>
 		</ul>
 	</div>
 
     <div>
-    	<p class="text-lg font-semibold">메뉴-B</p>
+    	<p class="text-lg font-semibold">환경</p>
     	<ul class="pl-4 space-y-1">
-    		<li><a th:href="@{/View/menuB_1.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_1.html'} ? 'selected'">메뉴-B-1</a></li>
-    		<li><a th:href="@{/View/menuB_2.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_2.html'} ? 'selected'">메뉴-B-2</a></li>
-    		<li><a th:href="@{/View/menuB_3.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_3.html'} ? 'selected'">메뉴-B-3</a></li>
+    		<li><a th:href="@{/Env/BankCard}" class="menu-item" th:classappend="${currentURI == '/Env/BankCard.html'} ? 'selected'">은행/카드 등록</a></li>
+    		<li><a th:href="@{/View/menuB_2.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_2.html'} ? 'selected'">사용처</a></li>
+    		<li><a th:href="@{/View/menuB_3.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_3.html'} ? 'selected'">세부관리</a></li>
     	</ul>
+    </div>
+    <div>
+    	<p class="text-lg font-semibold">
+    		<a th:href="@{/View/menuA_0.html}" class="menu-item" >Sample</a>
+    	</p>
     </div>
 </div>
 

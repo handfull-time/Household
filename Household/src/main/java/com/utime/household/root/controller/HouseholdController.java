@@ -16,12 +16,12 @@ public class HouseholdController {
 	
 	@RequestMapping(value = {"Home.html"})
 	public String rootMain() {
-		return "root/home";
+		return "Root/Home";
 	}
 	
 	@RequestMapping(value = {"List.html"})
 	public String rootList() {
-		return "root/list";
+		return "Root/list";
 	}
 
 }

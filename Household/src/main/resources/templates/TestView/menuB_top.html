@@ -1,0 +1,23 @@
+<div xmlns:th="http://www.thymeleaf.org" 
+	th:fragment="topView" 
+	class="bg-white p-6 shadow-lg rounded-xl max-w-2xl w-full text-sm">
+    <!-- <div class="grid grid-cols-2 md:grid-cols-4 gap-4"> -->
+    <div class="grid grid-cols-2 md:grid-cols-auto-fit gap-5">
+    
+        <label class="block bg-blue-500 text-white text-center py-2 px-4 rounded-lg font-semibold">
+            <a th:href="@{/View/menuB_1.html}" class="menu-item" >로그인</a>
+        </label>
+        <label class="block bg-blue-500 text-white text-center py-2 px-4 rounded-lg font-semibold">
+            <a th:href="@{/View/menuB_2.html}" class="menu-item" >회원 가입</a>
+        </label>
+        <label class="block bg-blue-500 text-white text-center py-2 px-4 rounded-lg font-semibold">
+            <a th:href="@{/View/menuB_3.html}" class="menu-item" >회원 정보 변경</a>
+        </label>
+        <label class="block bg-blue-500 text-white text-center py-2 px-4 rounded-lg font-semibold">
+            <a th:href="@{/View/menuB_4.html}" class="menu-item" >비번 찾기</a>
+        </label>
+        <label class="block bg-blue-500 text-white text-center py-2 px-4 rounded-lg font-semibold">
+            <a th:href="@{/View/menuB_5.html}" class="menu-item" >Error</a>
+        </label>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{TestView/LayoutMain}">
+    
+    <th:block layout:fragment="title">
+    	메뉴-A-33 
+    </th:block>
+    
+    <th:block layout:fragment="css">
+    </th:block>
+    
+    <th:block layout:fragment="script">
+    	<script th:inline="javascript">
+    		function call(){
+    			const sendValue = {
+    			        url: /*[[@{/View/L/menuA_modal4.layer}]]*/ null,
+    					method: MethodType.Post, // 기본값: POST
+    			        contentType: ContentsType.Json, // 기본값: JSON
+    			        data: JSON.stringify({
+    			        	user:{
+	    			        	no:1000,
+	    			        	name:'call',
+	    			        	age:30,
+	    			        	email:'utime@utime.com',
+	    			        	note:'20251110',
+	    			        	gender:'M'
+    			        	}
+    			        }),
+    			        width: '800px'
+    			    };
+    			
+    			openPopup(sendValue);
+    		}
+    	</script>
+    </th:block>
+
+    <div layout:fragment="content">
+		<h2 class="text-2xl font-bold mb-4">메뉴-A-33 Param</h2>
+		<button onclick="call()"  class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
+		    팝업 모달 열기
+		</button>
+    </div>
+</html>

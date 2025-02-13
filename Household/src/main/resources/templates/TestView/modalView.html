@@ -4,7 +4,7 @@
 
 <!-- 팝업을 위한 컨테이너 -->
 <div id="popupContainer">
-    <div id="popupOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center">
+    <div id="popupOverlay" class="fixed inset-0 z-45 bg-black bg-opacity-50 hidden flex justify-center items-center">
         <div id="popupWindow" class="modalTop bg-white rounded-lg shadow-lg relative">
             <div id="popupContentContainer">
                 <!-- 서버에서 로드된 내용이 여기에 삽입됨 -->
@@ -36,7 +36,8 @@
 		}
 		
 		const defaults = {
-		        method: MethodType.Post, // 기본값: POST
+		        url: null,
+				method: MethodType.Post, // 기본값: POST
 		        contentType: ContentsType.Json, // 기본값: JSON
 		        data:null,
 		        width: '800px'
@@ -45,54 +46,64 @@
 		const finalValue = { ...defaults, ...sendObj };
 		const width = finalValue.width;
 		
-        popupIndex++; // 새로운 팝업 ID 증가
-
-        // 기존 팝업 컨테이너 복제
-        const originalPopup = document.getElementById("popupOverlay");
-        const newPopup = originalPopup.cloneNode(true);
-
-        // 새로운 팝업 ID 변경
-        const newPopupId = `popupOverlay_${popupIndex}`;
-        const newWindowId = `popupWindow_${popupIndex}`;
-        const newContentId = `popupContentContainer_${popupIndex}`;
-
-        newPopup.id = newPopupId;
-        const popupWindow = newPopup.querySelector("#popupWindow");
-        popupWindow.id = newWindowId;
-        // width 적용
-        popupWindow.style.width = width;
-        newPopup.querySelector("#popupContentContainer").id = newContentId;
-
-        // 모달 개별 드래그 객체 추가
-        popupWindow.dragObj = { isDragging: false, offsetX: 0, offsetY: 0 };
-
-        // 새 팝업 숨김 해제
-        newPopup.classList.remove("hidden");
-
-        // 새로운 팝업 추가
-        document.getElementById("popupContainer").appendChild(newPopup);
-
 
         // 데이터 로드
         fetch(finalValue.url, {
 	            method: finalValue.method,
 	            headers: { "Content-Type": finalValue.contentType },
 	            body: finalValue.data
-	        }
-        ).then(response => response.text())
-        .then(html => {
-            const container = document.getElementById(newContentId);
-            container.innerHTML = html;
-            
-            // 새로 추가된 script 태그 실행 (Thymeleaf script 실행)
-            container.querySelectorAll("script").forEach(oldScript => {
-                const newScript = document.createElement("script");
-                newScript.textContent = oldScript.textContent;
-                document.body.appendChild(newScript);
-                oldScript.remove();
-            });
-        })
-        .catch(error => alert("데이터 로드 실패: " + error));
+	    	})
+        	.then(response => {
+        		if (!response.ok) {
+        			// HTTP 상태 코드가 200이 아니면 예외 발생
+        			throw new Error(`HTTP 오류 발생: ${response.status} ${response.statusText}`);
+        		}
+        		return response.text(); // 정상적인 경우 HTML 반환
+        	})
+        	.then(html => {
+        		
+        		popupIndex++; // 새로운 팝업 ID 증가
+
+                // 기존 팝업 컨테이너 복제
+                const originalPopup = document.getElementById("popupOverlay");
+                const newPopup = originalPopup.cloneNode(true);
+
+                // 새로운 팝업 ID 변경
+                const newPopupId = `popupOverlay_${popupIndex}`;
+                const newWindowId = `popupWindow_${popupIndex}`;
+                const newContentId = `popupContentContainer_${popupIndex}`;
+
+                newPopup.id = newPopupId;
+                const popupWindow = newPopup.querySelector("#popupWindow");
+                popupWindow.id = newWindowId;
+                // width 적용
+                popupWindow.style.width = width;
+                newPopup.querySelector("#popupContentContainer").id = newContentId;
+
+                // 모달 개별 드래그 객체 추가
+                popupWindow.dragObj = { isDragging: false, offsetX: 0, offsetY: 0 };
+
+                // 새 팝업 숨김 해제
+                newPopup.classList.remove("hidden");
+
+                // 새로운 팝업 추가
+                document.getElementById("popupContainer").appendChild(newPopup);
+        		
+        		const container = document.getElementById(newContentId);
+        		container.innerHTML = html;
+        		
+        		// 새로 추가된 script 태그 실행 (Thymeleaf script 실행)
+        		container.querySelectorAll("script").forEach(oldScript => {
+        			const newScript = document.createElement("script");
+        			newScript.textContent = oldScript.textContent;
+        			document.body.appendChild(newScript);
+        			oldScript.remove();
+        		});
+        	})
+        	.catch(error => {
+        		console.error("에러 발생:", error);
+        		showCustomAlert( error.message );
+        	});
     }
 
     // 팝업 닫기 함수 (해당 모달만 닫기)

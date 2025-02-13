@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{TestView/LayoutModal}">
+
+    <th:block layout:fragment="modalTitle">
+        메뉴-A-Modal2
+    </th:block>
+
+    <th:block layout:fragment="modalContent">
+    	[[${user}]]
+    	
+    	<ul>
+             <li th:each="key, value : ${#maps.entrySet(user)}">
+                 <strong th:text="${key}"></strong>: 
+                 <span th:text="${value}"></span>
+             </li>
+         </ul>
+            
+        <!-- <form id="userForm">
+            <input type="hidden" id="userNo" name="userNo" th:value="${user.userNo}">
+            <div class="mb-2">
+                <label class="block text-gray-700" >이름</label><label class="block text-gray-700" th:text="${user.name}"></label>
+            </div>
+            <div class="mb-2">
+                <label class="block text-gray-700">이메일</label><label class="block text-gray-700" th:text="${user.email}"></label>
+            </div>
+            <div class="mb-2">
+                <label class="block text-gray-700">나이</label><label class="block text-gray-700" th:text="${user.age}"></label>
+            </div>
+            <div class="mb-2">
+                <label class="block text-gray-700">성별</label><label class="block text-gray-700" th:text="${user.gender}"></label>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">비고</label><label class="block text-gray-700" th:text="${user.note}"></label>
+            </div>
+        </form> -->
+    </th:block>
+
+    <th:block layout:fragment="modalScript">
+        <script>
+       	document.getElementById("saveButton").style.display = "none";
+        </script>
+    </th:block>
+
+</html>

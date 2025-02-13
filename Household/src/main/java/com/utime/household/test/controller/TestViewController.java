@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +57,27 @@ public class TestViewController {
     	user.setNote("모범학생");
     	
         model.addAttribute("user", user );
+        
+        return "TestView/" + path;
+    }
+    
+    @PostMapping("View/L/{path}.layer")
+    public String layerViewParam(Model model, @PathVariable("path") String path, @RequestBody String jsonData) {
+    	
+    	try {
+            // ObjectMapper를 사용하여 JSON 파싱
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(jsonData);
+
+            // JSON 루트에서 각 키를 모델에 동적으로 추가
+            jsonNode.fieldNames().forEachRemaining(fieldName -> {
+                JsonNode fieldValue = jsonNode.get(fieldName);
+                model.addAttribute(fieldName, fieldValue); // JSON 키를 모델에 추가
+            });
+
+        } catch (Exception e) {
+            model.addAttribute("error", "Invalid JSON Data");
+        }
         
         return "TestView/" + path;
     }

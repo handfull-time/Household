@@ -1,10 +1,12 @@
 <div xmlns:th="http://www.thymeleaf.org"
 	th:fragment="alertView"
 	id="customModal" 
-	class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+	class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
 
 	<!-- 공통 모달 -->
 	<div class="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
+	<!-- <div class="bg-white p-6 rounded-lg shadow-lg w-full min-h-screen text-center"> -->
+	
 	    <p id="modalMessage" class="mb-4"></p>
 	    <input type="text" id="modalInput" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 mb-4 hidden">
 	    <div id="modalButtons" class="flex justify-center space-x-2">
@@ -16,7 +18,7 @@
 	<script>
 	let modalCallback = null;
 	
-	function showCustomAlert(message, callback) {
+	function showCustomAlert(message, callback = null) {
 	    document.getElementById("modalMessage").innerText = message;
 	    document.getElementById("modalInput").classList.add("hidden"); // 입력 필드 숨김
 	    document.getElementById("modalCancelButton").classList.add("hidden"); // 취소 버튼 숨김

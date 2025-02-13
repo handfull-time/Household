@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
 <body class="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-    <h1 class="text-3xl font-bold text-blue-600 mb-4">House</h1>
+	<div th:replace="~{TestView/menuB_top :: topView}"></div>   
+	<h1 class="text-3xl font-bold text-blue-600 mb-4">House</h1>
     <div class="w-full max-w-md bg-white p-6 shadow-md rounded-lg">
         <h2 class="text-2xl font-semibold text-gray-800 text-center mb-6">비밀번호 찾기</h2>
 

@@ -13,6 +13,7 @@ import com.utime.household.common.vo.HouseholdDefine;
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.user.service.UserService;
 import com.utime.household.user.vo.LoginReqVo;
+import com.utime.household.user.vo.UserReqVo;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,30 +60,5 @@ public class AuthenticationController {
     	
     	return ResponseEntity.ok().body(result);
     }
+    
 }
-
-//
-//
-//@PostMapping("/login")
-//public ResponseEntity<?> login(@RequestBody @Valid Map<String, String> loginRequest, HttpServletResponse response) {
-//    String username = loginRequest.get("id");
-//    String password = loginRequest.get("pw");
-//
-//    Optional<User> userOpt = userRepository.findByUsername(username);
-//    if (userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getPassword())) {
-//        String token = jwtUtil.generateToken(username, userOpt.get().getRole().name());
-//
-//        // JWT를 HttpOnly 쿠키로 설정
-//        Cookie cookie = new Cookie("token", token);
-//        cookie.setHttpOnly(true); // JavaScript에서 접근 불가능 (XSS 방지)
-//        cookie.setSecure(true); // HTTPS에서만 전송 (보안 강화)
-//        cookie.setPath("/"); // 모든 경로에서 접근 가능
-//        cookie.setMaxAge(60 * 60 * 24); // 1일 동안 유지
-//
-//        response.addCookie(cookie); // 쿠키 추가
-//
-//        return ResponseEntity.ok().body(Map.of("message", "로그인 성공!"));
-//    } else {
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
-//    }
-//}

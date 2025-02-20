@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{common/LayoutCommon}">
-
-<div layout:fragment="content">
-
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<title>Budget Tracker</title>
+    <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
+</head>
+<body>
 	<div class="container-fluid mt-4">
 	    <div class="text-center">
 	        <div class="error mx-auto" data-text="Error">
@@ -26,7 +26,5 @@
 		    </div>
 	    </div>
 	</div>
-
-</div>
-
+</body>
 </html>

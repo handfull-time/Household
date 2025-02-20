@@ -60,8 +60,8 @@
 	        <div class="mt-6 opacity-0 transition-opacity duration-300" id="hiddenButtons">
 	            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">로그인</button>
 	            <div class="flex justify-between mt-2 text-sm text-blue-500 cursor-pointer">
-	                <span class="hover:underline">비밀번호 찾기</span>
-	                <span class="hover:underline">회원가입</span>
+	                <a class="hover:underline">비밀번호 찾기</a>
+	                <a th:href="@{/User/JoinUser.html}"  class="hover:underline">회원가입</a>
 	            </div>
 	        </div>
         </form>
@@ -143,6 +143,8 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
             const data = await response.json();
             if( data.code === '0' ){
             	window.location.href = data.message;
+            }else{
+            	showCustomAlert(data.code + " - " + data.message);
             }
         } else {
         	showCustomAlert("아이디 또는 비밀번호를 확인하세요.");

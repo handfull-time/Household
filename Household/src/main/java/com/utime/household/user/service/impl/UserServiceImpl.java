@@ -12,6 +12,7 @@ import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.user.dao.UserDao;
 import com.utime.household.user.service.UserService;
 import com.utime.household.user.vo.LoginReqVo;
+import com.utime.household.user.vo.UserReqVo;
 import com.utime.household.user.vo.UserVo;
 
 import lombok.RequiredArgsConstructor;
@@ -66,5 +67,15 @@ class UserServiceImpl implements UserService {
 		final String token = jwtUtil.generateAccessToken(user);
 		
 		return new ReturnBasic(HouseholdDefine.ERROR_OK, token);
+	}
+	
+	@Override
+	public ReturnBasic joinUser(UserReqVo reqVo) {
+		final UserVo user = new UserVo();
+		
+		
+		
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

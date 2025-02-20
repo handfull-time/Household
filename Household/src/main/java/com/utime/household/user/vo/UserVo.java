@@ -22,6 +22,7 @@ public class UserVo {
 	private byte [] imageBytes;
 	private String nickName;
 	private String birthday;
+	private EJwtRole role;
 	private String pwCheck1;
 	private String pwCheck2;
 	private String pwCheck3;

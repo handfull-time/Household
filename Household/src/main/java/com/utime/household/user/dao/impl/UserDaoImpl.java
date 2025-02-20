@@ -1,10 +1,14 @@
 package com.utime.household.user.dao.impl;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.utime.household.common.mapper.CommonMapper;
 import com.utime.household.user.dao.UserDao;
 import com.utime.household.user.mapper.UserMapper;
+import com.utime.household.user.vo.EJwtRole;
+import com.utime.household.user.vo.UserVo;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +23,10 @@ class UserDaoImpl implements UserDao{
 	
 	final UserMapper userMapper;
 	
+	@Value("${security.pwSaltKey}")
+    private String saltKey;
+	
+	
 	@PostConstruct
 	private void construct() {
 		
@@ -28,19 +36,72 @@ class UserDaoImpl implements UserDao{
 				log.info("HH_USER 생성");
 				userMapper.createUser();
 				
+				common.createIndex("HH_USER_ID", "HH_USER", "ID");
+
 				this.insertAdminUser();
 			}
-			
-			
+
 		}catch (Exception e) {
 			log.error("", e);
 		}
 		
 	}
 
-	private void insertAdminUser() {
-		// TODO Auto-generated method stub
+	private void insertAdminUser() throws Exception{
+		final UserVo admin = new UserVo();
+		admin.setId("Admin");
+		admin.setPw("Admin123");
+		admin.setRole(EJwtRole.Admin);
 		
+		this.joinUser(admin);
 	}
-			
+	
+	private String genPwString( UserVo user ) {
+		return saltKey + "[" + user.getId() + "]-{" +  user.getUserNo() + "}" + user.getPw();
+	}
+	
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public int joinUser(UserVo user) throws Exception {
+		
+		int result = 0;
+		
+		result += userMapper.insertUser(user);
+		
+		user.setPw( this.genPwString(user) );
+		
+		result += userMapper.updateUserPw(user);
+		
+		return result;
+	}
+	
+	@Override
+	public UserVo procLogin(String id, String pw) {
+		
+		UserVo result = userMapper.getUserFromId(id);
+		if( result == null ) {
+			log.warn("회원 없음");
+			return null;
+		}
+		
+		result.setPw(pw);
+		
+		final long no = userMapper.getUserAndPw(id, this.genPwString(result));
+		
+		if( no != result.getUserNo() ) {
+			log.warn("pw 불일치");
+			return null;
+		}
+		
+		result.setPw(null);
+		
+		return result;
+	}
+	
+	
+	@Override
+	public int updateUser(UserVo user) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

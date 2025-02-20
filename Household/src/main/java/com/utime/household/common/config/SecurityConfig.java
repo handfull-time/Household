@@ -39,7 +39,10 @@ public class SecurityConfig {
     	
     	// white list (Spring Security 체크 제외 목록)
         final MvcRequestMatcher[] permitAllWhiteList = {
-            mvc.pattern("/View"),
+//        	mvc.pattern("/Home.html"),
+        	mvc.pattern("/Auth/**"),
+        	mvc.pattern("/User/**"),
+            mvc.pattern("/View/**"),
             mvc.pattern("/register"),
             mvc.pattern("/token-refresh"),
             mvc.pattern("/favicon.ico"),
@@ -85,14 +88,14 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.builder()
-            .username("user")
-            .password("password") // 기본 패스워드 설정
-            .roles("USER")
-            .build();
-
-        return new InMemoryUserDetailsManager(user);
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        UserDetails user = User.builder()
+//            .username("user")
+//            .password("password") // 기본 패스워드 설정
+//            .roles("USER")
+//            .build();
+//
+//        return new InMemoryUserDetailsManager(user);
+//    }
 }

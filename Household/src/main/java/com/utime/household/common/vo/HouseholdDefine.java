@@ -18,4 +18,7 @@ public class HouseholdDefine {
 	
 	/** DB 위치 */
 	public static final String DB_PATH = "./Data";
+	
+	/** 이전 페이지 위치 */
+	public static final String KeyBeforeUri = "BeforUri";
 }

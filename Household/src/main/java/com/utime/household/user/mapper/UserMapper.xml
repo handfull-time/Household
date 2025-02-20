@@ -11,7 +11,8 @@
 			, UPDATE_DATE DATETIME NOT NULL <!-- 수정일 -->
 			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
 			, ID TEXT(32) NOT NULL <!-- 이름 -->
-			, PW TEXT(512) NOT NULL <!-- 비밀번호 -->
+			, PW TEXT(512) DEFAULT NULL <!-- 비밀번호 -->
+			, ROLE TEXT(12) NOT NULL <!-- 권한 -->
 			, NICKNAME TEXT(32) NOT NULL <!-- 별명 -->
 			, BIRTHDAY TEXT(8) NOT NULL <!-- 생년월일 YYYYMMDD -->
 			, IMAGE BLOB NOT NULL <!-- 이미지 -->
@@ -22,12 +23,12 @@
 	</insert>
 	
 	<!-- 회원 추가 -->
-	<insert id="insertUser" parameterType="com.utime.household.user.vo.UserVo">
+	<insert id="insertUser" parameterType="com.utime.household.user.vo.UserVo" useGeneratedKeys="true" keyProperty="userNo">
 		INSERT HH_USER(
 			UPDATE_DATE
 			, ENABLED
 			, ID 
-			, PW 
+			, ROLE
 			, NICKNAME 
 			, BIRTHDAY
 			<if test="imageBytes != null ">, IMAGE </if> 
@@ -38,7 +39,6 @@
 			DATETIME('NOW','LOCALTIME')
 			, #{enabled, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
 			, #{id}
-			, LOWER(HEX(HASH(#{pw}))) <!-- SHA-256 해싱 -->
 			, #{nickName}
 			, #{birthday}
 			<if test="imageBytes != null ">, #{imageBytes} </if>
@@ -52,7 +52,7 @@
 	<update id="updateUserPw" parameterType="com.utime.household.user.vo.UserVo">
 		UPDATE HH_USER SET
 			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
-			, PW = LOWER(HEX(HASH(#{pw})))
+			, PW = #{pw, typeHandler=com.utime.household.user.typeHandler.PasswordEncoderTypeHandler}
 		WHERE NO = #{userNo}
 	</update>
 	
@@ -74,6 +74,7 @@
 		<result column="UPDATE_DATE" property="updateDate" />
 		<result column="ENABLED" property="enabled" typeHandler="com.utime.household.common.handler.BooleanTypeHandler" />
 		<result column="ID" property="id" />
+		<result column="ROLE" property="role" />
 		<result column="IMAGE" property="imageBytes" />
 		<result column="NICKNAME" property="nickName" />
 		<result column="PW_CHECK1" property="pwCheck1" />
@@ -81,16 +82,29 @@
 		<result column="PW_CHECK3" property="pwCheck3" />
 	</resultMap>
 	
-	<!-- 회원번호로 조회 -->
+	<sql id="UserColumnSql">
+		NO
+		, REG_DATE
+		, UPDATE_DATE
+		, ENABLED
+		, ID
+		, ROLE
+		, NICKNAME
+		, IMAGE
+	</sql>
+	
+	<!-- 회원 id로 조회 -->
+	<select id="getUserFromId" parameterType="map" resultMap="UserVoMap">
+		SELECT 
+			<include refid="UserColumnSql" /> 
+		FROM HH_USER
+		WHERE ID = #{id} 
+	</select>
+	
+	<!-- 회원 번호로 조회 -->
 	<select id="getUserFromNo" parameterType="map" resultMap="UserVoMap">
 		SELECT 
-			NO
-			, REG_DATE
-			, UPDATE_DATE
-			, ENABLED
-			, ID
-			, NICKNAME
-			, IMAGE
+			<include refid="UserColumnSql" /> 
 		FROM HH_USER
 		WHERE NO = #{userNo} 
 	</select>
@@ -98,12 +112,7 @@
 	<!-- 비번 찾기에서 유효한 정보 조회 -->
 	<select id="getUserFromCheck" parameterType="map" resultMap="UserVoMap">
 		SELECT 
-			NO
-			, REG_DATE
-			, UPDATE_DATE
-			, ID
-			, NICKNAME
-			, IMAGE
+			<include refid="UserColumnSql" /> 
 		FROM HH_USER
 		WHERE 1=1
 			AND ENABLED = 'Y'
@@ -121,7 +130,7 @@
 		WHERE 1=1
 			AND ENABLED = 'Y'
 			AND ID = #{id}
-			AND PW = LOWER(HEX(HASH(#{pw}))) <!-- SHA-256 해싱 -->
+			AND PW = #{pw, typeHandler=com.utime.household.user.typeHandler.PasswordEncoderTypeHandler}
 	</select>
 	
 </mapper>

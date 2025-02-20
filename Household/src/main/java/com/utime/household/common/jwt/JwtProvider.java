@@ -11,6 +11,8 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.utime.household.user.vo.UserVo;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -36,6 +38,8 @@ public class JwtProvider {
     private final String KeyHaderAuthorization = "Authorization";
     
     private final String KeyTokenStarter = "Bearer ";
+    
+    private final String KeyRole = "role";
     
     private final int LenTokenStarter = KeyTokenStarter.length();
     
@@ -116,25 +120,22 @@ public class JwtProvider {
         return this.getClaimFromToken(token, Claims::getExpiration);
     }
 
-    /**
-     * access token 생성
-     *
-     * @param id token 생성 id
-     * @return access token
-     */
-    public String generateAccessToken(final String id) {
-        return this.generateAccessToken(id, new HashMap<>());
-    }
-
-    /**
-     * access token 생성
-     *
-     * @param id token 생성 id
-     * @return access token
-     */
-    public String generateAccessToken(final long id) {
-        return this.generateAccessToken(String.valueOf(id), new HashMap<>());
-    }
+//    /**
+//     * access token 생성
+//     *
+//     * @param id token 생성 id
+//     * @return access token
+//     */
+//    public String generateAccessToken(final String id) {
+//        return this.generateAccessToken(id, new HashMap<>());
+//    }
+    
+    public String generateAccessToken(UserVo user) {
+    	final Map<String, Object> claims = new HashMap<>();
+    	claims.put(KeyRole, user.getRole());
+    	
+		return this.generateAccessToken(user.getId(), claims);
+	}
 
     /**
      * access token 생성
@@ -146,7 +147,6 @@ public class JwtProvider {
     public String generateAccessToken(final String id, final Map<String, Object> claims) {
         return this.doGenerateAccessToken(id, claims);
     }
-    
     
     private static final String SECRET_KEY = "4261656C64756E67";
     
@@ -184,15 +184,14 @@ public class JwtProvider {
     public String generateRefreshToken(final String id) {
         return this.doGenerateRefreshToken(id);
     }
-
+    
     /**
-     * refresh token 생성
-     *
-     * @param id token 생성 id
-     * @return refresh token
+     * 토큰에서 역할(role) 추출
+     * @param token
+     * @return
      */
-    public String generateRefreshToken(final long id) {
-        return this.doGenerateRefreshToken(String.valueOf(id));
+    public String getRole(String token) {
+        return this.getAllClaimsFromToken(token).get(KeyRole, String.class);
     }
 
     /**
@@ -240,4 +239,5 @@ public class JwtProvider {
 
         return error == null;
     }
+
 }

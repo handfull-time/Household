@@ -22,7 +22,7 @@ import com.google.gson.GsonBuilder;
 import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.common.util.LimitStringBuilder;
 import com.utime.household.common.util.RandomValue;
-import com.utime.household.member.vo.MemberVo;
+import com.utime.household.user.vo.UserVo;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -90,7 +90,7 @@ class LoggingAspect {
         log.info(sb.toString());
     }
 	
-	private void requestLog(ServletRequestAttributes attributes, String startValue, String packageName, String methodName, MemberVo member, List<Object> objList ) {
+	private void requestLog(ServletRequestAttributes attributes, String startValue, String packageName, String methodName, UserVo user, List<Object> objList ) {
 
 		final HttpServletRequest req = attributes.getRequest();
     	
@@ -111,8 +111,8 @@ class LoggingAspect {
 		paramStrBuffer.append(MethodName + methodName).append(lineSepretor);
 		paramStrBuffer.append(ContentType + contentType ).append(lineSepretor);
 		paramStrBuffer.append(RemoteAddress + HouseholdUtils.getRemoteAddress(req) ).append(lineSepretor);
-		if( member != null ) {
-			paramStrBuffer.append(UserNoHeader + member.getUserNo() ).append(lineSepretor);
+		if( user != null ) {
+			paramStrBuffer.append(UserNoHeader + user.getUserNo() ).append(lineSepretor);
 		}
 		
 		{
@@ -245,7 +245,7 @@ class LoggingAspect {
 		
 		// 요청 파라미터 처리
 		final List<Object> objList = new ArrayList<>();
-		MemberVo member = null;
+		UserVo user = null;
 		final Object[] args = joinPoint.getArgs();
 		for (Object arg : args) {
 	        if (arg == null ) {
@@ -254,9 +254,9 @@ class LoggingAspect {
 	        
 	        final Class<?> classValue = arg.getClass();
 	        
-	        if( member == null )
-		        if( classValue.equals(MemberVo.class)) {
-		        	member = (MemberVo)arg;
+	        if( user == null )
+		        if( classValue.equals(UserVo.class)) {
+		        	user = (UserVo)arg;
 		        }
 	        
 	        if( !excludedClasses.contains(classValue)) {
@@ -267,7 +267,7 @@ class LoggingAspect {
 		final String methodName = signature.getName();
 		
     	final String startValue = System.currentTimeMillis() + rv.getRandomValue();
-		this.requestLog(attributes, startValue, packageName, methodName, member, objList );
+		this.requestLog(attributes, startValue, packageName, methodName, user, objList );
 		
 	    Model model = null;
 

@@ -1,0 +1,60 @@
+package com.utime.household.common.jwt;
+
+import java.io.IOException;
+
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
+
+import com.utime.household.common.vo.ApiResponse;
+import com.utime.household.common.vo.ApiResponseType;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Component("jwtAuthenticationEntryPoint")
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+	
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+    	
+        log.info("[CustomAuthenticationEntryPointHandler] :: {}", authException.getMessage());
+        log.info("[CustomAuthenticationEntryPointHandler] :: {}", request.getRequestURL());
+    	
+    	int status = response.getStatus();
+    	switch ( status ) {
+		case 200: return;
+		case 401,403 : 
+			ApiResponse.error(response, ApiResponseType.REQ_ACCESS);
+			break;
+		case 404 :
+			ApiResponse.error(response, ApiResponseType.NOT_FOUND_RESPONSE);
+			break;
+		case 405 :
+			ApiResponse.error(response, ApiResponseType.METHOD_NOT_ALLOWED_RESPONSE);
+			break;
+		case 500 :
+			ApiResponse.error(response, ApiResponseType.SC_INTERNAL_SERVER_ERROR);
+			break;
+		}
+
+    }
+//    
+//    @Override
+//    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+//        log.info("[CustomAuthenticationEntryPointHandler] :: 토근 정보가 만료되었거나 존재하지 않음");
+//
+//        response.setStatus(ApiExceptionEnum.ACCESS_DENIED.getStatus().value());
+//        response.setCharacterEncoding("UTF-8");
+//        response.setContentType("application/json; charset=UTF-8");
+//
+//        JsonObject returnJson = new JsonObject();
+//        returnJson.addProperty("errorCode", ApiExceptionEnum.ACCESS_DENIED.getCode());
+//        returnJson.addProperty("errorMsg", ApiExceptionEnum.ACCESS_DENIED.getMessage());
+//
+//        PrintWriter out = response.getWriter();
+//        out.print(returnJson);
+//    }
+}

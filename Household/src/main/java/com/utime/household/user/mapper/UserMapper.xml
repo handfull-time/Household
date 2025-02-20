@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!--//네임스페이스에는 mapper 가 있는 풀 패키지명과 매퍼명을 등록 한다. -->
+<mapper namespace="com.utime.household.user.mapper.UserMapper">
+
+	<!-- 부동산( 건물/토지 등) -->
+	<insert id="createUser">
+		CREATE TABLE HH_USER (
+			NO INTEGER PRIMARY KEY AUTOINCREMENT
+			, REG_DATE DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')) <!-- 생성일 -->
+			, UPDATE_DATE DATETIME NOT NULL <!-- 수정일 -->
+			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
+			, ID TEXT(32) NOT NULL <!-- 이름 -->
+			, PW TEXT(512) NOT NULL <!-- 비밀번호 -->
+			, NICKNAME TEXT(32) NOT NULL <!-- 별명 -->
+			, BIRTHDAY TEXT(8) NOT NULL <!-- 생년월일 YYYYMMDD -->
+			, IMAGE BLOB NOT NULL <!-- 이미지 -->
+			, PW_CHECK1 TEXT(8) NOT NULL <!-- 패스워드 찾기 답변 1 -->
+			, PW_CHECK2 TEXT(8) NOT NULL <!-- 패스워드 찾기 답변 1 -->
+			, PW_CHECK3 TEXT(8) NOT NULL <!-- 패스워드 찾기 답변 1 -->
+		)
+	</insert>
+	
+	<!-- 회원 추가 -->
+	<insert id="insertUser" parameterType="com.utime.household.user.vo.UserVo">
+		INSERT HH_USER(
+			UPDATE_DATE
+			, ENABLED
+			, ID 
+			, PW 
+			, NICKNAME 
+			, BIRTHDAY
+			<if test="imageBytes != null ">, IMAGE </if> 
+			<if test="pwCheck1 != null and pwCheck1 != ''">, PW_CHECK1 </if>
+			<if test="pwCheck2 != null and pwCheck2 != ''">, PW_CHECK2 </if>
+			<if test="pwCheck3 != null and pwCheck3 != ''">, PW_CHECK3 </if>
+		) VALUES (
+			DATETIME('NOW','LOCALTIME')
+			, #{enabled, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
+			, #{id}
+			, LOWER(HEX(HASH(#{pw}))) <!-- SHA-256 해싱 -->
+			, #{nickName}
+			, #{birthday}
+			<if test="imageBytes != null ">, #{imageBytes} </if>
+			<if test="pwCheck1 != null and pwCheck1 != ''">, #{pwCheck1} </if>
+			<if test="pwCheck2 != null and pwCheck2 != ''">, #{pwCheck2} </if>
+			<if test="pwCheck3 != null and pwCheck3 != ''">, #{pwCheck3} </if>
+		)
+	</insert>
+
+	<!-- pw 수정 -->	
+	<update id="updateUserPw" parameterType="com.utime.household.user.vo.UserVo">
+		UPDATE HH_USER SET
+			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
+			, PW = LOWER(HEX(HASH(#{pw})))
+		WHERE NO = #{userNo}
+	</update>
+	
+	<update id="updateUser" parameterType="com.utime.household.user.vo.UserVo">
+		UPDATE HH_USER SET
+			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
+			, ENABLED = #{enabled, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
+			<if test="nickName != null and nickName != ''">	, NICKNAME = #{nickName} </if>
+			<if test="imageBytes != null ">	, IMAGE = #{imageBytes} </if> 
+			<if test="pwCheck1 != null and pwCheck1 != ''">, PW_CHECK1 = #{pwCheck1}</if>
+			<if test="pwCheck2 != null and pwCheck2 != ''">, PW_CHECK2 = #{pwCheck2}</if>
+			<if test="pwCheck3 != null and pwCheck3 != ''">, PW_CHECK3 = #{pwCheck3}</if>
+		WHERE NO = #{userNo}
+	</update>
+	
+	<resultMap id="UserVoMap" type="com.utime.household.user.vo.UserVo">
+		<id column="NO" property="userNo" />
+		<result column="REG_DATE" property="regDate" />
+		<result column="UPDATE_DATE" property="updateDate" />
+		<result column="ENABLED" property="enabled" typeHandler="com.utime.household.common.handler.BooleanTypeHandler" />
+		<result column="ID" property="id" />
+		<result column="IMAGE" property="imageBytes" />
+		<result column="NICKNAME" property="nickName" />
+		<result column="PW_CHECK1" property="pwCheck1" />
+		<result column="PW_CHECK2" property="pwCheck2" />
+		<result column="PW_CHECK3" property="pwCheck3" />
+	</resultMap>
+	
+	<!-- 회원번호로 조회 -->
+	<select id="getUserFromNo" parameterType="map" resultMap="UserVoMap">
+		SELECT 
+			NO
+			, REG_DATE
+			, UPDATE_DATE
+			, ENABLED
+			, ID
+			, NICKNAME
+			, IMAGE
+		FROM HH_USER
+		WHERE NO = #{userNo} 
+	</select>
+	
+	<!-- 비번 찾기에서 유효한 정보 조회 -->
+	<select id="getUserFromCheck" parameterType="map" resultMap="UserVoMap">
+		SELECT 
+			NO
+			, REG_DATE
+			, UPDATE_DATE
+			, ID
+			, NICKNAME
+			, IMAGE
+		FROM HH_USER
+		WHERE 1=1
+			AND ENABLED = 'Y'
+			AND BIRTH = #{birthday}
+			AND PW_CHECK1 = #{pwCheck1}
+			AND PW_CHECK2 = #{pwCheck2} 
+			AND PW_CHECK3 = #{pwCheck3}
+	</select>
+
+	<!-- id / pw 일치하는 계정 정보 조회 -->	
+	<select id="getUserAndPw" parameterType="map" resultType="long">
+		SELECT 
+			NO
+		FROM HH_USER
+		WHERE 1=1
+			AND ENABLED = 'Y'
+			AND ID = #{id}
+			AND PW = LOWER(HEX(HASH(#{pw}))) <!-- SHA-256 해싱 -->
+	</select>
+	
+</mapper>

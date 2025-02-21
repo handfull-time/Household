@@ -1,17 +1,13 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Admin 회원가입</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
-</head>
-<body class="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-    <h1 class="text-3xl font-bold text-blue-600 mb-4">MoneyMap</h1>
-    <div class="w-full max-w-lg bg-white p-8 shadow-md rounded-lg">
-        <h2 class="text-2xl font-semibold text-gray-800 text-center mb-6">회원가입</h2>
+<div xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{User/UserLayout}">
+    
+    <th:block layout:fragment="title">ID 찾기</th:block>
 
-        <form id="signupForm">
+	<th:block layout:fragment="css"></th:block>
+	
+    <div layout:fragment="content">
+        <form id="findPwForm" th:action="@{/User/FindUserPw.layer}" method="POST">
             <div class="grid grid-cols-1 gap-4">
                 <!-- ID -->
                 <div class="flex flex-col w-full"> <!-- ✅ flex-col로 변경하여 세로 정렬 -->
@@ -20,40 +16,9 @@
 				        <div class="w-3/4">
 				            <input type="text" id="id" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
 				                minlength="4" maxlength="20" required>
-				            <p id="idCheckMessage" class="text-sm mt-1 text-red-500"></p> <!-- ✅ 메시지를 input 아래로 배치 -->
 				        </div>
 				    </div>
 				</div>
-
-                <!-- Birthday -->
-                <div class="flex items-center">
-                    <label class="w-1/4 font-medium">생년월일</label>
-                    <input type="date" id="birthday" class="w-3/4 p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
-                </div>
-
-                <!-- 비밀번호 -->
-                <div class="flex items-center">
-                    <label class="w-1/4 font-medium">비밀번호</label>
-                    <input type="password" id="password" class="w-3/4 p-2 border rounded-md focus:ring-2 focus:ring-blue-400" minlength="6" maxlength="20" required>
-                </div>
-                <p id="passwordError" class="text-sm text-red-500 mt-1 hidden">비밀번호 규칙을 확인하세요.</p>
-
-                <!-- 비밀번호 확인 -->
-                <div class="flex items-center">
-                    <label class="w-1/4 font-medium">비밀번호 확인</label>
-                    <input type="password" id="confirmPassword" class="w-3/4 p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
-                </div>
-                <p id="confirmPasswordError" class="text-sm text-red-500 mt-1 hidden">비밀번호가 일치하지 않습니다.</p>
-
-                <!-- 닉네임 및 프로필 이미지 -->
-                <div class="flex items-center">
-                    <label class="w-1/4 font-medium">닉네임</label>
-                    <input type="text" id="nickname" class="w-3/4 p-2 border rounded-md focus:ring-2 focus:ring-blue-400" minlength="1" maxlength="20" required>
-                    <label for="profileImageInput" class="ml-4 cursor-pointer">
-                        <img id="profilePreview" th:src="@{/images/undraw_profile.svg}" class="w-14 h-12 rounded-full border" alt="프로필 이미지">
-                    </label>
-                    <input type="file" id="profileImageInput" class="hidden" accept="image/png, image/jpeg, image/svg+xml">
-                </div>
 
                 <!-- 비밀번호 찾기 질문 -->
                 <div class="relative w-full">
@@ -102,7 +67,7 @@
 			        </div>
 			        
 			        <!-- 숨겨진 실제 <select> 요소 (값 전송 용도) -->
-			        <select id="myRainbow" name="color" class="hidden" required>
+			        <select name="myRainbow" id="myRainbow" class="hidden" required>
 			            <option value="">선택하세요</option>
 			            <option value="빨강">빨강</option>
 			            <option value="주황">주황</option>
@@ -116,7 +81,7 @@
 
                 <div>
                     <label class="block font-medium">4계절 중 좋아하는 계절</label>
-                    <select id="mySeason" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
+                    <select name="mySeason" id="mySeason" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
                         <option value="">선택하세요</option>
                         <option>봄</option>
                         <option>여름</option>
@@ -127,7 +92,7 @@
 
                 <div>
                     <label class="block font-medium">0부터 10까지 좋아하는 숫자</label>
-                    <select id="myNumber" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
+                    <select name="myNumber" id="myNumber" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
                         <option value="">선택하세요</option>
                         <option>0</option>
                         <option>1</option>
@@ -144,49 +109,13 @@
                 </div>
 
                 <!-- 가입 버튼 -->
-                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">가입하기</button>
+                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">ID 찾기</button>
             </div>
         </form>
+        
     </div>
 
-    <div th:replace="~{Root/alertView :: alertView}"></div>
-    
-    <script th:inline="javascript">
-		document.getElementById("id").addEventListener("blur", async function() {
-		    const idInput = this.value.trim(); // 입력된 ID 값
-		    const messageElement = document.getElementById("idCheckMessage");
-		
-		    // ID 길이 검사 (4~20자)
-		    if (idInput.length < 4 || idInput.length > 20) {
-		        messageElement.textContent = "아이디는 4~20자 사이로 입력해주세요.";
-		        messageElement.className = "text-red-500";
-		        return;
-		    }
-		
-		    try {
-		        // API 요청 보내기
-		        const checkIdUri = /*[[@{/User/CheckId.json}]]*/ null;
-		        const response = await fetch(`${checkIdUri}?id=${encodeURIComponent(idInput)}`);
-		        const data = await response.json();
-		
-		        if (data.code === "0") {
-		            messageElement.textContent = "사용 가능한 아이디입니다.";
-		            messageElement.className = "text-green-500";
-		        } else if (data.code === "E") {
-		            messageElement.textContent = "이미 사용 중인 아이디입니다.";
-		            messageElement.className = "text-red-500";
-		        } else {
-		            messageElement.textContent = "서버 오류가 발생했습니다.";
-		            messageElement.className = "text-red-500";
-		        }
-		    } catch (error) {
-		        console.error("ID 체크 오류:", error);
-		        messageElement.textContent = "네트워크 오류가 발생했습니다.";
-		        messageElement.className = "text-red-500";
-		    }
-		});
-	</script>
-    
+    <th:block layout:fragment="script">
     
     <script>
         const dropdownBtn = document.getElementById('dropdownBtn');
@@ -223,104 +152,11 @@
     </script>
 
     <script th:inline="javascript">
-        document.getElementById("signupForm").addEventListener("submit", function(event) {
+        document.getElementById("findPwForm").addEventListener("submit", async function(event) {
             event.preventDefault();
-
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirmPassword").value;
-            const passwordError = document.getElementById("passwordError");
-            const confirmPasswordError = document.getElementById("confirmPasswordError");
-            
-            // 비밀번호 검사 (숫자, 영문, 특수문자 중 2가지 이상 포함)
-            const hasNumber = /[0-9]/.test(password);
-            const hasLetter = /[a-zA-Z]/.test(password);
-            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-            const isValidPassword = (hasNumber && hasLetter) || (hasNumber && hasSpecial) || (hasLetter && hasSpecial);
-
-            if (!isValidPassword || password.length < 6 || password.length > 20) {
-                passwordError.classList.remove("hidden");
-                return;
-            } else {
-                passwordError.classList.add("hidden");
-            }
-
-            // 비밀번호 확인 검사
-            if (password !== confirmPassword) {
-                confirmPasswordError.classList.remove("hidden");
-                return;
-            } else {
-                confirmPasswordError.classList.add("hidden");
-            }
-            
-            alert(document.getElementById("myNumber").value);
-
-            saveUser();
+			alert('a');
         });
         
-        async function saveUser() {
-            const formData = new FormData();
-            formData.append("id", document.getElementById("id").value);
-            formData.append("pw", document.getElementById("password").value);
-            formData.append("birthday", document.getElementById("birthday").value);
-            formData.append("nickname", document.getElementById("nickname").value);
-            formData.append("myRainbow", document.getElementById("myRainbow").value);
-            formData.append("mySeason", document.getElementById("mySeason").value);
-            formData.append("myNumber", document.getElementById("myNumber").value);
-            formData.append("token", /*[[${genToken}]]*/ null);
-            
-            const imageFile = document.getElementById("profileImageInput").files[0];
-            if (imageFile) {
-                formData.append("image", imageFile);
-            }else{
-            	// 파일이 선택되지 않았을 경우, profilePreview의 이미지를 FormData에 추가
-                const imageElement = document.getElementById("profilePreview");
-                const imageUrl = imageElement.src;
-
-                try {
-                    const response = await fetch(imageUrl);
-                    const blob = await response.blob();
-                    const defaultFile = new File([blob], "default-profile.png", { type: blob.type });
-
-                    formData.append("image", defaultFile); // 기본 이미지 추가
-                } catch (error) {
-                    console.error("기본 이미지 변환 오류:", error);
-                }
-            }
-
-            //credentials: "same-origin" // 같은 출처의 요청에만 쿠키 포함
-
-            try {
-                const response = await fetch(/*[[@{/User/JoinUser.json}]]*/ null, {
-                    method: "POST",
-                    body: formData,
-                    credentials: "include"
-                });
-
-                const result = await response.json();
-                if (response.ok) {
-                	showCustomAlert("회원가입이 완료되었습니다.", () => {
-                		window.location.href = /*[[@{/User/Login.html}]]*/ null;
-                	});
-                } else {
-                	showCustomAlert(result.message || "회원가입에 실패했습니다.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                showCustomAlert("서버 오류가 발생했습니다.");
-            }
-        }
-
-        // 프로필 이미지 미리보기 기능
-        document.getElementById("profileImageInput").addEventListener("change", function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById("profilePreview").src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
     </script>
-</body>
-</html>
+    </th:block>
+</div>

@@ -126,7 +126,7 @@
 		FROM HH_USER
 		WHERE 1=1
 			AND ENABLED = 'Y'
-			AND BIRTH = #{birthday}
+			AND BIRTHDAY = #{birthday}
 			AND PW_CHECK1 = #{pwCheck1}
 			AND PW_CHECK2 = #{pwCheck2} 
 			AND PW_CHECK3 = #{pwCheck3}

@@ -1,21 +1,32 @@
 <div xmlns:th="http://www.thymeleaf.org">
     
-    <div>
-    	[[${item.list}]]
-    </div>
-    
-     <div id="resultLayer" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-        <h2 class="text-lg font-bold">찾은 ID</h2>
-     	<th:block th:each="row : ${item.list}" >
-		    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-		        <p id="foundId" class="text-xl text-blue-600">[[${row.id}]]</p>
-		        <p class="text-xl text-green-500">[[${row.nickname}]]</p>
-		        <button onclick="goLogin()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">로그인하기</button>
-		    </div>
-     	</th:block>
-	</div>
+     <h2 class="text-xl font-bold mb-4">ID 찾기 결과</h2>
+     
+     <form id="idSelectForm">
+         <div class="space-y-4">
+             <!-- Thymeleaf로 동적 데이터 바인딩 -->
+             <div th:each="user : ${item.list}" class="border-b pb-2 flex items-center space-x-4">
+                 <input type="radio" name="selectedId" th:value="${user.id}" class="form-radio h-4 w-4 text-blue-600">
+                 <span th:text="${user.id}" class="font-semibold"></span>
+                 <span th:text="${user.nickname}" class="text-gray-600"></span>
+             </div>
+         </div>
+         
+         <button type="submit" class="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">
+             확인
+         </button>
+     </form>
 
     <script>
+        document.getElementById("idSelectForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const selectedId = document.querySelector("input[name='selectedId']:checked");
+            if (!selectedId) {
+                alert("ID를 선택해주세요.");
+                return;
+            }
+            window.location.href = "/User/Login.html?userId="+selectedId;
+        });
     </script>
 </div>
 

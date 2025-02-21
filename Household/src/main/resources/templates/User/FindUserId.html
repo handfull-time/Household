@@ -109,6 +109,7 @@
         </form>
         
     </div>
+    <div id="resultLayer" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center"></div>
 
     <th:block layout:fragment="script">
     
@@ -149,7 +150,27 @@
     <script th:inline="javascript">
         document.getElementById("findIdForm").addEventListener("submit", async function(event) {
             event.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch(this.action, {
+                    method: this.method,
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest" // AJAX 요청임을 알림
+                    }
+                });
 
+                const result = await response.text();
+                console.log("서버 응답:", result);
+
+                // 응답을 처리하여 결과 Layer 표시
+                document.getElementById("resultLayer").innerHTML = result;
+                document.getElementById("resultLayer").classList.remove("hidden");
+            } catch (error) {
+                console.error("Error:", error);
+            }
         });
         
     </script>

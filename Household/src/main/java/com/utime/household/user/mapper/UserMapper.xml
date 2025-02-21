@@ -24,7 +24,7 @@
 	
 	<!-- 회원 추가 -->
 	<insert id="insertUser" parameterType="com.utime.household.user.vo.UserVo" useGeneratedKeys="true" keyProperty="userNo">
-		INSERT HH_USER(
+		INSERT INTO HH_USER(
 			UPDATE_DATE
 			, ENABLED
 			, ID 
@@ -39,7 +39,8 @@
 			DATETIME('NOW','LOCALTIME')
 			, #{enabled, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
 			, #{id}
-			, #{nickName}
+			, #{role}
+			, #{nickname}
 			, #{birthday}
 			<if test="imageBytes != null ">, #{imageBytes} </if>
 			<if test="pwCheck1 != null and pwCheck1 != ''">, #{pwCheck1} </if>
@@ -60,7 +61,7 @@
 		UPDATE HH_USER SET
 			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
 			, ENABLED = #{enabled, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
-			<if test="nickName != null and nickName != ''">	, NICKNAME = #{nickName} </if>
+			<if test="nickname != null and nickname != ''">	, NICKNAME = #{nickname} </if>
 			<if test="imageBytes != null ">	, IMAGE = #{imageBytes} </if> 
 			<if test="pwCheck1 != null and pwCheck1 != ''">, PW_CHECK1 = #{pwCheck1}</if>
 			<if test="pwCheck2 != null and pwCheck2 != ''">, PW_CHECK2 = #{pwCheck2}</if>
@@ -76,7 +77,7 @@
 		<result column="ID" property="id" />
 		<result column="ROLE" property="role" />
 		<result column="IMAGE" property="imageBytes" />
-		<result column="NICKNAME" property="nickName" />
+		<result column="NICKNAME" property="nickname" />
 		<result column="PW_CHECK1" property="pwCheck1" />
 		<result column="PW_CHECK2" property="pwCheck2" />
 		<result column="PW_CHECK3" property="pwCheck3" />

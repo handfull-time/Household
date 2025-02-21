@@ -1,71 +1,21 @@
 <div xmlns:th="http://www.thymeleaf.org">
     
-    <div class="relative w-64">
-        <div class="relative">
-            <!-- 선택된 값 표시 -->
-            <button id="dropdownBtn" class="w-full p-2 border rounded-md flex justify-between items-center bg-white">
-                <span id="selectedText">선택하세요</span>
-                <span class="text-gray-600">&#9662;</span> <!-- 아래 화살표 -->
-            </button>
-
-            <!-- 드롭다운 목록 -->
-            <div id="dropdownMenu" class="absolute w-full mt-1 bg-white border rounded-md shadow-lg hidden z-10">
-                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="" id="templateItem" style="display: none;">
-                    <span class="w-4 h-4 bg-blue-500 rounded"></span>
-                    <span class="item-text"></span>
-                </div>
-                <div id="idListContainer">
-                    <!-- 여기에 동적으로 ID 목록이 추가됨 -->
-                </div>
-            </div>
-        </div>
-        
-        <!-- 숨겨진 실제 <select> 요소 (값 전송 용도) -->
-        <select id="myRainbow" name="color" class="hidden" required>
-            <option value="">선택하세요</option>
-        </select>
+    <div>
+    	[[${item.list}]]
     </div>
+    
+     <div id="resultLayer" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+        <h2 class="text-lg font-bold">찾은 ID</h2>
+     	<th:block th:each="row : ${item.list}" >
+		    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+		        <p id="foundId" class="text-xl text-blue-600">[[${row.id}]]</p>
+		        <p class="text-xl text-green-500">[[${row.nickname}]]</p>
+		        <button onclick="goLogin()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">로그인하기</button>
+		    </div>
+     	</th:block>
+	</div>
 
     <script>
-        const dropdownBtn = document.getElementById('dropdownBtn');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        const selectedText = document.getElementById('selectedText');
-        const selectInput = document.getElementById('myRainbow');
-        const idListContainer = document.getElementById("idListContainer");
-        const templateItem = document.getElementById("templateItem");
-
-        // 가짜 ID 데이터 (서버에서 받아오는 데이터)
-        const foundIds = ["user123", "test456", "hello789"];
-
-        // ID 리스트를 드롭다운에 추가
-        function populateIdList(ids) {
-            idListContainer.innerHTML = ""; // 기존 목록 초기화
-            ids.forEach(id => {
-                const item = templateItem.cloneNode(true);
-                item.style.display = "flex";
-                item.setAttribute("data-value", id);
-                item.querySelector(".item-text").textContent = id;
-                item.addEventListener("click", () => {
-                    selectedText.textContent = id;
-                    selectInput.value = id;
-                    dropdownMenu.classList.add('hidden'); // 선택 후 닫기
-                });
-                idListContainer.appendChild(item);
-            });
-        }
-
-        // 드롭다운 버튼 클릭 시 목록 표시 및 ID 목록 동적 추가
-        dropdownBtn.addEventListener('click', () => {
-            populateIdList(foundIds);
-            dropdownMenu.classList.toggle('hidden');
-        });
-
-        // 드롭다운 외부 클릭 시 닫기
-        document.addEventListener('click', (event) => {
-            if (!dropdownBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                dropdownMenu.classList.add('hidden');
-            }
-        });
     </script>
 </div>
 

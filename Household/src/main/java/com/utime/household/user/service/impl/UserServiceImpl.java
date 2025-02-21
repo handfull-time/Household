@@ -17,6 +17,7 @@ import com.utime.household.user.service.UserService;
 import com.utime.household.user.vo.EJwtRole;
 import com.utime.household.user.vo.FindUserIdResVo;
 import com.utime.household.user.vo.LoginReqVo;
+import com.utime.household.user.vo.ReqUniqueVo;
 import com.utime.household.user.vo.UserReqVo;
 import com.utime.household.user.vo.UserVo;
 
@@ -46,28 +47,50 @@ class UserServiceImpl implements UserService {
 
 		return result;
 	}
-
-	@Override
-	public ReturnBasic procLogin(LoginReqVo reqVo) {
-		String sessionId = intervalMap.remove(reqVo.getToken());
+	
+	/**
+	 * 유효성 검사
+	 * @param reqVo
+	 * @return true: 옳은 데이터
+	 */
+	private boolean validation(ReqUniqueVo reqVo) {
+		String sessionId = intervalMap.get(reqVo.getToken());
 		if( sessionId == null ) {
 			log.warn("interval Key 없음: {} ", reqVo.getToken() );
-			return new ReturnBasic("", "");
+			return false;
 		}
 		
 		if( ! sessionId.equals(reqVo.getSessionId()) ) {
 			log.warn("interval Value 불일치 : {} - {} ", sessionId, reqVo.getSessionId() );
-			return new ReturnBasic("", "");
+			return false;
 		}
+		
+		return true;
+	}
+	
+	/**
+	 * 유효성 검사 키 삭제.
+	 * @param reqVo
+	 */
+	private void validationRemove(ReqUniqueVo reqVo) {
+		this.intervalMap.remove(reqVo.getToken());
+	}
+
+	@Override
+	public ReturnBasic procLogin(LoginReqVo reqVo) {
+		
+		if( ! this.validation(reqVo) ) {
+			return new ReturnBasic("E", "");
+		}
+		
 		
 		final UserVo user = userDao.procLogin( reqVo.getId(), reqVo.getPw());
 		if( user == null ) {
 			log.warn("회원 없음");
-			
-			this.intervalMap.put(reqVo.getToken(), sessionId);
-			
 			return new ReturnBasic("", "");
 		}
+
+		this.validationRemove(reqVo);
 		
 		final String token = jwtUtil.generateAccessToken(user);
 		
@@ -88,6 +111,10 @@ class UserServiceImpl implements UserService {
 	@Override
 	public ReturnBasic joinUser(UserReqVo reqVo) throws IOException {
 		
+		if( ! this.validation(reqVo) ) {
+			return new ReturnBasic("E", "");
+		}
+		
 		final UserVo user = new UserVo();
 		
 		user.setUserNo(-1L);
@@ -95,7 +122,7 @@ class UserServiceImpl implements UserService {
 		user.setId(reqVo.getId());
 		user.setPw(reqVo.getPw());
 		user.setImageBytes(HouseholdUtils.convertMultipartFileToByteArray(reqVo.getImage()));
-		user.setNickName(reqVo.getNickName());
+		user.setNickname(reqVo.getNickname());
 		user.setBirthday(reqVo.getBirthday());
 		user.setRole(EJwtRole.User);
 		user.setPwCheck1(reqVo.getMyRainbow());
@@ -105,6 +132,8 @@ class UserServiceImpl implements UserService {
 		final ReturnBasic result = new ReturnBasic();
 		try {
 			userDao.joinUser(user);
+			
+			this.validationRemove(reqVo);
 		} catch (Exception e) {
 			log.error("", e);
 			result.setCodeMessage("E", e.getMessage());
@@ -133,8 +162,8 @@ class UserServiceImpl implements UserService {
 				for( UserVo item : list) {
 					final String id = item.getId();
 					item.setId( "*" + id.substring(1, id.length()-2) + "**" );
-					final String nickName = item.getNickName();
-					item.setNickName( nickName.substring(0,  nickName.length()-1) + "*" );
+					final String nickname = item.getNickname();
+					item.setNickname( nickname.substring(0,  nickname.length()-1) + "*" );
 				}
 			}
 			

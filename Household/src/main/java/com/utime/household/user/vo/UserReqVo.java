@@ -10,18 +10,16 @@ import lombok.ToString;
 
 @Setter
 @Getter
-@ToString
-public class UserReqVo {
+@ToString(callSuper = true)
+public class UserReqVo extends ReqUniqueVo {
 	private long userNo;
 	private String id;
 	@JsonIgnore
 	private String pw;
 	MultipartFile image;
-	private String nickName;
+	private String nickname;
 	private String birthday;
 	private String myRainbow;
 	private String mySeason;
 	private String myNumber;
-	private String token;
-	private String sessionId;
 }

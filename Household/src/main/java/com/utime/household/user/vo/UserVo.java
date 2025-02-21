@@ -20,7 +20,7 @@ public class UserVo {
 	@JsonIgnore
 	private String pw;
 	private byte [] imageBytes;
-	private String nickName;
+	private String nickname;
 	private String birthday;
 	private EJwtRole role;
 	private String pwCheck1;

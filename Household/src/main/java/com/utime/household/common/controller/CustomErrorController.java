@@ -44,7 +44,7 @@ class CustomErrorController implements ErrorController {
 	}
 	
 	@RequestMapping("error")
-    public ModelAndView handleError(HttpServletRequest request, HttpServletResponse response ){
+    public ModelAndView handleError(HttpServletRequest request, HttpServletResponse response, Exception e ){
 		
 		final Object exception = request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
 		final Object exceptionType = request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE);
@@ -91,8 +91,10 @@ class CustomErrorController implements ErrorController {
     		
     		result = new ModelAndView();
     		result.setViewName("Common/Error");
-//    		${errorMessage}
+    		result.getModelMap().addAttribute("errorMessage", e.getMessage());
         }
+        
+        e.printStackTrace();
         
         return result;
     }

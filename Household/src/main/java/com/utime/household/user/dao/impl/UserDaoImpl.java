@@ -1,5 +1,7 @@
 package com.utime.household.user.dao.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,5 +105,15 @@ class UserDaoImpl implements UserDao{
 	public int updateUser(UserVo user) throws Exception {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	@Override
+	public boolean checkId(String id) {
+		return userMapper.checkId(id);
+	}
+	
+	@Override
+	public List<UserVo> findUserId(UserVo user) {
+		return userMapper.getUserFromCheck(user);
 	}
 }

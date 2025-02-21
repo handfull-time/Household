@@ -82,6 +82,15 @@
 		<result column="PW_CHECK3" property="pwCheck3" />
 	</resultMap>
 	
+	<select id="checkId" parameterType="map" resultType="boolean">
+		SELECT
+			CASE COUNT(1) WHEN 0 THEN 1 ELSE 0 END
+		FROM HH_USER
+		WHERE 1=1
+			AND ENABLED = 'Y'
+			AND ID = #{id}
+	</select>
+	
 	<sql id="UserColumnSql">
 		NO
 		, REG_DATE

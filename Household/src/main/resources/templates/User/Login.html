@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Admin Main</title>
+    <title>MoneyMap Main</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
@@ -42,7 +42,7 @@
     <div class="bg-white p-8 shadow-lg rounded-lg w-96 text-center">
         <!-- 제목 -->
         <h1 id="houseTitle" class="text-5xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-pink-500 to-yellow-500 animate-wiggle shadow-text">
-        	House
+        	MoneyMap
 		</h1>
 		
 		 <!-- 별 (기본적으로 숨김) -->
@@ -60,8 +60,9 @@
 	        <div class="mt-6 opacity-0 transition-opacity duration-300" id="hiddenButtons">
 	            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">로그인</button>
 	            <div class="flex justify-between mt-2 text-sm text-blue-500 cursor-pointer">
-	                <a class="hover:underline">비밀번호 찾기</a>
-	                <a th:href="@{/User/JoinUser.html}"  class="hover:underline">회원가입</a>
+	                <a th:href="@{/User/JFindUserId.html}" class="hover:underline">계정 찾기</a>
+	                <a th:href="@{/User/FindUserPw.html}" class="hover:underline">비번 찾기</a>
+	                <a th:href="@{/User/JoinUser.html}" class="hover:underline">회원 가입</a>
 	            </div>
 	        </div>
         </form>

@@ -2,9 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-    <title><th:block layout:fragment="title">MoneyMap</th:block></title>
+    <title>MoneyMap <th:block layout:fragment="title"></th:block></title>
     <meta charset="UTF-8">
-    <!-- https://www.favicon-generator.org/  -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="apple-touch-icon" sizes="57x57" th:href="@{/images/favicon/apple-icon-57x57.png}">
 	<link rel="apple-touch-icon" sizes="60x60" th:href="@{/images/favicon/apple-icon-60x60.png}">
 	<link rel="apple-touch-icon" sizes="72x72" th:href="@{/images/favicon/apple-icon-72x72.png}">
@@ -22,33 +22,46 @@
 	<meta name="msapplication-TileColor" content="#ffffff">
 	<meta name="msapplication-TileImage" th:content="@{/images/favicon/ms-icon-144x144.png}">
 	<!-- <meta name="theme-color" content="#ffffff"> -->
-	
+
     <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
-    <script type="text/javascript" th:src="@{/js/MyToast.js}"></script>
-	<th:block layout:fragment="css"></th:block>
+
+    <style>
+    /* 별 회전 애니메이션 */
+    @keyframes rotateStar {
+        0% { opacity: 1; transform: rotate(0deg) scale(1); }
+        100% { opacity: 0; transform: rotate(720deg) scale(1.5); } /* 2바퀴 돌고 사라짐 */
+    }
+
+    .animate-star {
+        animation: rotateStar 2s ease-in-out forwards;
+    }
+    </style>
+    <th:block layout:fragment="css"></th:block>
 </head>
-<body class="bg-gray-100 min-h-screen flex">
-
-    <!-- Sidebar -->
-    <div th:replace="~{Root/sideView :: sideView}"></div>
-
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col">
-        <!-- Top Bar -->
-        <div th:replace="~{Root/headerView :: headerView}"></div>
-
+<body class="h-screen flex items-center justify-center bg-gray-100">
+    <div class="bg-white p-8 shadow-lg rounded-lg w-full max-w-2xl text-center"> <!-- bg-white p-8 shadow-lg rounded-lg w-96 text-center"> -->
+        <!-- 제목 -->
+        <h1 id="houseTitle" class="text-5xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-pink-500 to-yellow-500 animate-wiggle shadow-text">
+        	MoneyMap <th:block layout:fragment="title"></th:block>
+		</h1>
+		
         <!-- Main Content Area -->
         <div class="flex-1 p-6 overflow-auto">
             <th:block layout:fragment="content"></th:block>
         </div>
+		
     </div>
-
+    
 	<!-- alert confirm prompt -->
 	<div th:replace="~{Root/alertView :: alertView}"></div>
     <!-- 모달창 -->
     <div th:replace="~{Root/modalView :: modalView}"></div>
 
+    <script type="text/javascript" th:src="@{/js/MyToast.js}"></script>
 	<th:block layout:fragment="script"></th:block>
-
+	
 </body>
 </html>
+
+
+

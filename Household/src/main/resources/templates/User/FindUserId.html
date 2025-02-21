@@ -1,0 +1,189 @@
+<div xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{User/UserLayout}">
+    
+    <th:block layout:fragment="title">ID 찾기</th:block>
+
+	<th:block layout:fragment="css"></th:block>
+	
+    <div layout:fragment="content">
+        <form id="signupForm" th:action="@{/FindUserId.layer}" method="POST">
+            <div class="grid grid-cols-1 gap-4">
+                <!-- Birthday -->
+                <div class="flex items-center">
+                    <label class="w-1/4 font-medium">생년월일</label>
+                    <input type="date" name="birthday" id="birthday" class="w-3/4 p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
+                </div>
+
+                <!-- 비밀번호 찾기 질문 -->
+                <div class="relative w-full">
+			        <div class="relative">
+			            <label class="block font-medium">무지개 7가지 색 중 좋아하는 색깔</label>
+			            <button id="dropdownBtn" class="w-full p-2 border rounded-md flex justify-between items-center bg-white">
+			                <span id="selectedText">선택하세요</span>
+			                <span class="text-gray-600">&#9662;</span> <!-- 아래 화살표 -->
+			            </button>
+			
+			            <!-- 드롭다운 목록 -->
+			            <div id="dropdownMenu" class="absolute w-full mt-1 bg-white border rounded-md shadow-lg hidden z-10">
+			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="">
+			                    <span class="w-4 h-4 bg-gray-300 rounded"></span>
+			                    <span>선택하세요</span>
+			                </div>
+			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="빨강">
+			                    <span class="w-4 h-4 bg-red-500 rounded"></span>
+			                    <span>빨강</span>
+			                </div>
+			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="주황">
+			                    <span class="w-4 h-4 bg-orange-500 rounded"></span>
+			                    <span>주황</span>
+			                </div>
+			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="노랑">
+			                    <span class="w-4 h-4 bg-yellow-500 rounded"></span>
+			                    <span>노랑</span>
+			                </div>
+			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="초록">
+			                    <span class="w-4 h-4 bg-green-500 rounded"></span>
+			                    <span>초록</span>
+			                </div>
+			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="파랑">
+			                    <span class="w-4 h-4 bg-blue-500 rounded"></span>
+			                    <span>파랑</span>
+			                </div>
+			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="남색">
+			                    <span class="w-4 h-4 bg-indigo-500 rounded"></span>
+			                    <span>남색</span>
+			                </div>
+			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="보라">
+			                    <span class="w-4 h-4 bg-purple-500 rounded"></span>
+			                    <span>보라</span>
+			                </div>
+			            </div>
+			        </div>
+			        
+			        <!-- 숨겨진 실제 <select> 요소 (값 전송 용도) -->
+			        <select name="myRainbow" id="myRainbow" name="color" class="hidden" required>
+			            <option value="">선택하세요</option>
+			            <option value="빨강">빨강</option>
+			            <option value="주황">주황</option>
+			            <option value="노랑">노랑</option>
+			            <option value="초록">초록</option>
+			            <option value="파랑">파랑</option>
+			            <option value="남색">남색</option>
+			            <option value="보라">보라</option>
+			        </select>
+			    </div>
+
+                <div>
+                    <label class="block font-medium">4계절 중 좋아하는 계절</label>
+                    <select name="mySeason" id="mySeason" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
+                        <option value="">선택하세요</option>
+                        <option>봄</option>
+                        <option>여름</option>
+                        <option>가을</option>
+                        <option>겨울</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-medium">0부터 10까지 좋아하는 숫자</label>
+                    <select name="myNumber" id="myNumber" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
+                        <option value="">선택하세요</option>
+                        <option>0</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
+                    </select>
+                </div>
+
+                <!-- 가입 버튼 -->
+                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">ID 찾기</button>
+            </div>
+        </form>
+        
+        <div id="resultLayer" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+		    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+		        <h2 class="text-lg font-bold">찾은 ID</h2>
+		        <p id="foundId" class="text-xl text-blue-600"></p>
+		        <button onclick="goLogin()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">로그인하기</button>
+		    </div>
+		</div>
+    </div>
+
+    <th:block layout:fragment="script">
+    
+    <script>
+        const dropdownBtn = document.getElementById('dropdownBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const selectedText = document.getElementById('selectedText');
+        const selectInput = document.getElementById('myRainbow');
+
+        // 드롭다운 버튼 클릭 시 목록 표시
+        dropdownBtn.addEventListener('click', () => {
+        	event.preventDefault(); // 기본 포커스 이동 방지
+            dropdownMenu.classList.toggle('hidden');
+            dropdownBtn.classList.toggle('hidden');
+        });
+        
+
+        // 옵션 선택 시 값 변경
+        dropdownMenu.querySelectorAll('div').forEach(item => {
+            item.addEventListener('click', () => {
+                const value = item.getAttribute('data-value');
+                selectedText.textContent = value || '선택하세요';
+                selectInput.value = value;
+                dropdownMenu.classList.add('hidden'); // 선택 후 닫기
+                dropdownBtn.classList.toggle('hidden');
+            });
+        });
+
+        // 드롭다운 외부 클릭 시 닫기
+        document.addEventListener('click', (event) => {
+            if (!dropdownBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.add('hidden');
+                dropdownBtn.classList.remove('hidden');
+            }
+        });
+    </script>
+
+    <script th:inline="javascript">
+        document.getElementById("signupForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append("birthday", document.getElementById("birthday").value);
+            formData.append("myRainbow", document.getElementById("myRainbow").value);
+            formData.append("mySeason", document.getElementById("mySeason").value);
+            formData.append("myNumber", document.getElementById("myNumber").value);
+            
+            try {
+                const response = await fetch(/*[[@{/User/JoinUser.json}]]*/ null, {
+                    method: "POST",
+                    body: formData,
+                    credentials: "include"
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                	showCustomAlert("회원가입이 완료되었습니다.", () => {
+                		window.location.href = /*[[@{/User/Login.html}]]*/ null;
+                	});
+                } else {
+                	showCustomAlert(result.message || "회원가입에 실패했습니다.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                showCustomAlert("서버 오류가 발생했습니다.");
+            }
+        });
+        
+    </script>
+    </th:block>
+</div>

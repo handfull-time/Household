@@ -38,6 +38,13 @@ public interface UserMapper {
 	int updateUser( UserVo vo );
 	
 	/**
+	 * 사용 가능 id 확인
+	 * @param id
+	 * @return
+	 */
+	boolean checkId(@Param("id") String id);
+	
+	/**
 	 * 회원 id로 조회
 	 * @param userNo
 	 * @return

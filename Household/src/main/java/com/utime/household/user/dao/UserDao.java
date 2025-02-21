@@ -1,5 +1,7 @@
 package com.utime.household.user.dao;
 
+import java.util.List;
+
 import com.utime.household.user.vo.UserVo;
 
 public interface UserDao {
@@ -27,4 +29,18 @@ public interface UserDao {
 	 * @throws Exception
 	 */
 	int updateUser(UserVo user)throws Exception;
+	
+	/**
+	 * 사용 가능 id 확인
+	 * @param id
+	 * @return
+	 */
+	boolean checkId(String id);
+
+	/**
+	 * 일치하는 id 목록 조회
+	 * @param user
+	 * @return
+	 */
+	List<UserVo> findUserId(UserVo user);
 }

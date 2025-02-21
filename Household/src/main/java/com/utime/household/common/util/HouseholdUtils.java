@@ -1,10 +1,13 @@
 package com.utime.household.common.util;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -132,4 +135,11 @@ private static final String UnknownIp = "unknown";
         
         return result;
 	}
+	
+	public static byte[] convertMultipartFileToByteArray(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            return null; 
+        }
+        return file.getBytes();
+    }
 }

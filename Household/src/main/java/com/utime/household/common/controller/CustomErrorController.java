@@ -1,45 +1,100 @@
 package com.utime.household.common.controller;
 
-import org.springframework.boot.web.servlet.error.ErrorController;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.utime.household.common.util.HouseholdUtils;
-import com.utime.household.common.vo.ReturnBasic;
+import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
-@RequiredArgsConstructor
 class CustomErrorController implements ErrorController {
 	
-	@GetMapping(value = {"error"})
-	public String goMain(HttpServletRequest request, ModelMap model, Exception e) {
-		
-		final ReturnBasic res = new ReturnBasic();
-		
-		final Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-        if (status != null) {
-            res.setCode( status.toString() );
-        }else {
-        	res.setCode( "Unknown" );
-        }
-        
-        final Object msg = request.getAttribute(RequestDispatcher.ERROR_MESSAGE);
-        if (msg != null) {
-        	res.setMessage(msg.toString());
-        }
-        
-        if( HouseholdUtils.isEmpty( res.getMessage() )) {
-        	res.setMessage( HouseholdUtils.exceptionToStr(e) );
-        }
-        
-		model.addAttribute("res", res);
-		
-		return "common/error";
+	private class _ErrorInfo{
+		String exception;
+		String exceptionType;
+        String message;
+        String requestUri;
+		Integer status;
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("_ErrorInfo [\n");
+			if (exception != null)
+				builder.append("exception=").append(exception).append(",\n");
+			if (exceptionType != null)
+				builder.append("exceptionType=").append(exceptionType).append(",\n");
+			if (message != null)
+				builder.append("message=").append(message).append(",\n");
+			if (requestUri != null)
+				builder.append("requestUri=").append(requestUri).append(",\n");
+			if (status != null)
+				builder.append("status=").append(status);
+			builder.append("\n]");
+			return builder.toString();
+		}
 	}
+	
+	@RequestMapping("error")
+    public ModelAndView handleError(HttpServletRequest request, HttpServletResponse response ){
+		
+		final Object exception = request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
+		final Object exceptionType = request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE);
+        final Object message = request.getAttribute(RequestDispatcher.ERROR_MESSAGE);
+        final Object requestUri = request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
+		final Integer status = (Integer)request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+           
+		final _ErrorInfo info = new _ErrorInfo();
+		info.exception = (exception == null)? null:exception.toString();
+		info.exceptionType = (exceptionType == null)? null:exceptionType.toString();
+		info.message = (message == null)? "알 수 없는 에러 발생":message.toString();
+		info.requestUri = (requestUri == null)? null:requestUri.toString();
+		info.status = (status == null)? HttpStatus.INTERNAL_SERVER_ERROR.value():status;
+
+        // JSON 응답을 할지 여부 확인
+        boolean jsonResponse = false;
+       	if( info.requestUri != null ){
+       		jsonResponse = info.requestUri.indexOf(".json") > 0;
+       	} 
+
+       	final String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
+       	if( ! jsonResponse && acceptHeader != null ) {
+        	jsonResponse = acceptHeader.contains(MediaType.APPLICATION_JSON_VALUE);
+        }
+		
+		response.setStatus( status );
+		
+		final ModelAndView result;
+		
+        if (jsonResponse) {
+
+    		response.setContentType("application/json; charset=UTF-8");
+
+    		final  Map<String, Object>  json = new  HashMap<>();
+        	json.put("code", "Error");
+        	json.put("status", info.status);
+        	json.put("message", info.message);
+        	json.put("requestUri", info.requestUri);
+    		
+        	result = new ModelAndView("jsonView", json);
+
+        } else {
+    		response.setContentType("text/html; charset=UTF-8");
+    		
+    		result = new ModelAndView();
+    		result.setViewName("Common/Error");
+//    		${errorMessage}
+        }
+        
+        return result;
+    }
 	
 }

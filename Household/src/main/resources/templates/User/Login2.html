@@ -1,0 +1,134 @@
+<div xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{User/UserLayout}">
+     
+    <th:block layout:fragment="title"></th:block>
+
+	<th:block layout:fragment="css">
+	    <style>
+	    /* 별 회전 애니메이션 */
+	    @keyframes rotateStar {
+	        0% { opacity: 1; transform: rotate(0deg) scale(1); }
+	        100% { opacity: 0; transform: rotate(720deg) scale(1.5); } /* 2바퀴 돌고 사라짐 */
+	    }
+	
+	    .animate-star {
+	        animation: rotateStar 2s ease-in-out forwards;
+	    }
+	    </style>
+    </th:block>
+    
+    <th:block layout:fragment="script">
+    <script>
+        const inputs = document.querySelectorAll("input");
+        const hiddenButtons = document.getElementById("hiddenButtons");
+
+        // 입력 필드에 포커스 또는 입력 시 버튼 표시
+        inputs.forEach(input => {
+            input.addEventListener("focus", () => {
+                hiddenButtons.classList.remove("opacity-0");
+            });
+
+            input.addEventListener("input", () => {
+                hiddenButtons.classList.remove("opacity-0");
+            });
+        });
+
+        // 입력 필드에서 벗어나고 내용이 없으면 버튼 숨김
+        document.addEventListener("click", (event) => {
+            if (!event.target.closest(".bg-white")) {
+                if (!inputs[0].value && !inputs[1].value) {
+                    hiddenButtons.classList.add("opacity-0");
+                }
+            }
+        });
+    </script>
+    
+    <script>
+	    // 흔들림 애니메이션이 끝난 후 별 애니메이션 실행
+	    setTimeout(() => {
+	        const star = document.getElementById("star");
+	        const houseTitle = document.getElementById("houseTitle");
+	
+	        // 제목의 위치 및 크기 계산
+	        const rect = houseTitle.getBoundingClientRect();
+	        
+	        const offsetX = rect.x + (rect.width);
+	        const offsetY = rect.top -10;
+	
+	        // 별 위치 조정
+	        star.style.top = `${offsetY}px`;
+	        star.style.left = `${offsetX}px`;
+	        
+	        // 별 애니메이션 실행
+	        star.classList.add("animate-star");
+	
+	        // 애니메이션이 끝나면 제거
+	        setTimeout(() => {
+	            star.remove();
+	        }, 2000);
+	    }, 1000); 
+	</script>
+	
+	<script th:inline="javascript">
+		document.getElementById("loginForm").addEventListener("submit", async function(event) {
+		    event.preventDefault();
+		
+		    const formData = new FormData(event.target);
+		    const requestData = {
+		        id: formData.get("id"),
+		        pw: formData.get("pw"),
+		        token: formData.get("token")
+		    };
+		
+		    try {
+		        const response = await fetch(/*[[@{/Auth/Login.json}]]*/ null, {
+		            method: "POST",
+		            headers: { "Content-Type": "application/json" },
+		            body: JSON.stringify(requestData),
+		            credentials: "include"
+		        });
+		
+		        if (response.ok) {
+		            const data = await response.json();
+		            if( data.code === '0' ){
+		            	window.location.href = data.message;
+		            }else{
+		            	showCustomAlert(data.code + " - " + data.message);
+		            }
+		        } else {
+		        	showCustomAlert("아이디 또는 비밀번호를 확인하세요.");
+		        }
+		    } catch (error) {
+		        console.error("로그인 오류:", error);
+		        showCustomAlert("서버 오류가 발생했습니다.");
+		    }
+		});
+	</script>    
+    
+    </th:block>
+
+    <div layout:fragment="content">
+    	<!-- 별 (기본적으로 숨김) -->
+    	<span id="star" class="absolute text-yellow-400 text-2xl font-bold opacity-0 transform origin-center">
+			★
+		</span>
+
+        <!-- 입력 필드 -->
+        <form id="loginForm">
+        	<input type="hidden" name="token" th:value="${genToken}">
+	        <input type="text" name="id" placeholder="ID" maxlength="16"  class="w-full p-3 border rounded-md mb-3 focus:ring-2 focus:ring-blue-400">
+	        <input type="password" name="pw" placeholder="Password" maxlength="32" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-400">
+
+	        <!-- 숨겨진 버튼 -->
+	        <div class="mt-6 opacity-0 transition-opacity duration-300" id="hiddenButtons">
+	            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">로그인</button>
+	            <div class="flex justify-between mt-2 text-sm text-blue-500 cursor-pointer">
+	                <a th:href="@{/User/JFindUserId.html}" class="hover:underline">계정 찾기</a>
+	                <a th:href="@{/User/FindUserPw.html}" class="hover:underline">비번 찾기</a>
+	                <a th:href="@{/User/JoinUser.html}" class="hover:underline">회원 가입</a>
+	            </div>
+	        </div>
+        </form>
+    </div>
+</div>

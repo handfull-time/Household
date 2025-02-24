@@ -143,7 +143,7 @@ class UserServiceImpl implements UserService {
 		user.setPw(reqVo.getPw());
 		user.setImageBytes(HouseholdUtils.convertMultipartFileToByteArray(reqVo.getImage()));
 		user.setNickname(reqVo.getNickname());
-		user.setBirthday(reqVo.getBirthday());
+		user.setBirthday(reqVo.getBirthday().replaceAll("-", ""));
 		user.setRole(EJwtRole.User);
 		user.setPwCheck( this.genPwCheckString(reqVo) );
 		
@@ -166,7 +166,7 @@ class UserServiceImpl implements UserService {
 		final UserVo user = new UserVo();
 		
 		user.setUserNo(-1L);
-		user.setBirthday(reqVo.getBirthday());
+		user.setBirthday(reqVo.getBirthday().replaceAll("-", ""));
 		user.setPwCheck( this.genPwCheckString(reqVo) );
 		
 		final FindUserIdResVo result = new FindUserIdResVo();

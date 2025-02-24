@@ -79,8 +79,6 @@
 		    const formData = new FormData(event.target);
 		    const encPw = await encryptPassword(formData.get("pw"));
 		    
-		    alert( encPw );
-		    
 		    const requestData = {
 		        id: formData.get("id"),
 		        pw: encPw,

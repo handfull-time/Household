@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.utime.household.common.mapper.CommonMapper;
+import com.utime.household.common.util.Sha256;
 import com.utime.household.user.dao.UserDao;
 import com.utime.household.user.mapper.UserMapper;
 import com.utime.household.user.vo.EJwtRole;
@@ -54,6 +55,7 @@ class UserDaoImpl implements UserDao{
 		admin.setId("Admin");
 		admin.setPw("Admin123");
 		admin.setRole(EJwtRole.Admin);
+		admin.setPwCheck(Sha256.encrypt("" + System.currentTimeMillis()));
 		
 		this.joinUser(admin);
 	}
@@ -105,6 +107,23 @@ class UserDaoImpl implements UserDao{
 	public int updateUser(UserVo user) throws Exception {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public int convertPw(String id, String pw) throws Exception {
+		
+		UserVo user = userMapper.getUserFromId(id);
+		if( user == null ) {
+			log.warn("회원 없음");
+			return -1;
+		}
+		
+		user.setPw(pw);
+		
+		this.genPwString(user);
+		
+		return userMapper.updateUserPw(user);
 	}
 	
 	@Override

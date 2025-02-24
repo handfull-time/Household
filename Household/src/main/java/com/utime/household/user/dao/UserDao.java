@@ -43,4 +43,12 @@ public interface UserDao {
 	 * @return
 	 */
 	List<UserVo> findUserId(UserVo user);
+	
+	/**
+	 * 비번 변경
+	 * @param id
+	 * @param pw
+	 * @return
+	 */
+	int convertPw( String id, String pw)throws Exception;
 }

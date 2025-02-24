@@ -16,9 +16,7 @@
 			, NICKNAME TEXT(32) NOT NULL <!-- 별명 -->
 			, BIRTHDAY TEXT(8) NOT NULL <!-- 생년월일 YYYYMMDD -->
 			, IMAGE BLOB NOT NULL <!-- 이미지 -->
-			, PW_CHECK1 TEXT(8) NOT NULL <!-- 패스워드 찾기 답변 1 -->
-			, PW_CHECK2 TEXT(8) NOT NULL <!-- 패스워드 찾기 답변 1 -->
-			, PW_CHECK3 TEXT(8) NOT NULL <!-- 패스워드 찾기 답변 1 -->
+			, PW_CHECK TEXT(64) NOT NULL <!-- 계정/패스워드 찾기 정보 -->
 		)
 	</insert>
 	
@@ -32,9 +30,7 @@
 			, NICKNAME 
 			, BIRTHDAY
 			<if test="imageBytes != null ">, IMAGE </if> 
-			<if test="pwCheck1 != null and pwCheck1 != ''">, PW_CHECK1 </if>
-			<if test="pwCheck2 != null and pwCheck2 != ''">, PW_CHECK2 </if>
-			<if test="pwCheck3 != null and pwCheck3 != ''">, PW_CHECK3 </if>
+			, PW_CHECK
 		) VALUES (
 			DATETIME('NOW','LOCALTIME')
 			, #{enabled, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
@@ -43,9 +39,7 @@
 			, #{nickname}
 			, #{birthday}
 			<if test="imageBytes != null ">, #{imageBytes} </if>
-			<if test="pwCheck1 != null and pwCheck1 != ''">, #{pwCheck1} </if>
-			<if test="pwCheck2 != null and pwCheck2 != ''">, #{pwCheck2} </if>
-			<if test="pwCheck3 != null and pwCheck3 != ''">, #{pwCheck3} </if>
+			, #{pwCheck}
 		)
 	</insert>
 
@@ -63,9 +57,7 @@
 			, ENABLED = #{enabled, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
 			<if test="nickname != null and nickname != ''">	, NICKNAME = #{nickname} </if>
 			<if test="imageBytes != null ">	, IMAGE = #{imageBytes} </if> 
-			<if test="pwCheck1 != null and pwCheck1 != ''">, PW_CHECK1 = #{pwCheck1}</if>
-			<if test="pwCheck2 != null and pwCheck2 != ''">, PW_CHECK2 = #{pwCheck2}</if>
-			<if test="pwCheck3 != null and pwCheck3 != ''">, PW_CHECK3 = #{pwCheck3}</if>
+			<if test="pwCheck != null and pwCheck != ''">, PW_CHECK = #{pwCheck}</if>
 		WHERE NO = #{userNo}
 	</update>
 	
@@ -78,9 +70,6 @@
 		<result column="ROLE" property="role" />
 		<result column="IMAGE" property="imageBytes" />
 		<result column="NICKNAME" property="nickname" />
-		<result column="PW_CHECK1" property="pwCheck1" />
-		<result column="PW_CHECK2" property="pwCheck2" />
-		<result column="PW_CHECK3" property="pwCheck3" />
 	</resultMap>
 	
 	<select id="checkId" parameterType="map" resultType="boolean">
@@ -100,7 +89,6 @@
 		, ID
 		, ROLE
 		, NICKNAME
-		, IMAGE
 	</sql>
 	
 	<!-- 회원 id로 조회 -->
@@ -120,16 +108,19 @@
 	</select>
 	
 	<!-- 비번 찾기에서 유효한 정보 조회 -->
-	<select id="getUserFromCheck" parameterType="map" resultMap="UserVoMap">
+	<select id="getUserFromCheck" parameterType="com.utime.household.user.vo.UserVo" resultMap="UserVoMap">
 		SELECT 
 			<include refid="UserColumnSql" /> 
 		FROM HH_USER
 		WHERE 1=1
 			AND ENABLED = 'Y'
+			<if test="id != null and id != '' ">
+			AND ID = #{id}
+			</if>
+			<if test="birthday != null and birthday != '' ">
 			AND BIRTHDAY = #{birthday}
-			AND PW_CHECK1 = #{pwCheck1}
-			AND PW_CHECK2 = #{pwCheck2} 
-			AND PW_CHECK3 = #{pwCheck3}
+			</if>
+			AND PW_CHECK = #{pwCheck}
 	</select>
 
 	<!-- id / pw 일치하는 계정 정보 조회 -->	

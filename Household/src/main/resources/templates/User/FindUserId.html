@@ -7,8 +7,8 @@
 	<th:block layout:fragment="css"></th:block>
 	
     <div layout:fragment="content">
-        <form id="findIdForm" th:action="@{/User/FindUserId.layer}" method="POST">
-            <div class="grid grid-cols-1 gap-4">
+        <div id="requestLayer" class="grid grid-cols-1 gap-4">
+	        <form id="findIdForm" >
                 <!-- Birthday -->
                 <div class="flex items-center">
                     <label class="w-1/4 font-medium">생년월일</label>
@@ -104,12 +104,20 @@
                 </div>
 
                 <!-- 가입 버튼 -->
-                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">ID 찾기</button>
-            </div>
-        </form>
-        
+                <div class="mt-6 transition-opacity duration-300" id="hiddenButtons">
+		            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">ID 찾기</button>
+		            <div class="flex justify-between mt-2 text-sm text-blue-500 cursor-pointer">
+		                <a th:href="@{/User/FindUserPw.html}" class="hover:underline">비번 찾기</a>
+		                <a th:href="@{/User/Login.html}" class="hover:underline">로그인</a>
+		                <a th:href="@{/User/JoinUser.html}" class="hover:underline">회원 가입</a>
+		            </div>
+		        </div>
+                
+	        </form>
+        </div>
+	    <!-- <div id="resultLayer" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center"></div> -->
+	    <div id="resultLayer" class="hidden grid grid-cols-1 gap-4"></div>
     </div>
-    <div id="resultLayer" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center"></div>
 
     <th:block layout:fragment="script">
     
@@ -152,10 +160,9 @@
             event.preventDefault();
             
             const formData = new FormData(this);
-            
             try {
-                const response = await fetch(this.action, {
-                    method: this.method,
+                const response = await fetch(/*[[@{/User/FindUserId.layer}]]*/ null, {
+                    method: "POST",
                     body: formData,
                     headers: {
                         "X-Requested-With": "XMLHttpRequest" // AJAX 요청임을 알림
@@ -163,11 +170,13 @@
                 });
 
                 const result = await response.text();
-                console.log("서버 응답:", result);
 
                 // 응답을 처리하여 결과 Layer 표시
-                document.getElementById("resultLayer").innerHTML = result;
-                document.getElementById("resultLayer").classList.remove("hidden");
+                const resultLayer = document.getElementById("resultLayer");
+                resultLayer.innerHTML = result;
+                
+        		resultLayer.classList.remove("hidden");
+                document.getElementById("requestLayer").classList.add("hidden");
             } catch (error) {
                 console.error("Error:", error);
             }

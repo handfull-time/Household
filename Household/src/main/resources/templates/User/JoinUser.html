@@ -1,16 +1,12 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Admin 회원가입</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
-</head>
-<body class="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-    <h1 class="text-3xl font-bold text-blue-600 mb-4">MoneyMap</h1>
-    <div class="w-full max-w-lg bg-white p-8 shadow-md rounded-lg">
-        <h2 class="text-2xl font-semibold text-gray-800 text-center mb-6">회원가입</h2>
+<div xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{User/UserLayout}">
+     
+    <th:block layout:fragment="title"></th:block>
 
+	<th:block layout:fragment="css"></th:block>
+    
+    <div layout:fragment="content">
         <form id="signupForm">
             <div class="grid grid-cols-1 gap-4">
                 <!-- ID -->
@@ -144,12 +140,20 @@
                 </div>
 
                 <!-- 가입 버튼 -->
-                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">가입하기</button>
+                
+                <div class="mt-6 transition-opacity duration-300" id="hiddenButtons">
+		            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">가입하기</button>
+		            <div class="flex justify-between mt-2 text-sm text-blue-500 cursor-pointer">
+		                <a th:href="@{/User/FindUserPw.html}" class="hover:underline">비번 찾기</a>
+		                <a th:href="@{/User/Login.html}" class="hover:underline" >로그인</a>
+		                <a th:href="@{/User/FindUserId.html}" class="hover:underline">계정 찾기</a>
+		            </div>
+		        </div>
             </div>
         </form>
     </div>
 
-    <div th:replace="~{Root/alertView :: alertView}"></div>
+    <th:block layout:fragment="script">
     
     <script th:inline="javascript">
 		document.getElementById("id").addEventListener("blur", async function() {
@@ -252,15 +256,13 @@
                 confirmPasswordError.classList.add("hidden");
             }
             
-            alert(document.getElementById("myNumber").value);
-
             saveUser();
         });
         
         async function saveUser() {
             const formData = new FormData();
             formData.append("id", document.getElementById("id").value);
-            formData.append("pw", document.getElementById("password").value);
+            formData.append("pw", await encryptPassword( document.getElementById("password").value) );
             formData.append("birthday", document.getElementById("birthday").value);
             formData.append("nickname", document.getElementById("nickname").value);
             formData.append("myRainbow", document.getElementById("myRainbow").value);
@@ -290,7 +292,7 @@
             //credentials: "same-origin" // 같은 출처의 요청에만 쿠키 포함
 
             try {
-                const response = await fetch(/*[[@{/User/JoinUser.json}]]*/ null, {
+                const response = await fetch(/*[[@{/Auth/JoinUser.json}]]*/ null, {
                     method: "POST",
                     body: formData,
                     credentials: "include"
@@ -322,5 +324,5 @@
             }
         });
     </script>
-</body>
-</html>
+    </th:block>
+</div>

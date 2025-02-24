@@ -23,7 +23,5 @@ public class UserVo {
 	private String nickname;
 	private String birthday;
 	private EJwtRole role;
-	private String pwCheck1;
-	private String pwCheck2;
-	private String pwCheck3;
+	private String pwCheck;
 }

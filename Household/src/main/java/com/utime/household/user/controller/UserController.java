@@ -1,14 +1,9 @@
 package com.utime.household.user.controller;
 
-import java.io.IOException;
-import java.util.Map;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +15,6 @@ import com.utime.household.user.vo.FindUserIdResVo;
 import com.utime.household.user.vo.UserReqVo;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -41,7 +35,7 @@ public class UserController {
 		
 		model.addAttribute("genToken", userService.getNewGenToken(request.getRequestedSessionId()) );
 		
-        return "User/Login2";
+        return "User/Login";
     }
 	
 	/**
@@ -55,29 +49,7 @@ public class UserController {
 		
 		model.addAttribute("genToken", userService.getNewGenToken(request.getRequestedSessionId()) );
 		
-        return "User/JoinUser2";
-    }
-	
-	/**
-	 * 회원 가입
-	 * @param request
-	 * @param reqVo
-	 * @return
-	 * @throws IOException
-	 */
-	@ResponseBody
-	@PostMapping("JoinUser.json")
-    public ResponseEntity<?> login( HttpServletRequest request, @ModelAttribute UserReqVo reqVo) throws IOException {
-    	
-    	reqVo.setSessionId( request.getRequestedSessionId() );
-    	
-    	final ReturnBasic result = userService.joinUser(reqVo);
-    	
-    	if( result.isError() ) {
-    		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", result.getMessage()));
-    	}
-    	
-    	return ResponseEntity.ok().body(result);
+        return "User/JoinUser";
     }
 	
 	/**
@@ -152,20 +124,5 @@ public class UserController {
     	return "User/FindUserPwLayer";
     }
 
-	/**
-	 * 비번 변경
-	 * @param request
-	 * @param reqVo
-	 * @return
-	 */
-	@ResponseBody
-	@PostMapping("ConvertUserPw.json")
-    public ResponseEntity<ReturnBasic> convertUserPw( HttpServletRequest request, UserReqVo reqVo ) {
-		
-		reqVo.setSessionId( request.getRequestedSessionId() );
-		
-		final ReturnBasic result = userService.convertUserPw(reqVo);
-    	
-    	return ResponseEntity.ok().body(result);
-    }
+
 }

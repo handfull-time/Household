@@ -6,26 +6,40 @@
          <div class="space-y-4">
              <!-- Thymeleaf로 동적 데이터 바인딩 -->
              <div th:each="user : ${item.list}" class="border-b pb-2 flex items-center space-x-4">
-                 <input type="radio" name="selectedId" th:value="${user.id}" class="form-radio h-4 w-4 text-blue-600">
+                 <!-- <input type="radio" name="selectedId" th:value="${user.id}" class="form-radio h-4 w-4 text-blue-600"> -->
                  <span th:text="${user.id}" class="font-semibold"></span>
                  <span th:text="${user.nickname}" class="text-gray-600"></span>
              </div>
+             
+             <div th:if="${#lists.size(item.list) < 1}">
+		    	일치하는 id 정보를 찾을 수 없어요.
+		    </div>
          </div>
          
-         <button type="submit" class="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">
-             확인
-         </button>
+         <div class="mt-6 transition-opacity duration-300" id="hiddenButtons">
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600" 
+            	th:text="${#lists.size(item.list) > 0? '로그인':'Id찾기'}" ></button>
+            <div class="flex justify-between mt-2 text-sm text-blue-500 cursor-pointer">
+                <a th:href="@{/User/FindUserPw.html}" class="hover:underline">비번 찾기</a>
+                <a th:href="@{/User/Login.html}" class="hover:underline" th:if="${#lists.size(item.list) < 1}" >로그인</a>
+                <a th:href="@{/User/JoinUser.html}" class="hover:underline">회원 가입</a>
+            </div>
+        </div>
      </form>
 
-    <script>
+    <script th:inline="javascript">
         document.getElementById("idSelectForm").addEventListener("submit", function(event) {
             event.preventDefault();
+/*
             const selectedId = document.querySelector("input[name='selectedId']:checked");
             if (!selectedId) {
                 alert("ID를 선택해주세요.");
                 return;
             }
-            window.location.href = "/User/Login.html?userId="+selectedId;
+*/
+			const itemListSize = /*[[${#lists.size(item.list)}]]*/ 0;
+			const targetUrl = itemListSize > 0 ? /*[[@{/User/Login.html}]]*/ null : /*[[@{/User/FindUserId.html}]]*/ null;
+			window.location.href = targetUrl;
         });
     </script>
 </div>

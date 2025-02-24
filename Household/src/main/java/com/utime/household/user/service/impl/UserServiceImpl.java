@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.utime.household.common.jwt.JwtProvider;
 import com.utime.household.common.util.CacheIntervalMap;
 import com.utime.household.common.util.HouseholdUtils;
+import com.utime.household.common.util.Sha256;
 import com.utime.household.common.vo.HouseholdDefine;
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.user.dao.UserDao;
@@ -31,22 +33,40 @@ class UserServiceImpl implements UserService {
 	
 	final CacheIntervalMap<String, String> intervalMap = new CacheIntervalMap<>(10L, TimeUnit.MINUTES);
 	
+	@Value("${security.pwSaltKey}")
+    private String saltKey;
+	
 	final UserDao userDao;
 	final JwtProvider jwtUtil;
-
-	@Override
-	public String getNewGenToken(String sessionId) {
-		
+	
+	/**
+	 * Interval 에 추가.
+	 * @param value
+	 * @return 추가 key
+	 */
+	private String inputInterval( String value ) {
 		final UUID guid = UUID.randomUUID();
 		 
 		final String result = guid.toString();
 		
-		this.intervalMap.put(result, sessionId);
+		this.intervalMap.put(result, value);
 		
-		log.info("interval 추가: {} - {}", result, sessionId );
+		log.info("interval 추가: {} - {}", result, value );
 
 		return result;
 	}
+
+	@Override
+	public String getNewGenToken(String sessionId) {
+		
+		return this.inputInterval( sessionId );
+	}
+	
+	private String genPwCheckString( UserReqVo user ) {
+		return Sha256.encrypt(saltKey + user.getMyNumber() + user.getMyRainbow() + user.getMySeason());
+	}
+
+
 	
 	/**
 	 * 유효성 검사
@@ -125,9 +145,7 @@ class UserServiceImpl implements UserService {
 		user.setNickname(reqVo.getNickname());
 		user.setBirthday(reqVo.getBirthday());
 		user.setRole(EJwtRole.User);
-		user.setPwCheck1(reqVo.getMyRainbow());
-		user.setPwCheck2(reqVo.getMySeason());
-		user.setPwCheck3(reqVo.getMyNumber());
+		user.setPwCheck( this.genPwCheckString(reqVo) );
 		
 		final ReturnBasic result = new ReturnBasic();
 		try {
@@ -149,9 +167,7 @@ class UserServiceImpl implements UserService {
 		
 		user.setUserNo(-1L);
 		user.setBirthday(reqVo.getBirthday());
-		user.setPwCheck1(reqVo.getMyRainbow());
-		user.setPwCheck2(reqVo.getMySeason());
-		user.setPwCheck3(reqVo.getMyNumber());
+		user.setPwCheck( this.genPwCheckString(reqVo) );
 		
 		final FindUserIdResVo result = new FindUserIdResVo();
 		try {
@@ -177,13 +193,44 @@ class UserServiceImpl implements UserService {
 
 	@Override
 	public ReturnBasic findUserPw(UserReqVo reqVo) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		final ReturnBasic result = new ReturnBasic();
+		
+		final UserVo user = new UserVo();
+		
+		user.setUserNo(-1L);
+		user.setId(reqVo.getId());
+		user.setPwCheck( this.genPwCheckString(reqVo) );
+		
+		final List<UserVo> list = userDao.findUserId(user);
+		if( HouseholdUtils.isEmpty(list) ) {
+			result.setCodeMessage("E", "일치 데이터 없음");
+			return result;
+		}
+		
+		final String key = inputInterval( list.get(0).getId() );
+		result.setMessage(key);
+		return result;
 	}
 
 	@Override
 	public ReturnBasic convertUserPw(UserReqVo reqVo) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		final ReturnBasic result = new ReturnBasic();
+		
+		final String id = intervalMap.get(reqVo.getToken());
+		if( id == null ) {
+			result.setCodeMessage("E", "일치 데이터 없음");
+			return result;
+		}
+		
+		try {
+			userDao.convertPw(id, reqVo.getPw());
+		} catch (Exception e) {
+			log.error("", e);
+			result.setCodeMessage("E", e.getMessage());
+		}
+
+		return result;
 	}
 }

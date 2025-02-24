@@ -2,13 +2,13 @@
      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
      layout:decorate="~{User/UserLayout}">
     
-    <th:block layout:fragment="title">ID 찾기</th:block>
+    <th:block layout:fragment="title">비번 찾기</th:block>
 
 	<th:block layout:fragment="css"></th:block>
 	
     <div layout:fragment="content">
-        <form id="findPwForm" th:action="@{/User/FindUserPw.layer}" method="POST">
-            <div class="grid grid-cols-1 gap-4">
+    	<div id="requestLayer" class="grid grid-cols-1 gap-4">
+	        <form id="findPwForm" >
                 <!-- ID -->
                 <div class="flex flex-col w-full"> <!-- ✅ flex-col로 변경하여 세로 정렬 -->
 				    <div class="flex items-center">
@@ -108,11 +108,17 @@
                     </select>
                 </div>
 
-                <!-- 가입 버튼 -->
-                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">ID 찾기</button>
-            </div>
-        </form>
-        
+                <div class="mt-6 transition-opacity duration-300" id="hiddenButtons">
+		            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">ID 찾기</button>
+		            <div class="flex justify-between mt-2 text-sm text-blue-500 cursor-pointer">
+		                <a th:href="@{/User/FindUserPw.html}" class="hover:underline">비번 찾기</a>
+		                <a th:href="@{/User/Login.html}" class="hover:underline">로그인</a>
+		                <a th:href="@{/User/JoinUser.html}" class="hover:underline">회원 가입</a>
+		            </div>
+		        </div>
+	        </form>
+        </div>
+        <div id="resultLayer" class="hidden grid grid-cols-1 gap-4"></div>
     </div>
 
     <th:block layout:fragment="script">
@@ -154,9 +160,29 @@
     <script th:inline="javascript">
         document.getElementById("findPwForm").addEventListener("submit", async function(event) {
             event.preventDefault();
-			alert('a');
+            
+            const formData = new FormData(this);
+            try {
+                const response = await fetch(/*[[@{/User/FindUserPw.layer}]]*/ null, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest" // AJAX 요청임을 알림
+                    }
+                });
+
+                const result = await response.text();
+
+                // 응답을 처리하여 결과 Layer 표시
+                const resultLayer = document.getElementById("resultLayer");
+                resultLayer.innerHTML = result;
+                
+        		resultLayer.classList.remove("hidden");
+                document.getElementById("requestLayer").classList.add("hidden");
+            } catch (error) {
+                console.error("Error:", error);
+            }
         });
-        
     </script>
     </th:block>
 </div>

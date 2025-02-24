@@ -1,76 +1,26 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>MoneyMap Main</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
+<div xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{User/UserLayout}">
+     
+    <th:block layout:fragment="title"></th:block>
+
+	<th:block layout:fragment="css">
+	    <style>
+	    /* 별 회전 애니메이션 */
+	    @keyframes rotateStar {
+	        0% { opacity: 1; transform: rotate(0deg) scale(1); }
+	        100% { opacity: 0; transform: rotate(720deg) scale(1.5); } /* 2바퀴 돌고 사라짐 */
+	    }
+	
+	    .animate-star {
+	        animation: rotateStar 2s ease-in-out forwards;
+	    }
+	    </style>
+    </th:block>
     
-    <style>
-    /* 흔들리는 애니메이션 (3번 실행 후 멈춤) */
-    @keyframes wiggle {
-        0%, 100% { transform: rotate(0deg); }
-        25% { transform: rotate(-2deg); }
-        50% { transform: rotate(2deg); }
-        75% { transform: rotate(-1deg); }
-    }
-
-    .animate-wiggle {
-        animation: wiggle 1s ease-in-out 1; /* 3번만 실행 후 멈춤 */
-    }
-
-    /* 화려한 그림자 효과 */
-    .shadow-text {
-        text-shadow: 
-            2px 2px 4px rgba(0, 0, 255, 0.1),  /* 파란색 그림자 */
-            -2px -2px 4px rgba(255, 0, 255, 0.1), /* 핑크색 그림자 */
-            3px -3px 4px rgba(255, 255, 0, 0.1); /* 노란색 그림자 */
-    }
-    
-    /* 별 회전 애니메이션 */
-    @keyframes rotateStar {
-        0% { opacity: 1; transform: rotate(0deg) scale(1); }
-        100% { opacity: 0; transform: rotate(720deg) scale(1.5); } /* 2바퀴 돌고 사라짐 */
-    }
-
-    .animate-star {
-        animation: rotateStar 2s ease-in-out forwards;
-    }
-    </style>
-</head>
-<body class="h-screen flex items-center justify-center bg-gray-100">
-    <div class="bg-white p-8 shadow-lg rounded-lg w-96 text-center">
-        <!-- 제목 -->
-        <h1 id="houseTitle" class="text-5xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-pink-500 to-yellow-500 animate-wiggle shadow-text">
-        	MoneyMap
-		</h1>
-		
-		 <!-- 별 (기본적으로 숨김) -->
-		    <span id="star" class="absolute text-yellow-400 text-2xl font-bold opacity-0 transform origin-center">
-		        ★
-		    </span>
-
-        <!-- 입력 필드 -->
-        <form id="loginForm">
-        	<input type="hidden" name="token" th:value="${genToken}">
-	        <input type="text" name="id" placeholder="ID" maxlength="16"  class="w-full p-3 border rounded-md mb-3 focus:ring-2 focus:ring-blue-400">
-	        <input type="password" name="pw" placeholder="Password" maxlength="32" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-400">
-
-	        <!-- 숨겨진 버튼 -->
-	        <div class="mt-6 opacity-0 transition-opacity duration-300" id="hiddenButtons">
-	            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">로그인</button>
-	            <div class="flex justify-between mt-2 text-sm text-blue-500 cursor-pointer">
-	                <a th:href="@{/User/FindUserId.html}" class="hover:underline">계정 찾기</a>
-	                <a th:href="@{/User/FindUserPw.html}" class="hover:underline">비번 찾기</a>
-	                <a th:href="@{/User/JoinUser.html}" class="hover:underline">회원 가입</a>
-	            </div>
-	        </div>
-        </form>
-    </div>
-    
-    <div th:replace="~{Root/alertView :: alertView}"></div>
-
-    <script>
+    <th:block layout:fragment="script">
+    	
+    <!-- <script>
         const inputs = document.querySelectorAll("input");
         const hiddenButtons = document.getElementById("hiddenButtons");
 
@@ -93,71 +43,98 @@
                 }
             }
         });
-    </script>
+    </script> -->
     
     <script>
-    // 흔들림 애니메이션이 끝난 후 별 애니메이션 실행
-    setTimeout(() => {
-        const star = document.getElementById("star");
-        const houseTitle = document.getElementById("houseTitle");
+	    // 흔들림 애니메이션이 끝난 후 별 애니메이션 실행
+	    setTimeout(() => {
+	        const star = document.getElementById("star");
+	        const houseTitle = document.getElementById("houseTitle");
+	
+	        // 제목의 위치 및 크기 계산
+	        const rect = houseTitle.getBoundingClientRect();
+	        
+	        const offsetX = rect.x + (rect.width);
+	        const offsetY = rect.top -10;
+	
+	        // 별 위치 조정
+	        star.style.top = `${offsetY}px`;
+	        star.style.left = `${offsetX}px`;
+	        
+	        // 별 애니메이션 실행
+	        star.classList.add("animate-star");
+	
+	        // 애니메이션이 끝나면 제거
+	        setTimeout(() => {
+	            star.remove();
+	        }, 2000);
+	    }, 1000); 
+	</script>
+	
+	<script th:inline="javascript">
+	
+		document.getElementById("loginForm").addEventListener("submit", async function(event) {
+		    event.preventDefault();
+		
+		    const formData = new FormData(event.target);
+		    const encPw = await encryptPassword(formData.get("pw"));
+		    
+		    alert( encPw );
+		    
+		    const requestData = {
+		        id: formData.get("id"),
+		        pw: encPw,
+		        token: formData.get("token")
+		    };
+		
+		    try {
+		        const response = await fetch(/*[[@{/Auth/Login.json}]]*/ null, {
+		            method: "POST",
+		            headers: { "Content-Type": "application/json" },
+		            body: JSON.stringify(requestData),
+		            credentials: "include"
+		        });
+		
+		        if (response.ok) {
+		            const data = await response.json();
+		            if( data.code === '0' ){
+		            	window.location.href = data.message;
+		            }else{
+		            	showCustomAlert(data.code + " - " + data.message);
+		            }
+		        } else {
+		        	showCustomAlert("아이디 또는 비밀번호를 확인하세요.");
+		        }
+		    } catch (error) {
+		        console.error("로그인 오류:", error);
+		        showCustomAlert("서버 오류가 발생했습니다.");
+		    }
+		});
+	</script>    
+    
+    </th:block>
 
-        // 제목의 위치 및 크기 계산
-        const rect = houseTitle.getBoundingClientRect();
-        
-        const offsetX = rect.x + (rect.width);
-        const offsetY = rect.top -10;
+    <div layout:fragment="content">
+    	<!-- 별 (기본적으로 숨김) -->
+    	<span id="star" class="absolute text-yellow-400 text-2xl font-bold opacity-0 transform origin-center">
+			★
+		</span>
 
-        // 별 위치 조정
-        star.style.top = `${offsetY}px`;
-        star.style.left = `${offsetX}px`;
-        
-        // 별 애니메이션 실행
-        star.classList.add("animate-star");
+        <!-- 입력 필드 -->
+        <form id="loginForm">
+        	<input type="hidden" name="token" th:value="${genToken}">
+	        <input type="text" name="id" placeholder="ID" maxlength="16" class="w-full p-3 border rounded-md mb-3 focus:ring-2 focus:ring-blue-400">
+	        <input type="password" name="pw" placeholder="Password" maxlength="32" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-400">
 
-        // 애니메이션이 끝나면 제거
-        setTimeout(() => {
-            star.remove();
-        }, 2000);
-    }, 1000); 
-</script>
-
-<script th:inline="javascript">
-document.getElementById("loginForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
-
-    const formData = new FormData(event.target);
-    const requestData = {
-        id: formData.get("id"),
-        pw: formData.get("pw"),
-        token: formData.get("token")
-    };
-
-    try {
-        const response = await fetch(/*[[@{/Auth/Login.json}]]*/ null, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestData),
-            credentials: "include"
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            if( data.code === '0' ){
-            	window.location.href = data.message;
-            }else{
-            	showCustomAlert(data.code + " - " + data.message);
-            }
-        } else {
-        	showCustomAlert("아이디 또는 비밀번호를 확인하세요.");
-        }
-    } catch (error) {
-        console.error("로그인 오류:", error);
-        showCustomAlert("서버 오류가 발생했습니다.");
-    }
-});
-</script>
-</body>
-</html>
-
-
-
+	        <!-- 숨겨진 버튼 -->
+	        <div class="mt-6 transition-opacity duration-300" id="hiddenButtons">
+	            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">로그인</button>
+	            <div class="flex justify-between mt-2 text-sm text-blue-500 cursor-pointer">
+	                <a th:href="@{/User/FindUserId.html}" class="hover:underline">계정 찾기</a>
+	                <a th:href="@{/User/FindUserPw.html}" class="hover:underline">비번 찾기</a>
+	                <a th:href="@{/User/JoinUser.html}" class="hover:underline">회원 가입</a>
+	            </div>
+	        </div>
+        </form>
+    </div>
+</div>

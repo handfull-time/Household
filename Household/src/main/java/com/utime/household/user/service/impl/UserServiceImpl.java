@@ -113,7 +113,7 @@ class UserServiceImpl implements UserService {
 	 * @return
 	 */
 	private String genUserUniqueHashing( UserReqVo user ) {
-		return Sha256.encrypt(user.getId() + saltKey + user.getMyNumber() + user.getMyRainbow() + user.getMySeason());
+		return Sha256.encrypt(saltKey + user.getMyNumber() + user.getMyRainbow() + user.getMySeason());
 	}
 
 	/**

@@ -55,6 +55,8 @@ class UserDaoImpl implements UserDao{
 		admin.setId("Admin");
 		admin.setPw("Admin123");
 		admin.setRole(EJwtRole.Admin);
+		admin.setNickname("관리자");
+		admin.setBirthday("20150820");
 		admin.setPwCheck(Sha256.encrypt("" + System.currentTimeMillis()));
 		
 		this.joinUser(admin);

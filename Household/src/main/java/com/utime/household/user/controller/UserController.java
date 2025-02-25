@@ -75,7 +75,7 @@ public class UserController {
 	@GetMapping("FindUserId.html")
     public String findUserIdPage( HttpServletRequest request, ModelMap model ) {
 		
-		model.addAttribute("genToken", userService.getNewGenUnique(request) );
+		model.addAttribute("unique", userService.getNewGenUnique(request) );
 		
         return "User/FindUserId";
     }

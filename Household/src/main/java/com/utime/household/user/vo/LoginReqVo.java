@@ -12,6 +12,6 @@ public class LoginReqVo extends ReqUniqueVo{
 	
 	@Override
 	public String toString() {
-		return "LoginReqVo [id=" + id + ", pw=" + pw.getBytes().length + "bytes, token=" + token + "]";
+		return "LoginReqVo [id=" + id + ", pw=" + (pw==null? 0:pw.getBytes().length) + "bytes, token=" + token + "]";
 	}
 }

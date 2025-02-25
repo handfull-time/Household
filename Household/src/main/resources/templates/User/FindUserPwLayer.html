@@ -71,7 +71,8 @@
                 
                 const requestData = {};
                 requestData.token = /*[[${#item.message}]]*/ null;
-                requestData.pw = await encryptPassword(password);
+                requestData.pw = encryptPassword(password);
+                requestData.rsaId = document.getElementById("rsaId").value;
                 
                 try {
     		        const response = await fetch(/*[[@{/User/ConvertUserPw.json}]]*/ null, {

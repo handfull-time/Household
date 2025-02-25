@@ -262,13 +262,14 @@
         async function saveUser() {
             const formData = new FormData();
             formData.append("id", document.getElementById("id").value);
-            formData.append("pw", await encryptPassword( document.getElementById("password").value) );
+            formData.append("pw", encryptPassword( document.getElementById("password").value) );
             formData.append("birthday", document.getElementById("birthday").value);
             formData.append("nickname", document.getElementById("nickname").value);
             formData.append("myRainbow", document.getElementById("myRainbow").value);
             formData.append("mySeason", document.getElementById("mySeason").value);
             formData.append("myNumber", document.getElementById("myNumber").value);
-            formData.append("token", /*[[${genToken}]]*/ null);
+            formData.append("token", /*[[${unique.token}]]*/ null);
+            formData.append("rsaId", /*[[${unique.rsaId}]]*/ null);
             
             const imageFile = document.getElementById("profileImageInput").files[0];
             if (imageFile) {

@@ -5,15 +5,19 @@ import java.io.IOException;
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.user.vo.FindUserIdResVo;
 import com.utime.household.user.vo.LoginReqVo;
+import com.utime.household.user.vo.ReqUniqueVo;
 import com.utime.household.user.vo.UserReqVo;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface UserService {
 
 	/**
-	 * 로그인 유효성 토큰
+	 * 유효 정보 생성
+	 * @param request
 	 * @return
 	 */
-	String getNewGenToken(String sessionId);
+	ReqUniqueVo getNewGenUnique(HttpServletRequest request);
 
 	/**
 	 * 회원 로그인
@@ -56,5 +60,7 @@ public interface UserService {
 	 * @return
 	 */
 	ReturnBasic convertUserPw(UserReqVo reqVo);
+
+	
 
 }

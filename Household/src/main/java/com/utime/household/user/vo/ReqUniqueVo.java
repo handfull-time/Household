@@ -9,4 +9,6 @@ public class ReqUniqueVo {
 
 	protected String token;
 	protected String sessionId;
+	protected String rsaId;
+	protected String publicKey;
 }

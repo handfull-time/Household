@@ -9,6 +9,9 @@
     <div layout:fragment="content">
     	<div id="requestLayer" class="grid grid-cols-1 gap-4">
 	        <form id="findPwForm" >
+	        	<input type="hidden" id="rsaId" th:value="${unique.rsaId}">
+	        	<input type="hidden" id="token" th:value="${unique.token}">
+	        	
                 <!-- ID -->
                 <div class="flex flex-col w-full"> <!-- ✅ flex-col로 변경하여 세로 정렬 -->
 				    <div class="flex items-center">

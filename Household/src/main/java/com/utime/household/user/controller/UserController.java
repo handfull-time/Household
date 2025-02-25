@@ -33,7 +33,7 @@ public class UserController {
 	@GetMapping("Login.html")
     public String loginPage( HttpServletRequest request, ModelMap model ) {
 		
-		model.addAttribute("genToken", userService.getNewGenToken(request.getRequestedSessionId()) );
+		model.addAttribute("unique", userService.getNewGenUnique(request) );
 		
         return "User/Login";
     }
@@ -47,7 +47,7 @@ public class UserController {
 	@GetMapping("JoinUser.html")
     public String joinUserPage( HttpServletRequest request, ModelMap model ) {
 		
-		model.addAttribute("genToken", userService.getNewGenToken(request.getRequestedSessionId()) );
+		model.addAttribute("unique", userService.getNewGenUnique(request) );
 		
         return "User/JoinUser";
     }
@@ -75,7 +75,7 @@ public class UserController {
 	@GetMapping("FindUserId.html")
     public String findUserIdPage( HttpServletRequest request, ModelMap model ) {
 		
-		model.addAttribute("genToken", userService.getNewGenToken(request.getRequestedSessionId()) );
+		model.addAttribute("genToken", userService.getNewGenUnique(request) );
 		
         return "User/FindUserId";
     }
@@ -101,8 +101,8 @@ public class UserController {
 	@GetMapping("FindUserPw.html")
     public String findUserPwPage( HttpServletRequest request, ModelMap model ) {
 		
-		model.addAttribute("genToken", userService.getNewGenToken(request.getRequestedSessionId()) );
-		
+		model.addAttribute("unique", userService.getNewGenUnique(request) );
+				
         return "User/FindUserPw";
     }
 	

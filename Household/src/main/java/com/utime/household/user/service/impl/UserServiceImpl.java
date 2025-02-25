@@ -1,6 +1,7 @@
 package com.utime.household.user.service.impl;
 
 import java.io.IOException;
+import java.security.KeyPair;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.utime.household.common.jwt.JwtProvider;
 import com.utime.household.common.util.CacheIntervalMap;
 import com.utime.household.common.util.HouseholdUtils;
+import com.utime.household.common.util.RsaEncDec;
 import com.utime.household.common.util.Sha256;
 import com.utime.household.common.vo.HouseholdDefine;
 import com.utime.household.common.vo.ReturnBasic;
@@ -23,6 +25,7 @@ import com.utime.household.user.vo.ReqUniqueVo;
 import com.utime.household.user.vo.UserReqVo;
 import com.utime.household.user.vo.UserVo;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,19 +58,29 @@ class UserServiceImpl implements UserService {
 
 		return result;
 	}
-
+	
 	@Override
-	public String getNewGenToken(String sessionId) {
+	public ReqUniqueVo getNewGenUnique(HttpServletRequest request) {
 		
-		return this.inputInterval( sessionId );
+		final ReqUniqueVo result = new ReqUniqueVo();
+		result.setToken( this.inputInterval( request.getRequestedSessionId() ) );
+		
+		final KeyPair pair = RsaEncDec.generateRSAKeyPair();
+		result.setPublicKey( RsaEncDec.getPulicKeyScript(pair) );
+		result.setRsaId( this.inputInterval( RsaEncDec.getPrivateKey(pair) ) );
+		
+		return result;
 	}
 	
-	private String genPwCheckString( UserReqVo user ) {
-		return Sha256.encrypt(saltKey + user.getMyNumber() + user.getMyRainbow() + user.getMySeason());
+	/**
+	 * 계정 찾기 정보 해싱
+	 * @param user
+	 * @return
+	 */
+	private String genUserUniqueHashing( UserReqVo user ) {
+		return Sha256.encrypt(user.getId() + saltKey + user.getMyNumber() + user.getMyRainbow() + user.getMySeason());
 	}
 
-
-	
 	/**
 	 * 유효성 검사
 	 * @param reqVo
@@ -89,11 +102,35 @@ class UserServiceImpl implements UserService {
 	}
 	
 	/**
+	 * 암호 RSA 복호화
+	 * @param reqVo
+	 * @return
+	 */
+	private boolean convertEncPw( LoginReqVo reqVo ) {
+		
+		final String encPw = reqVo.getPw();
+		if( HouseholdUtils.isEmpty(encPw)) {
+			return true;
+		}
+		
+		final String privateKey = intervalMap.get(reqVo.getRsaId());
+		if( HouseholdUtils.isEmpty(privateKey)) {
+			return false;
+		}
+		
+		final String pw = RsaEncDec.rsaDecode( reqVo.getPw(), privateKey);
+		reqVo.setPw(pw);
+		
+		return true;
+	}
+	
+	/**
 	 * 유효성 검사 키 삭제.
 	 * @param reqVo
 	 */
 	private void validationRemove(ReqUniqueVo reqVo) {
 		this.intervalMap.remove(reqVo.getToken());
+		this.intervalMap.remove(reqVo.getRsaId());
 	}
 
 	@Override
@@ -103,6 +140,9 @@ class UserServiceImpl implements UserService {
 			return new ReturnBasic("E", "");
 		}
 		
+		if( ! this.convertEncPw( reqVo ) ){
+			return new ReturnBasic("E", "");
+		}
 		
 		final UserVo user = userDao.procLogin( reqVo.getId(), reqVo.getPw());
 		if( user == null ) {
@@ -135,6 +175,10 @@ class UserServiceImpl implements UserService {
 			return new ReturnBasic("E", "");
 		}
 		
+		if( ! this.convertEncPw( reqVo ) ){
+			return new ReturnBasic("E", "");
+		}
+		
 		final UserVo user = new UserVo();
 		
 		user.setUserNo(-1L);
@@ -145,7 +189,7 @@ class UserServiceImpl implements UserService {
 		user.setNickname(reqVo.getNickname());
 		user.setBirthday(reqVo.getBirthday().replaceAll("-", ""));
 		user.setRole(EJwtRole.User);
-		user.setPwCheck( this.genPwCheckString(reqVo) );
+		user.setPwCheck( this.genUserUniqueHashing(reqVo) );
 		
 		final ReturnBasic result = new ReturnBasic();
 		try {
@@ -167,7 +211,7 @@ class UserServiceImpl implements UserService {
 		
 		user.setUserNo(-1L);
 		user.setBirthday(reqVo.getBirthday().replaceAll("-", ""));
-		user.setPwCheck( this.genPwCheckString(reqVo) );
+		user.setPwCheck( this.genUserUniqueHashing(reqVo) );
 		
 		final FindUserIdResVo result = new FindUserIdResVo();
 		try {
@@ -200,7 +244,7 @@ class UserServiceImpl implements UserService {
 		
 		user.setUserNo(-1L);
 		user.setId(reqVo.getId());
-		user.setPwCheck( this.genPwCheckString(reqVo) );
+		user.setPwCheck( this.genUserUniqueHashing(reqVo) );
 		
 		final List<UserVo> list = userDao.findUserId(user);
 		if( HouseholdUtils.isEmpty(list) ) {
@@ -224,12 +268,19 @@ class UserServiceImpl implements UserService {
 			return result;
 		}
 		
+		if( ! this.convertEncPw( reqVo ) ){
+			result.setCodeMessage("E", "암호 변경 실패");
+			return result;
+		}
+		
 		try {
 			userDao.convertPw(id, reqVo.getPw());
 		} catch (Exception e) {
 			log.error("", e);
 			result.setCodeMessage("E", e.getMessage());
 		}
+		
+		this.validationRemove(reqVo);
 
 		return result;
 	}

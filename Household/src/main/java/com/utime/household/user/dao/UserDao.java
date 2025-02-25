@@ -51,4 +51,11 @@ public interface UserDao {
 	 * @return
 	 */
 	int convertPw( String id, String pw)throws Exception;
+
+	/**
+	 * ID 해당 사용자 정보 조회
+	 * @param id
+	 * @return
+	 */
+	UserVo getUserFromId(String id);
 }

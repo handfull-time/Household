@@ -28,7 +28,11 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtProvider {
 
     // jwt 만료 시간 1시간
-    private static final long JWT_TOKEN_VALID = (long) 1000 * 60 * 30;
+//    private static final long JWT_TOKEN_VALID = (long) 1000 * 60 * 30;
+    
+    public static final long ACCESS_EXPIRATION_TIME = 15 * 60 * 1000; // 15분
+    public static final long REFRESH_EXPIRATION_TIME = 7 * 24 * 60 * 60 * 1000; // 7일
+    
 
     @Value("${jwt.secret}")
     private String secret;
@@ -134,7 +138,7 @@ public class JwtProvider {
     	final Map<String, Object> claims = new HashMap<>();
     	claims.put(KeyRole, user.getRole());
     	
-		return this.generateAccessToken(user.getId(), claims);
+		return this.generateAccessToken(user, claims);
 	}
 
     /**
@@ -144,8 +148,8 @@ public class JwtProvider {
      * @param claims token 생성 claims
      * @return access token
      */
-    public String generateAccessToken(final String id, final Map<String, Object> claims) {
-        return this.doGenerateAccessToken(id, claims);
+    private String generateAccessToken(final UserVo user, final Map<String, Object> claims) {
+        return this.doGenerateAccessToken(user, claims);
     }
     
     private static final String SECRET_KEY = "4261656C64756E67";
@@ -162,16 +166,17 @@ public class JwtProvider {
      * @param claims token 생성 claims
      * @return access token
      */
-    private String doGenerateAccessToken(final String id, final Map<String, Object> claims) {
+    private String doGenerateAccessToken(final UserVo user, final Map<String, Object> claims) {
     	
     	final long now = System.currentTimeMillis();
     	
     	return Jwts.builder()
-                .subject(id)
+    			.id(user.getId())
+                .subject("" + user.getUserNo())
                 .claims(claims)
                 .issuedAt(new Date(now))
-                .expiration(new Date(now + JWT_TOKEN_VALID))
-                .signWith(this.getSigningKey())
+                .expiration(new Date(now + ACCESS_EXPIRATION_TIME))
+                .signWith(this.getSigningKey(), Jwts.SIG.HS256)
                 .compact(); 
     }
 
@@ -206,9 +211,10 @@ public class JwtProvider {
     	
         return Jwts.builder()
                 .id(id)
+//                .subject(id)
                 .issuedAt(new Date(now))
-                .expiration(new Date(now + (JWT_TOKEN_VALID * 2) * 24)) // 24시간
-                .signWith(key)
+                .expiration(new Date(now + REFRESH_EXPIRATION_TIME)) 
+                .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 

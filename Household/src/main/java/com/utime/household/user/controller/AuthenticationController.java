@@ -4,16 +4,19 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.utime.household.common.jwt.JwtProvider;
 import com.utime.household.common.vo.HouseholdDefine;
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.user.service.UserService;
 import com.utime.household.user.vo.LoginReqVo;
+import com.utime.household.user.vo.TokenPairVo;
 import com.utime.household.user.vo.UserReqVo;
 
 import jakarta.servlet.http.Cookie;
@@ -33,20 +36,33 @@ public class AuthenticationController {
     	
     	reqVo.setSessionId( request.getRequestedSessionId() );
     	
-    	final ReturnBasic result = userService.procLogin(reqVo);
+    	final TokenPairVo result = userService.procLogin(reqVo);
     	
     	if( result.isError() ) {
     		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
     	}
     	
-    	// JWT를 HttpOnly 쿠키로 설정
-    	final Cookie cookie = new Cookie("token", result.getMessage());
-    	cookie.setHttpOnly(true); // JavaScript에서 접근 불가능 (XSS 방지)
-    	//cookie.setSecure(true); // HTTPS에서만 전송 (보안 강화)
-    	cookie.setPath("/"); // 모든 경로에서 접근 가능
-    	cookie.setMaxAge(60 * 60 * 24); // 1일 동안 유지
+    	{
+    		// access token
+        	final Cookie cookie = new Cookie("accessToken", result.getAccessToken());
+        	cookie.setHttpOnly(true); // JavaScript에서 접근 불가능 (XSS 방지)
+        	//cookie.setSecure(true);
+        	cookie.setPath(request.getContextPath()); 
+        	cookie.setMaxAge( (int)(JwtProvider.ACCESS_EXPIRATION_TIME / 1000L));
+        	
+        	response.addCookie(cookie);
+    	}
     	
-    	response.addCookie(cookie); // 쿠키 추가
+    	{
+    		// refresh token
+        	final Cookie cookie = new Cookie("refreshToken", result.getRefreshToken());
+        	cookie.setHttpOnly(true); // JavaScript에서 접근 불가능 (XSS 방지)
+        	//cookie.setSecure(true);
+        	cookie.setPath(request.getContextPath() + "/Auth/Refresh");
+        	cookie.setMaxAge( (int)(JwtProvider.REFRESH_EXPIRATION_TIME / 1000L));
+        	
+        	response.addCookie(cookie);
+    	}
     	
     	String url;
     	final Object obj = request.getSession().getAttribute(HouseholdDefine.KeyBeforeUri);
@@ -61,6 +77,19 @@ public class AuthenticationController {
     	
     	return ResponseEntity.ok().body(result);
     }
+    
+    @PostMapping("Refresh")
+    public ResponseEntity<?> refreshAccessToken(@CookieValue("refreshToken") String refreshToken) {
+    	
+    	final ReturnBasic result = userService.refreshAccessToken(refreshToken);
+    	
+    	if( result.isError() ) {
+    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", result.getMessage()));
+    	}
+    	
+    	return ResponseEntity.ok().body(result);
+    }
+
     
     /**
 	 * 회원 가입

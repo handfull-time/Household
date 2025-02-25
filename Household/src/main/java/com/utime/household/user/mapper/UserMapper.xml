@@ -96,7 +96,7 @@
 		SELECT 
 			<include refid="UserColumnSql" /> 
 		FROM HH_USER
-		WHERE ID = #{id} 
+		WHERE ID = #{id} AND ENABLED = 'Y'
 	</select>
 	
 	<!-- 회원 번호로 조회 -->
@@ -104,7 +104,7 @@
 		SELECT 
 			<include refid="UserColumnSql" /> 
 		FROM HH_USER
-		WHERE NO = #{userNo} 
+		WHERE NO = #{userNo} AND ENABLED = 'Y'
 	</select>
 	
 	<!-- 비번 찾기에서 유효한 정보 조회 -->

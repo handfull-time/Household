@@ -102,6 +102,11 @@ class UserDaoImpl implements UserDao{
 		return result;
 	}
 	
+	@Override
+	public UserVo getUserFromId(String id) {
+		
+		return userMapper.getUserFromId(id);
+	}
 	
 	@Override
 	public int updateUser(UserVo user) throws Exception {

@@ -6,12 +6,20 @@ import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.user.vo.FindUserIdResVo;
 import com.utime.household.user.vo.LoginReqVo;
 import com.utime.household.user.vo.ReqUniqueVo;
+import com.utime.household.user.vo.TokenPairVo;
 import com.utime.household.user.vo.UserReqVo;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface UserService {
 
+	/**
+	 * 
+	 * @param refreshToken
+	 * @return
+	 */
+	ReturnBasic refreshAccessToken(String refreshToken);
+	
 	/**
 	 * 유효 정보 생성
 	 * @param request
@@ -24,7 +32,7 @@ public interface UserService {
 	 * @param reqVo
 	 * @return
 	 */
-	ReturnBasic procLogin(LoginReqVo reqVo);
+	TokenPairVo procLogin(LoginReqVo reqVo);
 
 	/**
 	 * 회원 가입
@@ -60,6 +68,7 @@ public interface UserService {
 	 * @return
 	 */
 	ReturnBasic convertUserPw(UserReqVo reqVo);
+
 
 	
 

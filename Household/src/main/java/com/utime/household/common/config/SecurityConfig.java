@@ -39,7 +39,6 @@ public class SecurityConfig {
     	
     	// white list (Spring Security 체크 제외 목록)
         final MvcRequestMatcher[] permitAllWhiteList = {
-//        	mvc.pattern("/Home.html"),
         	mvc.pattern("/Auth/**"),
         	mvc.pattern("/User/**"),
             mvc.pattern("/View/**"),
@@ -50,7 +49,6 @@ public class SecurityConfig {
             mvc.pattern("/html/**"),
             mvc.pattern("/images/**")
         };
-	
 	
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(permitAllWhiteList).permitAll()

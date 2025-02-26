@@ -20,6 +20,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,6 +66,11 @@ public class JwtProvider {
         if (headerToken != null && headerToken.startsWith(KeyTokenStarter)) {
         	log.info(headerToken);
         	result = headerToken.substring(LenTokenStarter);
+        }else {
+        	final Cookie[] cookies = request.getCookies();
+        	if( cookies != null ) {
+        		//TODO 토큰 획득.
+        	}
         }
         
         return result;

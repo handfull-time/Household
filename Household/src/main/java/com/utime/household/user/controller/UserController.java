@@ -81,7 +81,7 @@ public class UserController {
     }
 	
 	@PostMapping("FindUserId.layer")
-    public String findUserId( HttpServletRequest request, ModelMap model, UserReqVo reqVo ) {
+    public String findUserIdLayer( HttpServletRequest request, ModelMap model, UserReqVo reqVo ) {
 		
 		reqVo.setSessionId( request.getRequestedSessionId() );
 		
@@ -113,7 +113,7 @@ public class UserController {
 	 * @return
 	 */
 	@PostMapping("FindUserPw.layer")
-    public String findUserPw( HttpServletRequest request, ModelMap model, UserReqVo reqVo ) {
+    public String findUserPwLayer( HttpServletRequest request, ModelMap model, UserReqVo reqVo ) {
 		
 		reqVo.setSessionId( request.getRequestedSessionId() );
 		

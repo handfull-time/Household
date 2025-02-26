@@ -6,8 +6,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import com.utime.household.common.vo.ApiResponse;
-import com.utime.household.common.vo.ApiResponseType;
 import com.utime.household.common.vo.HouseholdDefine;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +19,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
     	
-        log.info( authException.getMessage() + " " + request.getRequestURL());
+        log.warn( authException.getMessage() + " " + request.getRequestURL());
         
         final String contextPath = request.getContextPath();
         final String requestUri = request.getRequestURI();

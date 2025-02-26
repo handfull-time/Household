@@ -28,14 +28,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtUtil;
     
-//    @Override
-//    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-//        String path = request.getRequestURI();
-//        return path.startsWith("/auth/login") || 
-//               path.startsWith("/js/") || 
-//               path.startsWith("/images/") || 
-//               path.startsWith("/css/");
-//    }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return path.startsWith("/error/") || 
+        		path.startsWith("/js/") ||
+        		path.startsWith("/css/") ||
+        		path.startsWith("/favicon.ico") ||
+        		path.startsWith("/html/") ||
+        		path.startsWith("/images/") ||
+        		path.startsWith("/Auth/");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -43,23 +46,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     	
     	final String userToken = jwtUtil.getAuthToken( request );
     
-    	if( userToken != null) {
-    		log.info(userToken);
-            if (jwtUtil.validateToken(userToken)) {
-                final String userId = jwtUtil.getUsernameFromToken(userToken);
-                
-                //token 검증 완료 후 SecurityContextHolder 내 인증 정보가 없는 경우 저장
-                if( HouseholdUtils.isNotEmpty( userId ) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                	log.info("Authentication 설정");
-                	final Authentication authToken = new UsernamePasswordAuthenticationToken(userId, 
-                            null,
-                            Collections.singleton(new SimpleGrantedAuthority("roleName"))
-                    );
-            	
-                	SecurityContextHolder.getContext().setAuthentication( authToken );
-                }
-            }
+    	if( userToken == null) {
+    		filterChain.doFilter(request, response);
+    		return;
     	}
+    	
+		log.info(userToken);
+        if (! jwtUtil.validateToken(userToken)) {
+        	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 Unauthorized 응답
+            return;
+        }
+        	
+        final String userId = jwtUtil.getUsernameFromToken(userToken);
+        
+        //token 검증 완료 후 SecurityContextHolder 내 인증 정보가 없는 경우 저장
+        if( HouseholdUtils.isNotEmpty( userId ) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        	log.info("Authentication 설정");
+        	final Authentication authToken = new UsernamePasswordAuthenticationToken(userId, 
+                    null,
+                    Collections.singleton(new SimpleGrantedAuthority("roleName"))
+            );
+    	
+        	SecurityContextHolder.getContext().setAuthentication( authToken );
+        }
 
         filterChain.doFilter(request, response);
     }

@@ -40,9 +40,8 @@
 	    document.getElementById("pwSelectForm").addEventListener("submit", async function(event) {
             event.preventDefault();
             
-            const pwFindRes = /*[[${#item.code eq '0'}]]*/ false;
-            
-            if( pwFindRes ){
+            if( /*[[${item.code eq '0'}]]*/ false ){
+            	
             	const password = document.getElementById("password").value;
                 const confirmPassword = document.getElementById("confirmPassword").value;
                 const passwordError = document.getElementById("passwordError");
@@ -69,16 +68,16 @@
                     confirmPasswordError.classList.add("hidden");
                 }
                 
-                const requestData = {};
-                requestData.token = /*[[${#item.message}]]*/ null;
-                requestData.pw = encryptPassword(password);
-                requestData.rsaId = document.getElementById("rsaId").value;
+                const formData = new FormData();
+                formData.append("token", /*[[${item.message}]]*/ null);
+                formData.append("pw", encryptPassword(password));
+                formData.append("rsaId", document.getElementById("rsaId").value);
                 
                 try {
-    		        const response = await fetch(/*[[@{/User/ConvertUserPw.json}]]*/ null, {
+    		        const response = await fetch(/*[[@{/Auth/ConvertUserPw.json}]]*/ null, {
     		            method: "POST",
-    		            headers: { "Content-Type": "application/json" },
-    		            body: JSON.stringify(requestData),
+    		            //headers: { "Content-Type": "application/json" },
+    		            body: formData,
     		            credentials: "include"
     		        });
     		

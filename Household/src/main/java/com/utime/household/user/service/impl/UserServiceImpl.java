@@ -264,7 +264,7 @@ class UserServiceImpl implements UserService {
 			if( HouseholdUtils.isNotEmpty(list) ) {
 				for( UserVo item : list) {
 					final String id = item.getId();
-					item.setId( "*" + id.substring(1, id.length()-2) + "**" );
+					item.setId( id.substring(0, id.length()-2) + "**" );
 					final String nickname = item.getNickname();
 					item.setNickname( nickname.substring(0,  nickname.length()-1) + "*" );
 				}

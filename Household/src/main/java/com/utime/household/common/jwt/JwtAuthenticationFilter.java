@@ -13,6 +13,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.common.vo.WhiteAddressList;
+import com.utime.household.user.dao.UserDao;
+import com.utime.household.user.vo.UserVo;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtUtil;
+    
+    private final UserDao userDao;
     
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -60,11 +64,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         //token 검증 완료 후 SecurityContextHolder 내 인증 정보가 없는 경우 저장
         if( HouseholdUtils.isNotEmpty( userId ) && SecurityContextHolder.getContext().getAuthentication() == null) {
         	log.info("Authentication 설정");
-        	final Authentication authToken = new UsernamePasswordAuthenticationToken(userId, 
+        	
+        	final UserVo user = userDao.getUserFromIdDetail(userId);
+        	
+        	final Authentication authToken = new UsernamePasswordAuthenticationToken(user, 
                     null,
-                    Collections.singleton(new SimpleGrantedAuthority("roleName"))
+                    Collections.singleton(new SimpleGrantedAuthority(user.getRole().name()))
             );
-    	
+        	
         	SecurityContextHolder.getContext().setAuthentication( authToken );
         }
 

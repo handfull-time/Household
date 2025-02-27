@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.user.service.UserService;
 import com.utime.household.user.vo.FindUserIdResVo;
@@ -83,7 +84,7 @@ public class UserController {
 	@PostMapping("FindUserId.layer")
     public String findUserIdLayer( HttpServletRequest request, ModelMap model, UserReqVo reqVo ) {
 		
-		reqVo.setSessionId( request.getRequestedSessionId() );
+		reqVo.setSessionId( HouseholdUtils.getRemoteAddress( request ) );
 		
 		final FindUserIdResVo result = userService.findUserId(reqVo);
 		
@@ -115,7 +116,7 @@ public class UserController {
 	@PostMapping("FindUserPw.layer")
     public String findUserPwLayer( HttpServletRequest request, ModelMap model, UserReqVo reqVo ) {
 		
-		reqVo.setSessionId( request.getRequestedSessionId() );
+		reqVo.setSessionId( HouseholdUtils.getRemoteAddress( request ) );
 		
 		final ReturnBasic result = userService.findUserPw(reqVo);
 		

@@ -102,7 +102,7 @@ class UserServiceImpl implements UserService {
 	public ReqUniqueVo getNewGenUnique(HttpServletRequest request) {
 		
 		final ReqUniqueVo result = new ReqUniqueVo();
-		result.setToken( this.inputInterval( request.getRequestedSessionId() ) );
+		result.setToken( this.inputInterval( HouseholdUtils.getRemoteAddress( request ) ) );
 		
 		final KeyPair pair = RsaEncDec.generateRSAKeyPair();
 		result.setPublicKey( RsaEncDec.getPulicKeyScript(pair) );
@@ -126,9 +126,15 @@ class UserServiceImpl implements UserService {
 	 * @return true: 옳은 데이터
 	 */
 	private boolean validation(ReqUniqueVo reqVo) {
-		String sessionId = intervalMap.get(reqVo.getToken());
+		final String key = reqVo.getToken();
+		if( key == null ) {
+			log.warn("interval Key 없음: {} ", key );
+			return false;
+		}
+		
+		String sessionId = intervalMap.get(key);
 		if( sessionId == null ) {
-			log.warn("interval Key 없음: {} ", reqVo.getToken() );
+			log.warn("interval Key-value 없음: {} ", reqVo.getToken() );
 			return false;
 		}
 		

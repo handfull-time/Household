@@ -1,17 +1,24 @@
 package com.utime.household.common.config;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.AsyncHandlerInterceptor;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+
+import com.utime.household.common.vo.WhiteAddressList;
 
 import jakarta.annotation.Resource;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
@@ -45,6 +52,17 @@ public class ViewResolverConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(this.userArgument);
+    }
+    
+    @Resource(name="ViewInterceptor")
+	private AsyncHandlerInterceptor viewInterceptor;
+    
+    @Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		
+    	final List<String> patterns = Arrays.stream(WhiteAddressList.AddressList).map(path -> path.endsWith("/") ? path + "**" : path ).toList();
+		
+		registry.addInterceptor( this.viewInterceptor ).excludePathPatterns(patterns).addPathPatterns("/**/*.html");
     }
     
 	@Bean

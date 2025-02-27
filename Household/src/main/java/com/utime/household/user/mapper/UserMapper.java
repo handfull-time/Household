@@ -73,4 +73,11 @@ public interface UserMapper {
 	 */
 	long getUserAndPw(@Param("id") String id, @Param("pw") String pw);
 
+	/**
+	 * 사용자 상세
+	 * @param id
+	 * @return
+	 */
+	UserVo getUserFromIdDetail(@Param("id") String id);
+
 }

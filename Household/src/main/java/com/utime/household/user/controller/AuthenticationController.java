@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.utime.household.common.jwt.JwtProvider;
+import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.common.vo.HouseholdDefine;
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.user.service.UserService;
@@ -35,7 +36,7 @@ public class AuthenticationController {
     @PostMapping("Login.json")
     public ResponseEntity<?> login( HttpServletRequest request, HttpServletResponse response, @RequestBody LoginReqVo reqVo) throws Exception {
     	
-    	reqVo.setSessionId( request.getRequestedSessionId() );
+    	reqVo.setSessionId( HouseholdUtils.getRemoteAddress( request ) );
     	
     	final TokenPairVo result = userService.procLogin(reqVo);
     	
@@ -104,7 +105,7 @@ public class AuthenticationController {
 	@PostMapping("JoinUser.json")
     public ResponseEntity<?> login( HttpServletRequest request, @ModelAttribute UserReqVo reqVo) throws Exception {
     	
-    	reqVo.setSessionId( request.getRequestedSessionId() );
+    	reqVo.setSessionId( HouseholdUtils.getRemoteAddress( request ) );
     	
     	final ReturnBasic result = userService.joinUser(reqVo);
     	
@@ -124,7 +125,7 @@ public class AuthenticationController {
 	@PostMapping("ConvertUserPw.json")
     public ResponseEntity<ReturnBasic> convertUserPw( HttpServletRequest request, UserReqVo reqVo )throws Exception {
 		
-		reqVo.setSessionId( request.getRequestedSessionId() );
+		reqVo.setSessionId( HouseholdUtils.getRemoteAddress( request ) );
 		
 		final ReturnBasic result = userService.convertUserPw(reqVo);
     	

@@ -14,6 +14,9 @@
     </th:block>
 
     <div layout:fragment="content">
+
+    	<div th:id="${user.id}">ttt</div>
+	    <img th:src="${user.image}" alt="PNG 이미지">
 	    <img th:src="@{/View/image(filename='logo.png')}" alt="PNG 이미지">
 	    <!-- <img th:src="@{/image(filename='logo.jpg')}" alt="JPG 이미지">
 	    <img th:src="@{/image(filename='undraw_profile_1.svg')}" alt="SVG 이미지"> -->

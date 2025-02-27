@@ -58,4 +58,11 @@ public interface UserDao {
 	 * @return
 	 */
 	UserVo getUserFromId(String id);
+	
+	/**
+	 * 사용자 상세 
+	 * @param id
+	 * @return
+	 */
+	UserVo getUserFromIdDetail(String id);
 }

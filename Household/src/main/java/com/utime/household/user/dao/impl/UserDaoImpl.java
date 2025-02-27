@@ -142,4 +142,10 @@ class UserDaoImpl implements UserDao{
 	public List<UserVo> findUserId(UserVo user) {
 		return userMapper.getUserFromCheck(user);
 	}
+	
+	@Override
+	public UserVo getUserFromIdDetail(String id) {
+		
+		return userMapper.getUserFromIdDetail(id);
+	}
 }

@@ -118,7 +118,6 @@ class LoggingAspect {
 		{
 			// Header log
 			paramStrBuffer.append(Headers);
-	        paramStrBuffer.append("\tX-POPA:" + req.getHeader("x-popa")).append(lineSepretor);
 	        paramStrBuffer.append("\tAUTHORIZATION:" + req.getHeader("authorization")).append(lineSepretor);
 	        paramStrBuffer.append("\tUSER-AGENT:" + req.getHeader("user-agent")).append(lineSepretor);
 		}

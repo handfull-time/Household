@@ -83,9 +83,6 @@
 	
 	<sql id="UserColumnSql">
 		NO
-		, REG_DATE
-		, UPDATE_DATE
-		, ENABLED
 		, ID
 		, ROLE
 		, NICKNAME
@@ -135,6 +132,19 @@
 		    		AND PW = #{pw, typeHandler=com.utime.household.user.typeHandler.PasswordEncoderTypeHandler}
     		), 
     	-1 ) AS NO;
+	</select>
+	
+	<!-- 사용자 상세 -->
+	<select id="getUserFromIdDetail">
+		SELECT 
+			<include refid="UserColumnSql" />
+			,REG_DATE 
+			,UPDATE_DATE
+			,IMAGE
+		FROM HH_USER
+		WHERE 1=1
+			AND ENABLED = 'Y'
+			AND ID = #{id}
 	</select>
 	
 </mapper>

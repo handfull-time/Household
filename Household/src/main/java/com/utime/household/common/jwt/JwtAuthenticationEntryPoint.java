@@ -21,11 +21,11 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     	
         log.warn( authException.getMessage() + " " + request.getRequestURL());
         
-        final String contextPath = request.getContextPath();
+//        final String contextPath = request.getContextPath();
         final String requestUri = request.getRequestURI();
-        final String beforeUri = requestUri.substring(contextPath.length());
+//        final String beforeUri = requestUri.substring(contextPath.length());
         
-		request.getSession().setAttribute(HouseholdDefine.KeyBeforeUri, beforeUri);
+		request.getSession().setAttribute(HouseholdDefine.KeyBeforeUri, requestUri);
         
         // 인증되지 않은 사용자가 보호된 페이지에 접근하면 로그인 페이지로 리디렉트
         response.sendRedirect(request.getContextPath() + "/User/Login.html");

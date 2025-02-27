@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
@@ -84,13 +85,13 @@ class CustomErrorController implements ErrorController {
         	json.put("message", info.message);
         	json.put("requestUri", info.requestUri);
     		
-        	result = new ModelAndView("jsonView", json);
+        	result = new ModelAndView( new MappingJackson2JsonView() );
+        	result.addAllObjects(json);
 
         } else {
     		response.setContentType("text/html; charset=UTF-8");
     		
-    		result = new ModelAndView();
-    		result.setViewName("Common/Error");
+    		result = new ModelAndView("Common/Error");
     		result.getModelMap().addAttribute("errorMessage", e.getMessage());
         }
         

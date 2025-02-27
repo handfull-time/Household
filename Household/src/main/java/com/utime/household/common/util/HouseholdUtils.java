@@ -1,12 +1,15 @@
 package com.utime.household.common.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
@@ -142,4 +145,53 @@ private static final String UnknownIp = "unknown";
         }
         return file.getBytes();
     }
+	
+	public static String encodeImageToBase64(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            return null; 
+        }
+        
+        final InputStream inputStream = file.getInputStream();
+
+        // 파일 헤더 분석하여 MIME 타입 판별
+        final String contentType = HouseholdUtils.detectImageType(inputStream);
+        if (contentType == null) {
+            throw new IOException("Unsupported file format: " + file.getOriginalFilename());
+        }
+
+        // Base64로 변환
+        final byte[] imageBytes = StreamUtils.copyToByteArray(inputStream);
+        final String base64 = Base64.getEncoder().encodeToString(imageBytes);
+
+        return "data:" + contentType + ";base64," + base64;
+    }
+	
+
+    private static String detectImageType(InputStream inputStream) throws IOException {
+        byte[] header = new byte[8];
+        int bytesRead = inputStream.read(header);
+        if (bytesRead < 4) return null;
+
+        if (header[0] == (byte) 0xFF && header[1] == (byte) 0xD8 &&
+            header[2] == (byte) 0xFF && header[3] == (byte) 0xE0) {
+            return "image/jpeg";
+        }
+
+        if (bytesRead >= 8 &&
+            header[0] == (byte) 0x89 && header[1] == (byte) 0x50 &&
+            header[2] == (byte) 0x4E && header[3] == (byte) 0x47 &&
+            header[4] == (byte) 0x0D && header[5] == (byte) 0x0A &&
+            header[6] == (byte) 0x1A && header[7] == (byte) 0x0A) {
+            return "image/png";
+        }
+
+        if (header[0] == (byte) 0x3C && header[1] == (byte) 0x3F &&
+            header[2] == (byte) 0x78 && header[3] == (byte) 0x6D &&
+            header[4] == (byte) 0x6C) {
+            return "image/svg+xml";
+        }
+
+        return null;
+    }
+	
 }

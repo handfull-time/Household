@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{TestView/LayoutMain}">
+    
+    <th:block layout:fragment="title">
+    	메뉴-A-10 이미지
+    </th:block>
+    
+    <th:block layout:fragment="css">
+    </th:block>
+    
+    <th:block layout:fragment="script">
+    </th:block>
+
+    <div layout:fragment="content">
+	    <img th:src="@{/View/image(filename='logo.png')}" alt="PNG 이미지">
+	    <!-- <img th:src="@{/image(filename='logo.jpg')}" alt="JPG 이미지">
+	    <img th:src="@{/image(filename='undraw_profile_1.svg')}" alt="SVG 이미지"> -->
+    </div>
+</html>
+
+
+
+
+
+
+
+

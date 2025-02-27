@@ -10,7 +10,7 @@ import lombok.ToString;
 
 @Setter
 @Getter
-@ToString
+@ToString(exclude = {"pw", "image"})
 public class UserVo {
 	private long userNo;
 	private Date regDate;
@@ -19,7 +19,7 @@ public class UserVo {
 	private String id;
 	@JsonIgnore
 	private String pw;
-	private byte [] imageBytes;
+	private String image;
 	private String nickname;
 	private String birthday;
 	private EJwtRole role;

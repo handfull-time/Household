@@ -11,6 +11,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.utime.household.common.vo.HouseholdDefine;
 import com.utime.household.user.vo.UserVo;
 
 import io.jsonwebtoken.Claims;
@@ -69,7 +70,12 @@ public class JwtProvider {
         }else {
         	final Cookie[] cookies = request.getCookies();
         	if( cookies != null ) {
-        		//TODO 토큰 획득.
+        		for( Cookie cookie : cookies ) {
+        			if( HouseholdDefine.KeyAccessToken.equals( cookie.getName() ) ){
+        				result = cookie.getValue();
+        				break;
+        			}
+        		}
         	}
         }
         

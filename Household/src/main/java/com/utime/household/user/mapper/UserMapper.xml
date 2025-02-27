@@ -15,7 +15,7 @@
 			, ROLE TEXT(12) NOT NULL <!-- 권한 -->
 			, NICKNAME TEXT(32) NOT NULL <!-- 별명 -->
 			, BIRTHDAY TEXT(8) NOT NULL <!-- 생년월일 YYYYMMDD -->
-			, IMAGE BLOB DEFAULT NULL <!-- 이미지 -->
+			, IMAGE TEXT DEFAULT NULL <!-- 이미지 -->
 			, PW_CHECK TEXT(64) NOT NULL <!-- 계정/패스워드 찾기 정보 -->
 		)
 	</insert>
@@ -29,7 +29,7 @@
 			, ROLE
 			, NICKNAME 
 			, BIRTHDAY
-			<if test="imageBytes != null ">, IMAGE </if> 
+			<if test="image != null ">, IMAGE </if> 
 			, PW_CHECK
 		) VALUES (
 			DATETIME('NOW','LOCALTIME')
@@ -38,7 +38,7 @@
 			, #{role}
 			, #{nickname}
 			, #{birthday}
-			<if test="imageBytes != null ">, #{imageBytes} </if>
+			<if test="image != null ">, #{image} </if>
 			, #{pwCheck}
 		)
 	</insert>
@@ -68,7 +68,7 @@
 		<result column="ENABLED" property="enabled" typeHandler="com.utime.household.common.handler.BooleanTypeHandler" />
 		<result column="ID" property="id" />
 		<result column="ROLE" property="role" />
-		<result column="IMAGE" property="imageBytes" />
+		<result column="IMAGE" property="image" />
 		<result column="NICKNAME" property="nickname" />
 	</resultMap>
 	

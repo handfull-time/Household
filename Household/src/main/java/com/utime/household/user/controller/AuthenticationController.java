@@ -44,7 +44,7 @@ public class AuthenticationController {
     	
     	{
     		// access token
-        	final Cookie cookie = new Cookie("accessToken", result.getAccessToken());
+        	final Cookie cookie = new Cookie(HouseholdDefine.KeyAccessToken, result.getAccessToken());
         	cookie.setHttpOnly(true); // JavaScript에서 접근 불가능 (XSS 방지)
         	//cookie.setSecure(true);
         	cookie.setPath(request.getContextPath()); 
@@ -55,7 +55,7 @@ public class AuthenticationController {
     	
     	{
     		// refresh token
-        	final Cookie cookie = new Cookie("refreshToken", result.getRefreshToken());
+        	final Cookie cookie = new Cookie(HouseholdDefine.KeyRefreshToken, result.getRefreshToken());
         	cookie.setHttpOnly(true); // JavaScript에서 접근 불가능 (XSS 방지)
         	//cookie.setSecure(true);
         	cookie.setPath(request.getContextPath() + "/Auth/Refresh");
@@ -79,7 +79,7 @@ public class AuthenticationController {
     }
     
     @PostMapping("Refresh")
-    public ResponseEntity<?> refreshAccessToken(@CookieValue("refreshToken") String refreshToken) {
+    public ResponseEntity<?> refreshAccessToken(@CookieValue(HouseholdDefine.KeyRefreshToken) String refreshToken) {
     	
     	final ReturnBasic result = userService.refreshAccessToken(refreshToken);
     	

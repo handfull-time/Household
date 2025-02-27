@@ -14,7 +14,6 @@ import com.utime.household.common.util.CacheIntervalMap;
 import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.common.util.RsaEncDec;
 import com.utime.household.common.util.Sha256;
-import com.utime.household.common.vo.HouseholdDefine;
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.user.dao.UserDao;
 import com.utime.household.user.service.UserService;
@@ -228,7 +227,7 @@ class UserServiceImpl implements UserService {
 		user.setEnabled(true);
 		user.setId(reqVo.getId());
 		user.setPw(reqVo.getPw());
-		user.setImageBytes(HouseholdUtils.convertMultipartFileToByteArray(reqVo.getImage()));
+		user.setImage(HouseholdUtils.encodeImageToBase64(reqVo.getImage()));
 		user.setNickname(reqVo.getNickname());
 		user.setBirthday(reqVo.getBirthday().replaceAll("-", ""));
 		user.setRole(EJwtRole.User);

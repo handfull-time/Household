@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.utime.household.common.util.HouseholdUtils;
+import com.utime.household.common.vo.WhiteAddressList;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,14 +31,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();
-        return path.startsWith("/error/") || 
-        		path.startsWith("/js/") ||
-        		path.startsWith("/css/") ||
-        		path.startsWith("/favicon.ico") ||
-        		path.startsWith("/html/") ||
-        		path.startsWith("/images/") ||
-        		path.startsWith("/Auth/");
+    	 
+    	final String path = request.getRequestURI().substring(request.getContextPath().length());
+
+    	return WhiteAddressList.whiteListPaths.stream().anyMatch(path::startsWith);
     }
 
     @Override
@@ -53,7 +50,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     	
 		log.info(userToken);
         if (! jwtUtil.validateToken(userToken)) {
-        	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 Unauthorized 응답
+        	// 401 Unauthorized 응답
+        	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
             return;
         }
         	

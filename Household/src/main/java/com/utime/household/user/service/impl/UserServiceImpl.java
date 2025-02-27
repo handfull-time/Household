@@ -82,6 +82,11 @@ class UserServiceImpl implements UserService {
 	 * @return 추가 key
 	 */
 	private String inputInterval( String value ) {
+		
+		if( value == null ) {
+			return null;
+		}
+		
 		final UUID guid = UUID.randomUUID();
 		 
 		final String result = guid.toString();

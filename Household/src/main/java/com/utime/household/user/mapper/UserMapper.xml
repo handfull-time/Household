@@ -55,8 +55,8 @@
 		UPDATE HH_USER SET
 			UPDATE_DATE = DATETIME('NOW','LOCALTIME')
 			, ENABLED = #{enabled, typeHandler=com.utime.household.common.handler.BooleanTypeHandler}
-			<if test="nickname != null and nickname != ''">	, NICKNAME = #{nickname} </if>
-			<if test="imageBytes != null ">	, IMAGE = #{imageBytes} </if> 
+			<if test="nickname != null and nickname != ''">, NICKNAME = #{nickname} </if>
+			<if test="image != null ">, IMAGE = #{image} </if> 
 			<if test="pwCheck != null and pwCheck != ''">, PW_CHECK = #{pwCheck}</if>
 		WHERE NO = #{userNo}
 	</update>

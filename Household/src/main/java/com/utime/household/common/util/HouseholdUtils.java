@@ -153,32 +153,33 @@ private static final String UnknownIp = "unknown";
         
         final InputStream inputStream = file.getInputStream();
 
+        final byte[] imageBytes = StreamUtils.copyToByteArray(inputStream);
+        if( imageBytes == null || imageBytes.length < 10 ) {
+        	return null;
+        }
+        
+
         // 파일 헤더 분석하여 MIME 타입 판별
-        final String contentType = HouseholdUtils.detectImageType(inputStream);
+        final String contentType = HouseholdUtils.detectImageType(imageBytes);
         if (contentType == null) {
             throw new IOException("Unsupported file format: " + file.getOriginalFilename());
         }
 
         // Base64로 변환
-        final byte[] imageBytes = StreamUtils.copyToByteArray(inputStream);
         final String base64 = Base64.getEncoder().encodeToString(imageBytes);
 
         return "data:" + contentType + ";base64," + base64;
     }
 	
 
-    private static String detectImageType(InputStream inputStream) throws IOException {
-        byte[] header = new byte[8];
-        int bytesRead = inputStream.read(header);
-        if (bytesRead < 4) return null;
-
+    private static String detectImageType(byte[] header) throws IOException {
+    	
         if (header[0] == (byte) 0xFF && header[1] == (byte) 0xD8 &&
             header[2] == (byte) 0xFF && header[3] == (byte) 0xE0) {
             return "image/jpeg";
         }
 
-        if (bytesRead >= 8 &&
-            header[0] == (byte) 0x89 && header[1] == (byte) 0x50 &&
+        if (header[0] == (byte) 0x89 && header[1] == (byte) 0x50 &&
             header[2] == (byte) 0x4E && header[3] == (byte) 0x47 &&
             header[4] == (byte) 0x0D && header[5] == (byte) 0x0A &&
             header[6] == (byte) 0x1A && header[7] == (byte) 0x0A) {

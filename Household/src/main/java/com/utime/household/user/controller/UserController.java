@@ -126,5 +126,12 @@ public class UserController {
     	return "User/FindUserPwLayer";
     }
 
-
+	
+	@GetMapping("Profile.layer")
+    public String ProfileLayer( ModelMap model, UserVo user ) {
+		
+		model.addAttribute("user", user);
+		
+        return "User/ProfileLayer";
+    }
 }

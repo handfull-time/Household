@@ -10,14 +10,21 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.utime.household.common.jwt.JwtProvider;
+import com.utime.household.user.dao.UserDao;
 import com.utime.household.user.vo.UserVo;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Component("UserArgument")
 public class UserArgumentResolver implements HandlerMethodArgumentResolver{
 
+	private final JwtProvider jwtUtil;
+    
+    private final UserDao userDao;
+    
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		return parameter.getParameterType().equals(UserVo.class);
@@ -29,11 +36,20 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver{
 		
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		final Object result;
+		Object result = null;
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
         	result = authentication.getPrincipal();
         }else {
-        	result = null;
+        	final String userToken = jwtUtil.getAuthToken( webRequest.getNativeRequest(HttpServletRequest.class) );
+            
+        	if( userToken != null) {
+        	
+	            if (jwtUtil.validateToken(userToken)) {
+	            	final String userId = jwtUtil.getUsernameFromToken(userToken);
+	            	
+	            	result = userDao.getUserFromIdDetail(userId);
+	            }
+        	}
         }
         
         return result;

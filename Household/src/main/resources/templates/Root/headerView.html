@@ -68,12 +68,23 @@
     userMenu.addEventListener("click", function (event) {
         let target = event.target.closest(".menuItem");
 
-        if (!target) return; // 버튼이 아닌 다른 곳 클릭 시 무시
+     	// 버튼이 아닌 다른 곳 클릭 시 무시
+        if (!target) return;
+     	
+     	const targetTxt = target.innerText.trim();
 
-        if (target.innerText.trim() === "Profile") {
+        if ( targetTxt === "Profile") {
             console.log("Profile Clicked");
             // 여기에 프로필 페이지 이동 로직 추가 가능
-        } else if (target.innerText.trim() === "Logout") {
+            const sendValue = {
+			        url: /*[[@{/User/Profile.layer}]]*/ null,
+					method: MethodType.Get, 
+			        width: '600px'
+			    };
+			
+			openPopup(sendValue);
+            
+        } else if (targetTxt === "Logout") {
             console.log("Logout Clicked");
             showCustomConfirm('로그아웃하시겠습니까?', async (isConfirm) => {
             	

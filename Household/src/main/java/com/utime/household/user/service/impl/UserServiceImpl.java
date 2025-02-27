@@ -176,7 +176,7 @@ class UserServiceImpl implements UserService {
 	public TokenPairVo procLogin(LoginReqVo reqVo) {
 		
 		final TokenPairVo result = new TokenPairVo();
-		
+
 		if( ! this.validation(reqVo) ) {
 			result.setCodeMessage("E", "");
 			return result;

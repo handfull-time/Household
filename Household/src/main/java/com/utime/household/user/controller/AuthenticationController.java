@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,12 +43,14 @@ public class AuthenticationController {
     		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
     	}
     	
+    	final String contextPath = request.getContextPath();
+    	
     	{
     		// access token
         	final Cookie cookie = new Cookie(HouseholdDefine.KeyAccessToken, result.getAccessToken());
         	cookie.setHttpOnly(true); // JavaScript에서 접근 불가능 (XSS 방지)
         	//cookie.setSecure(true);
-        	cookie.setPath(request.getContextPath()); 
+        	cookie.setPath(contextPath); 
         	cookie.setMaxAge( (int)(JwtProvider.ACCESS_EXPIRATION_TIME / 1000L));
         	
         	response.addCookie(cookie);
@@ -58,7 +61,7 @@ public class AuthenticationController {
         	final Cookie cookie = new Cookie(HouseholdDefine.KeyRefreshToken, result.getRefreshToken());
         	cookie.setHttpOnly(true); // JavaScript에서 접근 불가능 (XSS 방지)
         	//cookie.setSecure(true);
-        	cookie.setPath(request.getContextPath() + "/Auth/Refresh");
+        	cookie.setPath(contextPath + "/Auth/Refresh");
         	cookie.setMaxAge( (int)(JwtProvider.REFRESH_EXPIRATION_TIME / 1000L));
         	
         	response.addCookie(cookie);
@@ -70,7 +73,7 @@ public class AuthenticationController {
     		request.getSession().removeAttribute(HouseholdDefine.KeyBeforeUri);
     		url = (String)obj;
     	}else {
-    		url = "/Home.html";
+    		url = contextPath + "/Home.html";
     	}
     	
     	result.setMessage(url);
@@ -128,7 +131,39 @@ public class AuthenticationController {
     	return ResponseEntity.ok().body(result);
     }
     
-    
-    
+    /**
+     * 로그아웃
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
+	@GetMapping("Logout.json")
+    public ResponseEntity<?> userLogout( HttpServletRequest request, HttpServletResponse response )throws Exception {
+		
+		final String contextPath = request.getContextPath();
+		
+		{
+    		// access token
+        	final Cookie cookie = new Cookie(HouseholdDefine.KeyAccessToken, null);
+        	cookie.setHttpOnly(true);
+        	cookie.setPath(contextPath); 
+        	cookie.setMaxAge( 1 );
+        	
+        	response.addCookie(cookie);
+    	}
+    	
+    	{
+    		// refresh token
+        	final Cookie cookie = new Cookie(HouseholdDefine.KeyRefreshToken, null);
+        	cookie.setHttpOnly(true);
+        	cookie.setPath(contextPath + "/Auth/Refresh");
+        	cookie.setMaxAge( 1 );
+        	
+        	response.addCookie(cookie);
+    	}
+    	
+    	return ResponseEntity.ok().body(new ReturnBasic());
+    }
 }
 

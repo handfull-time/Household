@@ -1,6 +1,5 @@
 package com.utime.household.common.jwt;
 
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -164,12 +163,12 @@ public class JwtProvider {
         return this.doGenerateAccessToken(user, claims);
     }
     
-    private static final String SECRET_KEY = "4261656C64756E67";
-    
-    private SecretKey getSigningKey() {
-        byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
+//    private static final String SECRET_KEY = "4261656C64756E67";
+//    
+//    private SecretKey getSigningKey() {
+//        byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY);
+//        return Keys.hmacShaKeyFor(keyBytes);
+//    }
 
     /**
      * JWT access token 생성
@@ -188,7 +187,7 @@ public class JwtProvider {
                 .claims(claims)
                 .issuedAt(new Date(now))
                 .expiration(new Date(now + ACCESS_EXPIRATION_TIME))
-                .signWith(this.getSigningKey(), Jwts.SIG.HS256)
+                .signWith(this.key, Jwts.SIG.HS256)
                 .compact(); 
     }
 

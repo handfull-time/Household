@@ -1,22 +1,23 @@
 package com.utime.household.user.typeHandler;
 
-import org.apache.ibatis.type.BaseTypeHandler;
-import org.apache.ibatis.type.JdbcType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.ibatis.type.BaseTypeHandler;
+import org.apache.ibatis.type.JdbcType;
+
+import com.utime.household.common.util.Sha256;
+
 public class PasswordEncoderTypeHandler extends BaseTypeHandler<String> {
 
-    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, String parameter, JdbcType jdbcType) throws SQLException {
-        ps.setString(i, passwordEncoder.encode(parameter));
+//        ps.setString(i, passwordEncoder.encode(parameter));
+    	ps.setString(i, Sha256.encrypt(parameter) );
     }
 
     @Override

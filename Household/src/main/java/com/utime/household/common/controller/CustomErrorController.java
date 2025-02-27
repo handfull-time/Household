@@ -84,6 +84,8 @@ class CustomErrorController implements ErrorController {
         	json.put("status", info.status);
         	json.put("message", info.message);
         	json.put("requestUri", info.requestUri);
+        	json.put("exception", info.exception);
+        	json.put("exceptionType", info.exceptionType);
     		
         	result = new ModelAndView( new MappingJackson2JsonView() );
         	result.addAllObjects(json);

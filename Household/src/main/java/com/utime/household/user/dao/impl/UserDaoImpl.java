@@ -120,7 +120,7 @@ class UserDaoImpl implements UserDao{
 	@Transactional(rollbackFor = Exception.class)
 	public int convertPw(String id, String pw) throws Exception {
 		
-		UserVo user = userMapper.getUserFromId(id);
+		final UserVo user = userMapper.getUserFromId(id);
 		if( user == null ) {
 			log.warn("회원 없음");
 			return -1;
@@ -128,7 +128,7 @@ class UserDaoImpl implements UserDao{
 		
 		user.setPw(pw);
 		
-		this.genPwString(user);
+		user.setPw( this.genPwString(user) );
 		
 		return userMapper.updateUserPw(user);
 	}

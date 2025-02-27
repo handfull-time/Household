@@ -11,7 +11,7 @@
 			, UPDATE_DATE DATETIME NOT NULL <!-- 수정일 -->
 			, ENABLED CHAR(1) NOT NULL DEFAULT 'Y' CHECK (ENABLED IN ('Y', 'N'))<!--  사용 여부 Y:사용, N:미사용 -->
 			, ID TEXT(32) NOT NULL <!-- 이름 -->
-			, PW TEXT(512) DEFAULT NULL <!-- 비밀번호 -->
+			, PW TEXT(64) DEFAULT NULL <!-- 비밀번호 -->
 			, ROLE TEXT(12) NOT NULL <!-- 권한 -->
 			, NICKNAME TEXT(32) NOT NULL <!-- 별명 -->
 			, BIRTHDAY TEXT(8) NOT NULL <!-- 생년월일 YYYYMMDD -->
@@ -125,13 +125,16 @@
 
 	<!-- id / pw 일치하는 계정 정보 조회 -->	
 	<select id="getUserAndPw" parameterType="map" resultType="long">
-		SELECT 
-			NO
-		FROM HH_USER
-		WHERE 1=1
-			AND ENABLED = 'Y'
-			AND ID = #{id}
-			AND PW = #{pw, typeHandler=com.utime.household.user.typeHandler.PasswordEncoderTypeHandler}
+		SELECT COALESCE(
+		    (	SELECT
+		    		NO
+		    	FROM HH_USER
+		    	WHERE 1=1
+		    		AND ENABLED = 'Y'
+		    		AND ID = #{id}
+		    		AND PW = #{pw, typeHandler=com.utime.household.user.typeHandler.PasswordEncoderTypeHandler}
+    		), 
+    	-1 ) AS NO;
 	</select>
 	
 </mapper>

@@ -14,6 +14,7 @@ import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.user.service.UserService;
 import com.utime.household.user.vo.FindUserIdResVo;
 import com.utime.household.user.vo.UserReqVo;
+import com.utime.household.user.vo.UserVo;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class UserController {
 	 * @return
 	 */
 	@GetMapping("Login.html")
-    public String loginPage( HttpServletRequest request, ModelMap model ) {
+    public String loginPage( HttpServletRequest request, ModelMap model, UserVo user ) {
 		
 		model.addAttribute("unique", userService.getNewGenUnique(request) );
 		

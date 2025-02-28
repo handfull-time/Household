@@ -21,28 +21,20 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("Env/BankCard")
-@Deprecated
-public class BankCardController {
+@RequestMapping("Environment/Bank")
+public class BankController {
 	
 	private final BankCardService service;
 	
 	@GetMapping(value = {"", "/"})
 	public String goMain() {
-		return "redirect:/Env/BankCard/Home.html";
+		return "redirect:/Environment/Bank/Home.html";
 	}
 	
 	@GetMapping(value="Home.html")
-	public String bankCardMain(ModelMap model, @RequestParam(name = "BcType", defaultValue = "Bank") EBankCard bc) {
+	public String bankCardMain(ModelMap model) {
 		
-		final String result;
-		if( bc == EBankCard.Bank ) {
-			result = "bankMain";
-		}else {
-			result = "cardMain";
-		}
-		
-		return "Environment/bankcard/" + result;
+		return "Environment/Bankcard/BankCardMain";
 	}
 	
 //	@GetMapping(value="Home.html")

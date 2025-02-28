@@ -8,7 +8,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
@@ -101,5 +103,12 @@ class CustomErrorController implements ErrorController {
         
         return result;
     }
+	
+	
+	@RequestMapping("Error/AccessDenied.html")
+	public String AccessDenied(ModelMap model, @RequestParam("url") String address) {
+		model.addAttribute("reqAddress", address);
+		return "Common/Denied";
+	}
 	
 }

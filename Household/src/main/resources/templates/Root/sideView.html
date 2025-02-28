@@ -13,7 +13,7 @@
         flex-direction: column;
     }
     #resizer {
-        width: 8px;
+        width: 3px;
         cursor: ew-resize;
         background: gray;
         position: absolute;
@@ -51,7 +51,7 @@
     <div>
     	<p class="text-lg font-semibold">환경</p>
     	<ul class="pl-4 space-y-1">
-    		<li><a th:href="@{/Env/BankCard}" class="menu-item" th:classappend="${currentURI == '/Env/BankCard.html'} ? 'selected'">은행/카드 등록</a></li>
+    		<li><a th:href="@{/Environment/Bank/Home.html}" class="menu-item" th:classappend="${currentURI == '/Environment/Bank/Home.html'} ? 'selected'">은행/카드 등록</a></li>
     		<li><a th:href="@{/View/menuB_2.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_2.html'} ? 'selected'">사용처</a></li>
     		<li><a th:href="@{/View/menuB_3.html}" class="menu-item" th:classappend="${currentURI == '/View/menuB_3.html'} ? 'selected'">세부관리</a></li>
     	</ul>

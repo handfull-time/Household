@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("Env/Category")
+@Deprecated
 public class CategoryController {
 	
 	private final CategoryService categoryService;

@@ -83,13 +83,29 @@ public class AuthenticationController {
     }
     
     @PostMapping("Refresh")
-    public ResponseEntity<?> refreshAccessToken(@CookieValue(HouseholdDefine.KeyRefreshToken) String refreshToken) {
+    public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response, 
+    		@CookieValue(HouseholdDefine.KeyRefreshToken) String refreshToken) {
     	
     	final ReturnBasic result = userService.refreshAccessToken(refreshToken);
     	
     	if( result.isError() ) {
     		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", result.getMessage()));
     	}
+    	
+    	final String contextPath = request.getContextPath();
+    	
+    	{
+    		// access token
+        	final Cookie cookie = new Cookie(HouseholdDefine.KeyAccessToken, result.getMessage());
+        	cookie.setHttpOnly(true);
+        	//cookie.setSecure(true);
+        	cookie.setPath(contextPath); 
+        	cookie.setMaxAge( (int)(JwtProvider.ACCESS_EXPIRATION_TIME / 1000L));
+        	
+        	response.addCookie(cookie);
+    	}
+    	
+    	result.setMessage(null);
     	
     	return ResponseEntity.ok().body(result);
     }

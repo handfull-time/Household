@@ -1,7 +1,42 @@
 <script 
-	xmlns:th="http://www.thymeleaf.org" 
+	xmlns:th="http://www.hymeleaf.org" 
 	th:inline="javascript"
 	th:fragment="CommonScript">
+
+window.onload = async function() {
+    console.info("window.onload");
+    await checkAndRefreshToken();
+};
+
+async function checkAndRefreshToken() {
+	// 쿠키 포함
+    const options = {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    };
+	
+	const url = /*[[@{/My/Check}]]*/ null;
+    console.info('🚀 request', url, 'options', options);
+    
+    let response = await fetch(url, options);
+    
+    console.info('✅ response', response);
+
+    let result = true;
+    if (response.status === 401) {
+    	console.info('status', response.status, 'Refresh Token으로 재발급')
+        const refreshSuccess = await refreshToken();
+        if (! refreshSuccess) {
+            throw new Error("재로그인이 필요합니다.");
+        }
+    }
+
+    return result;
+}
+
 
 //사용 예)
 //const response = await apiRequest("/user/profile");

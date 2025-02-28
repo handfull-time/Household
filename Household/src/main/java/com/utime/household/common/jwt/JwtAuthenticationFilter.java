@@ -1,6 +1,7 @@
 package com.utime.household.common.jwt;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.core.annotation.Order;
@@ -12,12 +13,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.utime.household.common.util.HouseholdUtils;
+import com.utime.household.common.vo.HouseholdDefine;
 import com.utime.household.common.vo.WhiteAddressList;
 import com.utime.household.user.dao.UserDao;
 import com.utime.household.user.vo.UserVo;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -48,33 +51,87 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     	final String userToken = jwtUtil.getAuthToken( request );
     
     	if( userToken == null) {
-    		filterChain.doFilter(request, response);
-    		return;
+    		log.warn(request.getRequestURI() + "\tUserToken is null.");
+    		
+    		if( ! this.refreshTokenAndContinue(request, response, filterChain) ) {
+        		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
+        		filterChain.doFilter(request, response);
+        		return;
+    		}
     	}
     	
 		log.info(userToken);
         if (! jwtUtil.validateToken(userToken)) {
         	// 401 Unauthorized 응답
+    		log.warn(request.getRequestURI() + "\tUserToken Unauthorized.");
         	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
             return;
         }
-        	
-        final String userId = jwtUtil.getUsernameFromToken(userToken);
-        
-        //token 검증 완료 후 SecurityContextHolder 내 인증 정보가 없는 경우 저장
-        if( HouseholdUtils.isNotEmpty( userId ) && SecurityContextHolder.getContext().getAuthentication() == null) {
-        	log.info("Authentication 설정");
-        	
-        	final UserVo user = userDao.getUserFromIdDetail(userId);
-        	
-        	final Authentication authToken = new UsernamePasswordAuthenticationToken(user, 
-                    null,
-                    Collections.singleton(new SimpleGrantedAuthority(user.getRole().name()))
-            );
-        	
-        	SecurityContextHolder.getContext().setAuthentication( authToken );
-        }
+
+        this.authenticateUser( userToken );
 
         filterChain.doFilter(request, response);
+    }
+    
+    private boolean refreshTokenAndContinue(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) 
+    		throws ServletException, IOException {
+    	
+    	final Cookie[] cookies = request.getCookies();
+        if (cookies == null) return false;
+
+        final String refreshToken = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(HouseholdDefine.KeyRefreshToken))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+        
+        if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
+            log.warn("RefreshToken invalid or expired. Redirecting to login.");
+            response.sendRedirect(request.getContextPath() + "/User/Login.html");
+            return false;
+        }
+        
+        final String id = jwtUtil.getUsernameFromToken(refreshToken);
+		if( HouseholdUtils.isEmpty(id)) {
+			log.warn("ID 추출 실패");
+            response.sendRedirect(request.getContextPath() + "/User/Login.html");
+            return false;
+		}
+		
+		final UserVo user = userDao.getUserFromId( id );
+		if( user == null ) {
+			log.warn("회원 없음");
+            response.sendRedirect(request.getContextPath() + "/User/Login.html");
+            return false;
+		}
+		
+		final String newAccessToken = jwtUtil.generateAccessToken(user);
+        
+        log.info("RefreshToken valid. Issuing new AccessToken.");
+
+        Cookie accessTokenCookie = new Cookie(HouseholdDefine.KeyAccessToken, newAccessToken);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setPath(request.getContextPath());
+        accessTokenCookie.setMaxAge((int) (JwtProvider.ACCESS_EXPIRATION_TIME / 1000L));
+        response.addCookie(accessTokenCookie);
+
+        doFilterInternal(request, response, filterChain);
+        return true;
+    }
+    
+    private void authenticateUser(String token) {
+    	
+        final String userId = jwtUtil.getUsernameFromToken(token);
+        
+        if (HouseholdUtils.isNotEmpty(userId) && SecurityContextHolder.getContext().getAuthentication() == null) {
+            log.warn("Setting Authentication for user: {}", userId);
+            
+            final UserVo user = userDao.getUserFromIdDetail(userId);
+            
+            final Authentication authToken = new UsernamePasswordAuthenticationToken(user, null,
+                    Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));
+            
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+        }
     }
 }

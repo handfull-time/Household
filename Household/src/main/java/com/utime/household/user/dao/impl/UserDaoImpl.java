@@ -54,6 +54,7 @@ class UserDaoImpl implements UserDao{
 		final UserVo admin = new UserVo();
 		admin.setId("Admin");
 		admin.setPw("Admin123");
+		admin.setEnabled(true);
 		admin.setRole(EJwtRole.Admin);
 		admin.setNickname("관리자");
 		admin.setBirthday("20150820");

@@ -14,7 +14,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
-
+/**
+ * 권한 없는 페이지 접근 처리
+ */
 @Slf4j
 @Component("JwtAccessDenied")
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {

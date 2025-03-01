@@ -26,9 +26,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     	
     	response.setStatus( HttpServletResponse.SC_FORBIDDEN );
     	
-    	final String contextPath = request.getContextPath();
-    	
     	// 403 발생 시 특정 페이지로 이동
-    	response.sendRedirect( contextPath + "/Error/AccessDenied.html?url=" + request.getRequestURI());
+    	response.sendRedirect( request.getContextPath() + "/Error/AccessDenied.html?url=" + request.getRequestURI());
     }
 }

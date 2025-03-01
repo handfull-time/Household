@@ -29,11 +29,19 @@
 		Multipart:"multipart/form-data"
 	});
 
-    function openPopup(sendObj) {
+    async function openPopup(sendObj) {
     	
     	if( ! sendObj.url ){
-			throw new Error("❌ [useCall Error] 'url' 값이 필수입니다.");
+    		console.warn("❌ [openPopup Error] 'url' 값이 필수입니다.");
+			throw new Error("❌ [openPopup Error] 'url' 값이 필수입니다.");
 		}
+    	
+    	const refresh = await checkAndRefreshToken();
+    	if( ! refresh ){
+    		console.warn('❌ [authCheck Error] 인증 필요.');
+    		//throw new Error("❌ [authCheck Error] 인증 필요.");
+    		return;
+    	}
 		
 		const defaults = {
 		        method: MethodType.Post, // 기본값: POST

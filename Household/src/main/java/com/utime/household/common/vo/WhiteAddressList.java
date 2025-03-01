@@ -23,6 +23,7 @@ public class WhiteAddressList {
 			, "/User/"
 			, "/Auth/"
 			, "/View/"
+			, "/Error/"
 		};
 	
 	public static final Set<String> whiteListPaths = Arrays.stream(AddressList)

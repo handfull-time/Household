@@ -31,7 +31,8 @@ public class JwtProvider {
     // jwt 만료 시간 1시간
 //    private static final long JWT_TOKEN_VALID = (long) 1000 * 60 * 30;
     
-    public static final long ACCESS_EXPIRATION_TIME = 15 * 60 * 1000; // 15분
+//    public static final long ACCESS_EXPIRATION_TIME = 15 * 60 * 1000; // 15분
+    public static final long ACCESS_EXPIRATION_TIME = 1 * 60 * 1000; // 1분
     public static final long REFRESH_EXPIRATION_TIME = 7 * 24 * 60 * 60 * 1000; // 7일
     
 
@@ -44,7 +45,7 @@ public class JwtProvider {
     
     private final String KeyTokenStarter = "Bearer ";
     
-    private final String KeyRole = "role";
+    private final String KeyRole = "roles";
     
     private final int LenTokenStarter = KeyTokenStarter.length();
     
@@ -163,13 +164,6 @@ public class JwtProvider {
         return this.doGenerateAccessToken(user, claims);
     }
     
-//    private static final String SECRET_KEY = "4261656C64756E67";
-//    
-//    private SecretKey getSigningKey() {
-//        byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY);
-//        return Keys.hmacShaKeyFor(keyBytes);
-//    }
-
     /**
      * JWT access token 생성
      *

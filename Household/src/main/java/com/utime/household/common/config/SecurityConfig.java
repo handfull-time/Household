@@ -16,6 +16,7 @@ import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import com.utime.household.common.vo.WhiteAddressList;
+import com.utime.household.user.vo.EJwtRole;
 
 import jakarta.annotation.Resource;
 
@@ -41,8 +42,11 @@ public class SecurityConfig {
 	
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers( permitAllWhiteList ).permitAll()
+        	    .requestMatchers("/Admin/**").hasRole(EJwtRole.Admin.name())  // 관리자만 접근 가능
+//        	    .requestMatchers("/Home.html", "/Data/**", "/Environment/**").hasAnyRole(EJwtRole.User.name(), EJwtRole.Admin.name()) // 일반 사용자와 관리자 접근 가능
                 .anyRequest().authenticated()
             );
+        
         
         // Spring Security는 기본적으로 로그인 폼을 제공하지만, JWT를 사용하면 세션 기반 인증이 필요 없기 때문에 로그인 폼을 비활성화해야 합니다.
         http.formLogin(AbstractHttpConfigurer::disable);
@@ -76,14 +80,4 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        UserDetails user = User.builder()
-//            .username("user")
-//            .password("password") // 기본 패스워드 설정
-//            .roles("USER")
-//            .build();
-//
-//        return new InMemoryUserDetailsManager(user);
-//    }
 }

@@ -22,7 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("Env/Store")
+@RequestMapping("Environment/Store")
+@Deprecated
 public class StoreController {
 	
 	private final CategoryService categoryService;

@@ -12,13 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.utime.household.common.jwt.JwtProvider;
 import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.common.vo.HouseholdDefine;
 import com.utime.household.common.vo.ReturnBasic;
 import com.utime.household.user.service.UserService;
 import com.utime.household.user.vo.LoginReqVo;
-import com.utime.household.user.vo.TokenPairVo;
 import com.utime.household.user.vo.UserReqVo;
 
 import jakarta.servlet.http.Cookie;
@@ -38,35 +36,10 @@ public class AuthenticationController {
     	
     	reqVo.setSessionId( HouseholdUtils.getRemoteAddress( request ) );
     	
-    	final TokenPairVo result = userService.procLogin(reqVo);
+    	final ReturnBasic result = userService.procLogin(request, response, reqVo);
     	
     	if( result.isError() ) {
-    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
-    	}
-    	
-    	final String contextPath = request.getContextPath();
-    	
-    	{
-    		// access token
-        	final Cookie cookie = new Cookie(HouseholdDefine.KeyAccessToken, result.getAccessToken());
-        	cookie.setHttpOnly(true); // JavaScript에서 접근 불가능 (XSS 방지)
-        	//cookie.setSecure(true);
-        	cookie.setPath(contextPath); 
-        	cookie.setMaxAge( (int)(JwtProvider.ACCESS_EXPIRATION_TIME / 1000L));
-        	
-        	response.addCookie(cookie);
-    	}
-    	
-    	{
-    		// refresh token
-        	final Cookie cookie = new Cookie(HouseholdDefine.KeyRefreshToken, result.getRefreshToken());
-        	cookie.setHttpOnly(true); // JavaScript에서 접근 불가능 (XSS 방지)
-        	//cookie.setSecure(true);
-//        	cookie.setPath(contextPath + "/Auth/Refresh");
-        	cookie.setPath(contextPath);
-        	cookie.setMaxAge( (int)(JwtProvider.REFRESH_EXPIRATION_TIME / 1000L));
-        	
-        	response.addCookie(cookie);
+    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", ""));
     	}
     	
     	String url;
@@ -75,7 +48,7 @@ public class AuthenticationController {
     		request.getSession().removeAttribute(HouseholdDefine.KeyBeforeUri);
     		url = (String)obj;
     	}else {
-    		url = contextPath + "/Home.html";
+    		url = request.getContextPath() + "/Home.html";
     	}
     	
     	result.setMessage(url);
@@ -87,27 +60,12 @@ public class AuthenticationController {
     public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response, 
     		@CookieValue(HouseholdDefine.KeyRefreshToken) String refreshToken) {
     	
-    	final ReturnBasic result = userService.refreshAccessToken(refreshToken);
+    	final ReturnBasic result = userService.refreshAccessToken(request, response, refreshToken);
     	
     	if( result.isError() ) {
-    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", result.getMessage()));
+    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
     	}
-    	
-    	final String contextPath = request.getContextPath();
-    	
-    	{
-    		// access token
-        	final Cookie cookie = new Cookie(HouseholdDefine.KeyAccessToken, result.getMessage());
-        	cookie.setHttpOnly(true);
-        	//cookie.setSecure(true);
-        	cookie.setPath(contextPath); 
-        	cookie.setMaxAge( (int)(JwtProvider.ACCESS_EXPIRATION_TIME / 1000L));
-        	
-        	response.addCookie(cookie);
-    	}
-    	
-    	result.setMessage(null);
-    	
+
     	return ResponseEntity.ok().body(result);
     }
 
@@ -159,27 +117,7 @@ public class AuthenticationController {
 	@GetMapping("Logout.json")
     public ResponseEntity<?> userLogout( HttpServletRequest request, HttpServletResponse response )throws Exception {
 		
-		final String contextPath = request.getContextPath();
-		
-		{
-    		// access token
-        	final Cookie cookie = new Cookie(HouseholdDefine.KeyAccessToken, null);
-        	cookie.setHttpOnly(true);
-        	cookie.setPath(contextPath); 
-        	cookie.setMaxAge( 1 );
-        	
-        	response.addCookie(cookie);
-    	}
-    	
-    	{
-    		// refresh token
-        	final Cookie cookie = new Cookie(HouseholdDefine.KeyRefreshToken, null);
-        	cookie.setHttpOnly(true);
-        	cookie.setPath(contextPath + "/Auth/Refresh");
-        	cookie.setMaxAge( 1 );
-        	
-        	response.addCookie(cookie);
-    	}
+		userService.logout(request, response);
     	
     	return ResponseEntity.ok().body(new ReturnBasic());
     }

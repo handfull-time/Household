@@ -8,7 +8,7 @@
 	
     <script type="text/javascript" th:src="@{/js/tailwind/tailwind.min.js}"></script>
     <script type="text/javascript" th:src="@{/js/MyToast.js}"></script>
-	<th:block layout:fragment="css"></th:block>
+	<th:block layout:fragment="css"/>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
 
@@ -22,7 +22,7 @@
 
         <!-- Main Content Area -->
         <div class="flex-1 p-6 overflow-auto">
-            <th:block layout:fragment="content"></th:block>
+            <th:block layout:fragment="content"/>
         </div>
     </div>
 
@@ -31,8 +31,8 @@
     <!-- 모달창 -->
     <div th:replace="~{Root/modalView :: modalView}"></div>
 
-	<th:script th:replace="~{Common/Script :: CommonScript}"></th:script>
-	<th:block layout:fragment="script"></th:block>
+	<th:script th:replace="~{Common/Script :: CommonScript}"/>
+	<th:block layout:fragment="script"/>
 
 </body>
 </html>

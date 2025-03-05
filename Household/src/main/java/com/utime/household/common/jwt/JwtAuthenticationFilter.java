@@ -1,7 +1,6 @@
 package com.utime.household.common.jwt;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.core.annotation.Order;
@@ -12,15 +11,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.utime.household.common.util.HouseholdUtils;
-import com.utime.household.common.vo.HouseholdDefine;
+import com.utime.household.common.vo.ResUserVo;
 import com.utime.household.common.vo.WhiteAddressList;
-import com.utime.household.user.dao.UserDao;
 import com.utime.household.user.vo.UserVo;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtUtil;
     
-    private final UserDao userDao;
-    
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
     	 
@@ -58,102 +52,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
     	
-    	String userToken = jwtUtil.getAuthToken( request );
-    
-    	if( userToken == null) {
-    		log.warn(request.getRequestURI() + "\tUserToken is null.");
-    		
-    		userToken = this.refreshTokenAndContinue(request, response); 
-    		if( userToken == null ) {
-        		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
-    		} else {
-    			this.authenticateUser( userToken );
-    		}
-    		
-    		filterChain.doFilter(request, response);
-    		return;
+    	ResUserVo tokenRes = jwtUtil.procPagingToken(request, response);
+    	if( tokenRes.isError() ) {
+    		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    	}else {
+    	    this.authenticateUser( tokenRes.getUser() );
     	}
     	
-		log.info(userToken);
-        if (! jwtUtil.validateToken(userToken)) {
-        	// 401 Unauthorized 응답
-    		log.warn(request.getRequestURI() + "\tUserToken Unauthorized.");
-
-    		userToken = this.refreshTokenAndContinue(request, response); 
-    		if( userToken == null ) {
-        		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        		filterChain.doFilter(request, response);
-        		return;
-    		}
-        }
-
-        this.authenticateUser( userToken );
-
-        filterChain.doFilter(request, response);
-    }
-    
-    /**
-     * refreshToken을 이용해 accessToken을 얻는다.
-     * @param request
-     * @param response
-     * @return 새로 발급한 accessToken. 얻을 수 없으면 null.
-     * @throws ServletException
-     * @throws IOException
-     */
-    private String refreshTokenAndContinue(HttpServletRequest request, HttpServletResponse response) 
-    		throws ServletException, IOException {
-    	
-    	final Cookie[] cookies = request.getCookies();
-        if (cookies == null) return null;
-
-        final String refreshToken = Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(HouseholdDefine.KeyRefreshToken))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
-        
-        if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
-            log.warn("RefreshToken invalid or expired. Redirecting to login.");
-            return null;
-        }
-        
-        final String id = jwtUtil.getUsernameFromToken(refreshToken);
-		if( HouseholdUtils.isEmpty(id)) {
-			log.warn("ID 추출 실패");
-            return null;
-		}
-		
-		final UserVo user = userDao.getUserFromId( id );
-		if( user == null ) {
-			log.warn("회원 없음");
-            return null;
-		}
-		
-		final String newAccessToken = jwtUtil.generateAccessToken(user);
-        
-        log.info("RefreshToken valid. Issuing new AccessToken.");
-
-        Cookie accessTokenCookie = new Cookie(HouseholdDefine.KeyAccessToken, newAccessToken);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setPath(request.getContextPath());
-        accessTokenCookie.setMaxAge((int) (JwtProvider.ACCESS_EXPIRATION_TIME / 1000L));
-        response.addCookie(accessTokenCookie);
-
-        return newAccessToken;
+    	filterChain.doFilter(request, response);
     }
     
     /**
      * SecurityContext에 사용자 정보 저장
      * @param token
      */
-    private void authenticateUser(String token) {
+    private void authenticateUser(UserVo user) {
     	
-        final String userId = jwtUtil.getUsernameFromToken(token);
-        
-        if (HouseholdUtils.isNotEmpty(userId) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            log.warn("Setting Authentication for user: {}", userId);
-            
-            final UserVo user = userDao.getUserFromIdDetail(userId);
+        if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            log.warn("Setting Authentication for user: {}", user.getId());
             
             final Authentication authToken = new UsernamePasswordAuthenticationToken(user, null,
                     Collections.singleton(new SimpleGrantedAuthority(user.getRole().name())));

@@ -1,53 +1,75 @@
 package com.utime.household.common.jwt;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.utime.household.common.util.CacheIntervalMap;
+import com.utime.household.common.util.HouseholdUtils;
 import com.utime.household.common.vo.HouseholdDefine;
+import com.utime.household.common.vo.ResUserVo;
+import com.utime.household.common.vo.ReturnBasic;
+import com.utime.household.user.dao.UserDao;
 import com.utime.household.user.vo.UserVo;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.MacAlgorithm;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtProvider {
 
-    // jwt 만료 시간 1시간
-//    private static final long JWT_TOKEN_VALID = (long) 1000 * 60 * 30;
+	private static final long ONE_SECOND = 1000L;
+    private static final long ACCESS_EXPIRATION_TIME = 15L * 60L * ONE_SECOND; // 15분
+    private static final long PAGING_EXPIRATION_TIME = 1L * 24L * 60L * 60L * ONE_SECOND; // 1일
+    private static final long REFRESH_EXPIRATION_TIME = 7L * 24L * 60L * 60L * ONE_SECOND; // 7일
     
-//    public static final long ACCESS_EXPIRATION_TIME = 15 * 60 * 1000; // 15분
-    public static final long ACCESS_EXPIRATION_TIME = 1 * 60 * 1000; // 1분
-    public static final long REFRESH_EXPIRATION_TIME = 7 * 24 * 60 * 60 * 1000; // 7일
+	/** 엑세스 토큰의 쿠키 이름 */
+    private static final String KeyAccessToken = "accessToken";
+	
+	/** 페이지 갱신 토큰의 쿠키 이름 */
+    private static final String KeyPagingToken = "pagingToken";
+
+	private final UserDao userDao;
     
+    private final CacheIntervalMap<String, UserVo> intervalMap = new CacheIntervalMap<>(ACCESS_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
 
     @Value("${jwt.secret}")
     private String secret;
 
     private SecretKey key;
     
-    private final String KeyHaderAuthorization = "Authorization";
+    private final MacAlgorithm macAlgo = Jwts.SIG.HS256;
     
-    private final String KeyTokenStarter = "Bearer ";
+    private final String RefreshAddress = "/Auth/Refresh";
     
-    private final String KeyRole = "roles";
-    
-    private final int LenTokenStarter = KeyTokenStarter.length();
+    /**
+     * JWT 키 상수 관리
+     */
+    private static class JWT_KEY {
+        static final String AUTHORIZATION = "Authorization";
+        static final String TOKEN_PREFIX = "Bearer ";
+        static final String IP = "ReqIp";
+        static final String AGENT = "ReqAgent";
+    }
     
     @PostConstruct
     public void init() {
@@ -59,196 +81,301 @@ public class JwtProvider {
      * @param request
      * @return
      */
-    public String getAuthToken( HttpServletRequest request ) {
+    private String getAuthToken( HttpServletRequest request ) {
 
-    	String result = null;
-        final String headerToken = request.getHeader(KeyHaderAuthorization);
-
-        if (headerToken != null && headerToken.startsWith(KeyTokenStarter)) {
-        	log.info(headerToken);
-        	result = headerToken.substring(LenTokenStarter);
-        }else {
-        	final Cookie[] cookies = request.getCookies();
-        	if( cookies != null ) {
-        		for( Cookie cookie : cookies ) {
-        			if( HouseholdDefine.KeyAccessToken.equals( cookie.getName() ) ){
-        				result = cookie.getValue();
-        				break;
-        			}
-        		}
-        	}
-        }
-        
-        return result;
+    	return Optional.ofNullable(request.getHeader(JWT_KEY.AUTHORIZATION))
+                .filter(header -> header.startsWith(JWT_KEY.TOKEN_PREFIX))
+                .map(header -> header.substring(JWT_KEY.TOKEN_PREFIX.length()))
+                .orElseGet(() -> getCookieValue(request, JwtProvider.KeyAccessToken));
     }
-
-    /**
-     * token Username 조회
-     *
-     * @param token JWT
-     * @return token Username
-     */
-    public String getUsernameFromToken(final String token) {
-        return this.getClaimFromToken(token, Claims::getId);
-    }
-
-    /**
-     * token 사용자 속성 정보 조회
-     *
-     * @param token JWT
-     * @param claimsResolver Get Function With Target Claim
-     * @param <T> Target Claim
-     * @return 사용자 속성 정보
-     */
-    private <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
-        // token 유효성 검증
-        if(! this.validateToken(token) )
-            return null;
-
-        final Claims claims = this.getAllClaimsFromToken(token);
-
-        return claimsResolver.apply(claims);
-    }
-
     
     /**
-     * token 사용자 모든 속성 정보 조회
-     *
-     * @param token JWT
-     * @return All Claims
+     * 특정 이름의 쿠키 값을 가져오기
      */
-    private Claims getAllClaimsFromToken(final String token) {
+    private String getCookieValue(HttpServletRequest request, String key) {
+        if (request.getCookies() == null) return null;
+        
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> key.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+    }
+    
+//    /**
+//     * token 유효성 검증
+//     *
+//     * @param token JWT
+//     * @return token 검증 결과
+//     */
+//    private boolean validateToken(String token) {
+//        return Optional.ofNullable(this.getAllClaimsFromToken(token)).isPresent();
+//    }
+	
+    /**
+     * JWT에서 모든 Claims 정보 가져오기
+     */
+    private Claims getAllClaimsFromToken(String token) {
     	
-    	return Jwts.parser()
-    			.verifyWith(key)
-    			.build()
-    			.parseSignedClaims(token)
-    			.getPayload();
+    	if( token == null || token.length() < 1 ) {
+    		log.warn("토큰 값 없음");
+    		return null;
+    	}
+    	
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (JwtException e) {
+            log.warn("Invalid JWT: {}", e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Token 생성 및 쿠키 추가
+     */
+    private Cookie createTokenAndCookie(String cookieName, UserVo user, Map<String, Object> claims, long expirationTime, String domain, String path) {
+        
+    	final String token = (user != null)? this.generateToken(user, claims, expirationTime):null;
+        
+    	final Cookie cookie = new Cookie(cookieName, token);
+        cookie.setHttpOnly(true);
+        cookie.setPath(path);
+        cookie.setDomain(domain);
+        cookie.setMaxAge((int) (expirationTime / ONE_SECOND));
+        
+        return cookie;
+    }
+    
+    /**
+     * JWT 생성
+     */
+    private String generateToken(UserVo user, Map<String, Object> claims, long expirationTime) {
+        
+        return Jwts.builder()
+                .id(user.getId())
+                .subject(String.valueOf(user.getUserNo()))
+                .claims(claims)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(this.key, this.macAlgo)
+                .compact();
+    }
+    
+    /**
+     * IP 및 User-Agent 정보 검증
+     */
+    private boolean validateRequestIpAndAgent(HttpServletRequest request, Claims claims) {
+    	
+    	final String ip = claims.get(JWT_KEY.IP, String.class);
+		final String reqIp = HouseholdUtils.getRemoteAddress( request );
+		if( ! reqIp.equals( ip ) ) {
+			log.warn("ip가 서로 다르다. TokenIp:{}, ReqIp:{}", ip, reqIp);
+            return false;
+		}
+		
+		final String agent = claims.get(JWT_KEY.AGENT, String.class);
+		final String reqAgent = request.getHeader("user-agent");
+		if( ! reqAgent.equals( agent ) ) {
+			log.warn("USER-AGENT가 서로 다르다. Token User-agent:{}, Req User-agent:{}", agent, reqAgent);
+            return false;
+		}
+		
+    	return true;
     }
 
     /**
-     * 토큰 만료 일자 조회
-     *
-     * @param token JWT
-     * @return 만료 일자
+     * JWT에서 사용자 정보 추출
      */
-    public Date getExpirationDateFromToken(final String token) {
-        return this.getClaimFromToken(token, Claims::getExpiration);
+    private UserVo extractUserFromClaims(Claims claims) {
+    	
+    	final String id = claims.getId();
+    	
+    	UserVo user = this.intervalMap.get(id);
+    	
+    	if( user == null ) {
+    		user = this.userDao.getUserFromIdDetail(id);
+    		this.intervalMap.put(id, user);
+    	}
+        
+        return user;
     }
 
 //    /**
-//     * access token 생성
+//     * 토큰 만료 일자 조회
 //     *
-//     * @param id token 생성 id
-//     * @return access token
+//     * @param token JWT
+//     * @return 만료 일자
 //     */
-//    public String generateAccessToken(final String id) {
-//        return this.generateAccessToken(id, new HashMap<>());
+//    public Date getExpirationDateFromToken(final String token) {
+//        return this.getClaimFromToken(token, Claims::getExpiration);
 //    }
-    
-    public String generateAccessToken(UserVo user) {
+
+    /**
+     * 요청으로부터 IP 및 User-Agent 정보 가져오기
+     */
+    private Map<String, Object> createPagingClaims(HttpServletRequest request) {
+        
     	final Map<String, Object> claims = new HashMap<>();
-    	claims.put(KeyRole, user.getRole());
-    	
-		return this.generateAccessToken(user, claims);
-	}
-
-    /**
-     * access token 생성
-     *
-     * @param id token 생성 id
-     * @param claims token 생성 claims
-     * @return access token
-     */
-    private String generateAccessToken(final UserVo user, final Map<String, Object> claims) {
-        return this.doGenerateAccessToken(user, claims);
-    }
-    
-    /**
-     * JWT access token 생성
-     *
-     * @param id token 생성 id
-     * @param claims token 생성 claims
-     * @return access token
-     */
-    private String doGenerateAccessToken(final UserVo user, final Map<String, Object> claims) {
-    	
-    	final long now = System.currentTimeMillis();
-    	
-    	return Jwts.builder()
-    			.id(user.getId())
-                .subject("" + user.getUserNo())
-                .claims(claims)
-                .issuedAt(new Date(now))
-                .expiration(new Date(now + ACCESS_EXPIRATION_TIME))
-                .signWith(this.key, Jwts.SIG.HS256)
-                .compact(); 
+        
+    	claims.put(JWT_KEY.IP, HouseholdUtils.getRemoteAddress(request));
+        claims.put(JWT_KEY.AGENT, request.getHeader("user-agent"));
+        
+        log.info("요청 정보 : " + claims);
+        
+        return claims;
     }
 
     /**
-     * refresh token 생성
-     *
-     * @param id token 생성 id
-     * @return refresh token
-     */
-    public String generateRefreshToken(final String id) {
-        return this.doGenerateRefreshToken(id);
-    }
-    
-    /**
-     * 토큰에서 역할(role) 추출
-     * @param token
+     * <P>로그인</P>
+     * 로그인에 필요한 토큰 생성
+     * @param request
+     * @param response
+     * @param user
      * @return
      */
-    public String getRole(String token) {
-        return this.getAllClaimsFromToken(token).get(KeyRole, String.class);
-    }
+	public ReturnBasic procLogin(HttpServletRequest request, HttpServletResponse response, UserVo user) {
+		
+		this.intervalMap.put(user.getId(), userDao.getUserFromIdDetail(user.getId()) );
+		
+        final String domain = request.getServerName();
+        final String contextPath = request.getContextPath();
+        
+        final Map<String, Object> claims = this.createPagingClaims(request);
 
-    /**
-     * refresh token 생성
-     * 
-     * @param id token 생성 id
-     * @return refresh token
-     */
-    private String doGenerateRefreshToken(final String id) {
-    	
-    	final long now = System.currentTimeMillis();
-    	
-        return Jwts.builder()
-                .id(id)
-//                .subject(id)
-                .issuedAt(new Date(now))
-                .expiration(new Date(now + REFRESH_EXPIRATION_TIME)) 
-                .signWith(key, Jwts.SIG.HS256)
-                .compact();
-    }
+        response.addCookie( this.createTokenAndCookie( JwtProvider.KeyAccessToken, 
+        		user, new HashMap<>(), 
+        		ACCESS_EXPIRATION_TIME, 
+        		domain, contextPath));
+        
+        response.addCookie( this.createTokenAndCookie( JwtProvider.KeyPagingToken, 
+        		user, new HashMap<>(claims), 
+        		PAGING_EXPIRATION_TIME, 
+        		domain, contextPath));
+        
+        response.addCookie( this.createTokenAndCookie( HouseholdDefine.KeyRefreshToken, 
+        		user, new HashMap<>(claims), 
+        		REFRESH_EXPIRATION_TIME, 
+        		domain, contextPath + RefreshAddress));
 
-    /**
-     * token 검증
-     *
-     * @param token JWT
-     * @return token 검증 결과
-     */
-    public boolean validateToken(final String token) {
-    	Exception error = null;
-        try {
-            Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token);
-        } catch (SecurityException e) {
-            log.warn("Invalid JWT signature: {}", e.getMessage()); error = e;
-        } catch (MalformedJwtException e) {
-            log.warn("Invalid JWT token: {}", e.getMessage()); error = e;
-        } catch (ExpiredJwtException e) {
-            log.warn("JWT token is expired: {}", e.getMessage()); error = e;
-        } catch (UnsupportedJwtException e) {
-            log.warn("JWT token is unsupported: {}", e.getMessage()); error = e;
-        } catch (IllegalArgumentException e) {
-            log.warn("JWT claims string is empty: {}", e.getMessage()); error = e;
+        return new ReturnBasic();
+
+	}
+	
+	/**
+	 * <P>로그인</P>
+     * 로그인에 필요한 토큰 생성
+	 * @param request
+	 * @param response
+	 * @param refreshToken
+	 * @return
+	 */
+	public ReturnBasic procRefresh(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
+		
+        final Claims claims = this.getAllClaimsFromToken(refreshToken);
+        if( claims == null ) {
+        	return new ReturnBasic("E", "토큰으로부터 데이터 추출 실패");
+        }
+        
+        if ( ! this.validateRequestIpAndAgent(request, claims)) { 
+        	return new ReturnBasic("E", "유효성 검사 실패");
         }
 
-        return error == null;
-    }
+        final UserVo user = this.extractUserFromClaims(claims);
+
+        return this.procLogin(request, response, user);
+	}
+	
+	/**
+	 * 페이징 토큰을 이용해 Access token 작업을 생성한다.
+	 * @param request
+	 * @param response
+	 * @param pagingToken
+	 * @return
+	 */
+	public ResUserVo procPagingToken(HttpServletRequest request, HttpServletResponse response) {
+		
+		boolean isPagingToken = false;
+		String userToken = this.getAuthToken(request);
+		
+		if( userToken == null ) {
+			isPagingToken = true;
+		    userToken = this.getCookieValue(request, JwtProvider.KeyPagingToken);
+		    
+		    if( userToken == null ) {
+		    	log.warn("PagingToken invalid or expired. Redirecting to login.");
+		        return new ResUserVo("E", "토큰 만료");
+		    }
+		}
+    	
+        final Claims claims = this.getAllClaimsFromToken(userToken);
+        if( claims == null ) {
+        	return new ResUserVo("E", "토큰으로부터 데이터 추출 실패");
+        }
+        
+        if( isPagingToken ) {
+	        if ( ! this.validateRequestIpAndAgent(request, claims)) { 
+	        	return new ResUserVo("E", "유효성 검사 실패");
+	        }
+        }
+
+        final ResUserVo result = new ResUserVo();
+        final UserVo user = this.extractUserFromClaims(claims);
+        result.setUser(user);
+        
+        final String domain = request.getServerName();
+        final String contextPath = request.getContextPath();
+
+        response.addCookie( this.createTokenAndCookie( JwtProvider.KeyAccessToken, 
+        		user, new HashMap<>(), 
+        		ACCESS_EXPIRATION_TIME, 
+        		domain, contextPath));
+        
+        response.addCookie( this.createTokenAndCookie( JwtProvider.KeyPagingToken, 
+        		user, this.createPagingClaims(request), 
+        		PAGING_EXPIRATION_TIME, 
+        		domain, contextPath));
+
+        return result;
+	}
+
+	/**
+	 * 로그 아웃 처리
+	 * @param request
+	 * @param response
+	 */
+	public void procLogout(HttpServletRequest request, HttpServletResponse response) {
+		
+		final String userToken = this.getAuthToken(request);
+		
+		if( userToken != null ) {
+	        final Claims claims = this.getAllClaimsFromToken(userToken);
+	        if( claims != null ) {
+	        	this.intervalMap.remove( claims.getId() );
+	        }
+		}
+
+		final String domain = request.getServerName();
+        final String contextPath = request.getContextPath();
+        
+		response.addCookie( this.createTokenAndCookie( JwtProvider.KeyAccessToken, 
+        		null, null, 
+        		ONE_SECOND, 
+        		domain, contextPath));
+        
+        response.addCookie( this.createTokenAndCookie( JwtProvider.KeyPagingToken, 
+        		null, null, 
+        		ONE_SECOND, 
+        		domain, contextPath));
+        
+        response.addCookie( this.createTokenAndCookie( HouseholdDefine.KeyRefreshToken, 
+        		null, null, 
+        		ONE_SECOND, 
+        		domain, contextPath + RefreshAddress));
+		
+	}
 
 }

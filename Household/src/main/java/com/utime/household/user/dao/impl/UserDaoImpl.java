@@ -93,9 +93,9 @@ class UserDaoImpl implements UserDao{
 		
 		result.setPw(pw);
 		
-		final long no = userMapper.getUserAndPw(id, this.genPwString(result));
+		final String dbPw = userMapper.getUserAndPw(id);
 		
-		if( no != result.getUserNo() ) {
+		if( this.genPwString(result).equals(dbPw) ) {
 			log.warn("pw 불일치");
 			return null;
 		}

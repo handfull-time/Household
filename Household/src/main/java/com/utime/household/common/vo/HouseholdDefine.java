@@ -22,9 +22,7 @@ public class HouseholdDefine {
 	/** 이전 페이지 위치 */
 	public static final String KeyBeforeUri = "BeforUri";
 	
-	/** 엑세스 토큰의 쿠키 이름 */
-	public static final String KeyAccessToken = "accessToken";
-	
 	/** 리프래쉬 토큰의 쿠키 이름 */
 	public static final String KeyRefreshToken = "refreshToken";
+	
 }

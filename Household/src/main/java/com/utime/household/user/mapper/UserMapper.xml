@@ -104,7 +104,7 @@
 		WHERE NO = #{userNo} AND ENABLED = 'Y'
 	</select>
 	
-	<!-- 비번 찾기에서 유효한 정보 조회 -->
+	<!-- 비밀번호 찾기에서 유효한 정보 조회 -->
 	<select id="getUserFromCheck" parameterType="com.utime.household.user.vo.UserVo" resultMap="UserVoMap">
 		SELECT 
 			<include refid="UserColumnSql" /> 
@@ -121,17 +121,16 @@
 	</select>
 
 	<!-- id / pw 일치하는 계정 정보 조회 -->	
-	<select id="getUserAndPw" parameterType="map" resultType="long">
+	<select id="getUserAndPw" parameterType="map" resultType="String">
 		SELECT COALESCE(
 		    (	SELECT
-		    		NO
+		    		PW
 		    	FROM HH_USER
 		    	WHERE 1=1
 		    		AND ENABLED = 'Y'
 		    		AND ID = #{id}
-		    		AND PW = #{pw, typeHandler=com.utime.household.user.typeHandler.PasswordEncoderTypeHandler}
     		), 
-    	-1 ) AS NO;
+    	'-' ) AS PW;
 	</select>
 	
 	<!-- 사용자 상세 -->

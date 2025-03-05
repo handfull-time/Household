@@ -2,7 +2,7 @@
      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
      layout:decorate="~{User/UserLayout}">
     
-    <th:block layout:fragment="title">비번 찾기</th:block>
+    <th:block layout:fragment="title">비밀번호 찾기</th:block>
 
 	<th:block layout:fragment="css"></th:block>
 	
@@ -11,108 +11,80 @@
 	        <form id="findPwForm" >
 	        	<input type="hidden" id="rsaId" th:value="${unique.rsaId}">
 	        	<input type="hidden" id="token" th:value="${unique.token}">
-	        	
-                <!-- ID -->
-                <div class="flex flex-col w-full"> <!-- ✅ flex-col로 변경하여 세로 정렬 -->
-				    <div class="flex items-center">
-				        <label for="id" class="w-1/4 font-medium">아이디</label>
-				        <div class="w-3/4">
-				            <input type="text" id="id" name="id" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400"
-				                minlength="4" maxlength="20" required>
-				        </div>
-				    </div>
-				</div>
-
-                <!-- 비밀번호 찾기 질문 -->
-                <div class="relative w-full">
-			        <div class="relative">
-			            <label class="block font-medium">무지개 7가지 색 중 좋아하는 색깔</label>
-			            <button id="dropdownBtn" class="w-full p-2 border rounded-md flex justify-between items-center bg-white">
-			                <span id="selectedText">선택하세요</span>
-			                <span class="text-gray-600">&#9662;</span> <!-- 아래 화살표 -->
-			            </button>
+	        	<table class="w-full border-collapse">
+			        <tbody>
+			            <!-- ID -->
+			            <tr>
+			                <td class="w-1/4 font-medium p-2"><label for="id">아이디</label></td>
+			                <td class="w-3/4 p-2">
+			                    <input type="text" id="id" name="id" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" minlength="4" maxlength="20" required>
+			                    <p id="idCheckMessage" class="text-sm mt-1 text-red-500"></p>
+			                </td>
+			            </tr>
+			            
+			            <tr>
+			            	<td colspan="2"></td>
+			            </tr>
+			            <tr>
+			            	<td colspan="2"class="font-medium p-2">좋아하는 것을 고르세요.</td>
+			            </tr>
 			
-			            <!-- 드롭다운 목록 -->
-			            <div id="dropdownMenu" class="absolute w-full mt-1 bg-white border rounded-md shadow-lg hidden z-10">
-			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="">
-			                    <span class="w-4 h-4 bg-gray-300 rounded"></span>
-			                    <span>선택하세요</span>
-			                </div>
-			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="빨강">
-			                    <span class="w-4 h-4 bg-red-500 rounded"></span>
-			                    <span>빨강</span>
-			                </div>
-			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="주황">
-			                    <span class="w-4 h-4 bg-orange-500 rounded"></span>
-			                    <span>주황</span>
-			                </div>
-			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="노랑">
-			                    <span class="w-4 h-4 bg-yellow-500 rounded"></span>
-			                    <span>노랑</span>
-			                </div>
-			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="초록">
-			                    <span class="w-4 h-4 bg-green-500 rounded"></span>
-			                    <span>초록</span>
-			                </div>
-			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="파랑">
-			                    <span class="w-4 h-4 bg-blue-500 rounded"></span>
-			                    <span>파랑</span>
-			                </div>
-			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="남색">
-			                    <span class="w-4 h-4 bg-indigo-500 rounded"></span>
-			                    <span>남색</span>
-			                </div>
-			                <div class="p-2 cursor-pointer flex items-center space-x-2 hover:bg-gray-100" data-value="보라">
-			                    <span class="w-4 h-4 bg-purple-500 rounded"></span>
-			                    <span>보라</span>
-			                </div>
-			            </div>
-			        </div>
-			        
-			        <!-- 숨겨진 실제 <select> 요소 (값 전송 용도) -->
-			        <select name="myRainbow" id="myRainbow" class="hidden" required>
-			            <option value="">선택하세요</option>
-			            <option value="빨강">빨강</option>
-			            <option value="주황">주황</option>
-			            <option value="노랑">노랑</option>
-			            <option value="초록">초록</option>
-			            <option value="파랑">파랑</option>
-			            <option value="남색">남색</option>
-			            <option value="보라">보라</option>
-			        </select>
-			    </div>
-
-                <div>
-                    <label class="block font-medium">4계절 중 좋아하는 계절</label>
-                    <select name="mySeason" id="mySeason" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
-                        <option value="">선택하세요</option>
-                        <option>봄</option>
-                        <option>여름</option>
-                        <option>가을</option>
-                        <option>겨울</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block font-medium">0부터 10까지 좋아하는 숫자</label>
-                    <select name="myNumber" id="myNumber" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
-                        <option value="">선택하세요</option>
-                        <option>0</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                        <option>9</option>
-                        <option>10</option>
-                    </select>
-                </div>
+			            <!-- 보안 질문: 무지개 색깔 -->
+			            <tr>
+			                <td class="font-medium p-2">무지개 색깔</td>
+			                <td class="p-2">
+			                    <select id="myRainbow" name="myRainbow" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
+			                        <option value="">선택하세요</option>
+			                        <option value="빨강">🔴 (빨강)</option>
+			                        <option value="주황">🟠 (주황)</option>
+			                        <option value="노랑">🟡 (노랑)</option>
+			                        <option value="초록">🟢 (초록)</option>
+			                        <option value="파랑">🔵 (파랑)</option>
+			                        <option value="남색">🔵+🟣(남색)</option>
+			                        <option value="보라">🟣 (보라)</option>
+			                    </select>
+			                </td>
+			            </tr>
+			
+			            <!-- 보안 질문: 좋아하는 계절 -->
+			            <tr>
+			                <td class="font-medium p-2">계절</td>
+			                <td class="p-2">
+			                    <select id="mySeason" name="mySeason" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
+			                        <option value="">선택하세요</option>
+			                        <option>봄</option>
+			                        <option>여름</option>
+			                        <option>가을</option>
+			                        <option>겨울</option>
+			                    </select>
+			                </td>
+			            </tr>
+			
+			            <!-- 보안 질문: 좋아하는 숫자 -->
+			            <tr>
+			                <td class="font-medium p-2">숫자 (0~10)</td>
+			                <td class="p-2">
+			                    <select id="myNumber" name="myNumber" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" required>
+			                        <option value="">선택하세요</option>
+			                        <option>0</option>
+			                        <option>1</option>
+			                        <option>2</option>
+			                        <option>3</option>
+			                        <option>4</option>
+			                        <option>5</option>
+			                        <option>6</option>
+			                        <option>7</option>
+			                        <option>8</option>
+			                        <option>9</option>
+			                        <option>10</option>
+			                    </select>
+			                </td>
+			            </tr>
+			        </tbody>
+			    </table>
 
                 <div class="mt-6 transition-opacity duration-300" id="hiddenButtons">
-		            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">비번 찾기</button>
+		            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">비밀번호 찾기</button>
 		            <div class="flex justify-between mt-2 text-sm text-blue-500 cursor-pointer">
 		                <a th:href="@{/User/FindUserId.html}" class="hover:underline">ID 찾기</a>
 		                <a th:href="@{/User/Login.html}" class="hover:underline">로그인</a>
@@ -126,40 +98,6 @@
 
     <th:block layout:fragment="script">
     
-    <script>
-        const dropdownBtn = document.getElementById('dropdownBtn');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        const selectedText = document.getElementById('selectedText');
-        const selectInput = document.getElementById('myRainbow');
-
-        // 드롭다운 버튼 클릭 시 목록 표시
-        dropdownBtn.addEventListener('click', () => {
-        	event.preventDefault(); // 기본 포커스 이동 방지
-            dropdownMenu.classList.toggle('hidden');
-            dropdownBtn.classList.toggle('hidden');
-        });
-        
-
-        // 옵션 선택 시 값 변경
-        dropdownMenu.querySelectorAll('div').forEach(item => {
-            item.addEventListener('click', () => {
-                const value = item.getAttribute('data-value');
-                selectedText.textContent = value || '선택하세요';
-                selectInput.value = value;
-                dropdownMenu.classList.add('hidden'); // 선택 후 닫기
-                dropdownBtn.classList.toggle('hidden');
-            });
-        });
-
-        // 드롭다운 외부 클릭 시 닫기
-        document.addEventListener('click', (event) => {
-            if (!dropdownBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                dropdownMenu.classList.add('hidden');
-                dropdownBtn.classList.remove('hidden');
-            }
-        });
-    </script>
-
     <script th:inline="javascript">
         document.getElementById("findPwForm").addEventListener("submit", async function(event) {
             event.preventDefault();

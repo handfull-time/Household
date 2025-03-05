@@ -3,7 +3,7 @@
 	th:fragment="headerView" 
 	class="bg-white shadow-md p-4 flex justify-between items-center" >
 
-<h1 class="text-xl text-gray-700 font-bold">[[${user.nickname}]]</h1>
+<h1 class="text-lg text-gray-700 font-bold">[[${user.nickname}]]</h1>
             
 <!-- 오른쪽 사용자 메뉴 -->
 <div class="relative">
@@ -15,11 +15,15 @@
 	<!-- Dropdown 메뉴 -->
 	<div id="userMenu" class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md opacity-0 scale-95 transform transition-all duration-200 hidden">
 	    <button class="menuItem flex items-center px-4 py-2 hover:bg-gray-100 w-full">
-        <svg class="w-5 h-5 mr-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10 10a4 4 0 110-8 4 4 0 010 8zm0 2c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"></path></svg>
+        <svg class="w-5 h-5 mr-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+        	<path d="M10 10a4 4 0 110-8 4 4 0 010 8zm0 2c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"></path>
+        </svg>
     	    Profile
     	</button>
     	<button class="menuItem flex items-center px-4 py-2 hover:bg-gray-100 w-full">
-        	<svg class="w-5 h-5 mr-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 10a7 7 0 1114 0A7 7 0 013 10zm6-3a1 1 0 102 0 1 1 0 00-2 0zm-1 3a1 1 0 112 0v2a1 1 0 11-2 0v-2z" clip-rule="evenodd"></path></svg>
+        	<svg class="w-5 h-5 mr-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20">	
+        		<path fill-rule="evenodd" d="M3 10a7 7 0 1114 0A7 7 0 013 10zm6-3a1 1 0 102 0 1 1 0 00-2 0zm-1 3a1 1 0 112 0v2a1 1 0 11-2 0v-2z" clip-rule="evenodd"></path>
+        	</svg>
         	Logout
     	</button>
     </div>
@@ -112,8 +116,6 @@
 		        	console.error("로그아웃 실패:");
 		        }
             })
-            
-            // 여기에 로그아웃 처리 로직 추가 가능
         }
     });
     

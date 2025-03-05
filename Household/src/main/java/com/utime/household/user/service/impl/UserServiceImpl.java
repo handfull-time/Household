@@ -21,11 +21,11 @@ import com.utime.household.user.vo.EJwtRole;
 import com.utime.household.user.vo.FindUserIdResVo;
 import com.utime.household.user.vo.LoginReqVo;
 import com.utime.household.user.vo.ReqUniqueVo;
-import com.utime.household.user.vo.TokenPairVo;
 import com.utime.household.user.vo.UserReqVo;
 import com.utime.household.user.vo.UserVo;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,36 +44,13 @@ class UserServiceImpl implements UserService {
 	final JwtProvider jwtUtil;
 	
 	@Override
-	public ReturnBasic refreshAccessToken(String refreshToken) {
-		final ReturnBasic result = new ReturnBasic();
+	public ReturnBasic refreshAccessToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
 		
 		if( HouseholdUtils.isEmpty(refreshToken)) {
-			result.setCodeMessage("E", "Token is empty");
-			return result;
+			return new ReturnBasic("E", "Token is empty");
 		}
 		
-		if (!jwtUtil.validateToken(refreshToken)) {
-			result.setCodeMessage("E", "Invalid refresh token");
-			return result;
-		}
-		
-		final String id = jwtUtil.getUsernameFromToken(refreshToken);
-		if( HouseholdUtils.isEmpty(id)) {
-			result.setCodeMessage("E", "id 값 추출 오류");
-			return result;
-		}
-		
-		final UserVo user = userDao.getUserFromId( id );
-		if( user == null ) {
-			log.warn("회원 없음");
-			result.setCodeMessage("E", "회원 없음");
-			return result;
-		}
-		
-		final String newAccessToken = jwtUtil.generateAccessToken(user);
-		result.setMessage(newAccessToken);
-		
-		return result;
+		return jwtUtil.procRefresh( request, response, refreshToken );
 	}
 	
 	/**
@@ -179,35 +156,30 @@ class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public TokenPairVo procLogin(LoginReqVo reqVo) {
+	public ReturnBasic procLogin(HttpServletRequest request, HttpServletResponse response, LoginReqVo reqVo) {
 		
-		final TokenPairVo result = new TokenPairVo();
-
 		if( ! this.validation(reqVo) ) {
-			result.setCodeMessage("E", "");
-			return result;
+			return new ReturnBasic("E", "Invalid credentials");
 		}
 		
 		if( ! this.convertEncPw( reqVo ) ){
-			result.setCodeMessage("E", "");
-			return result;
+			return new ReturnBasic("E", "Invalid credentials");
 		}
 		
 		final UserVo user = userDao.procLogin( reqVo.getId(), reqVo.getPw());
 		if( user == null ) {
 			log.warn("회원 없음");
-			result.setCodeMessage("E", "");
-			return result;
+			return new ReturnBasic("E", "");
 		}
 
 		this.validationRemove(reqVo);
 		
-		final String accessToken = jwtUtil.generateAccessToken(user);
-		final String refreshToken = jwtUtil.generateRefreshToken(user.getId());
-		
-		result.setTokenPair(accessToken, refreshToken);
-		
-		return result;
+		return jwtUtil.procLogin( request, response, user );
+	}
+	
+	@Override
+	public void logout(HttpServletRequest request, HttpServletResponse response) {
+		jwtUtil.procLogout( request, response);
 	}
 	
 	@Override

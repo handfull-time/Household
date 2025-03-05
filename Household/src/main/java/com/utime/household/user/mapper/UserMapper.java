@@ -59,19 +59,19 @@ public interface UserMapper {
 	UserVo getUserFromNo( @Param("userNo") long userNo);
 	
 	/**
-	 * 비번 찾기에서 유효한 정보 조회
+	 * 비밀번호 찾기에서 유효한 정보 조회
 	 * @param vo
 	 * @return
 	 */
 	List<UserVo> getUserFromCheck( UserVo vo );
 
 	/**
-	 * id / pw 일치하는 계정 정보 조회 
+	 * id 일치하는 PW 조회 
 	 * @param id
 	 * @param pw
 	 * @return
 	 */
-	long getUserAndPw(@Param("id") String id, @Param("pw") String pw);
+	String getUserAndPw(@Param("id") String id);
 
 	/**
 	 * 사용자 상세

@@ -109,7 +109,7 @@ public class UserController {
     }
 	
 	/**
-	 * 비번 찾기
+	 * 비밀번호 찾기
 	 * @param request
 	 * @param reqVo
 	 * @return

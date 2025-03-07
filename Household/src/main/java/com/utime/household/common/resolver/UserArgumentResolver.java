@@ -11,9 +11,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.utime.household.user.vo.UserVo;
 
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 @Component("UserArgument")
 public class UserArgumentResolver implements HandlerMethodArgumentResolver{
 

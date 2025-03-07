@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
+import com.utime.household.common.util.HouseholdUtils;
+
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -58,7 +60,7 @@ class CustomErrorController implements ErrorController {
 		final _ErrorInfo info = new _ErrorInfo();
 		info.exception = (exception == null)? null:exception.toString();
 		info.exceptionType = (exceptionType == null)? null:exceptionType.toString();
-		info.message = (message == null)? "알 수 없는 에러 발생":message.toString();
+		info.message = HouseholdUtils.isEmpty( message )? exception.getClass().getName():message.toString();
 		info.requestUri = (requestUri == null)? null:requestUri.toString();
 		info.status = (status == null)? HttpStatus.INTERNAL_SERVER_ERROR.value():status;
 
@@ -96,7 +98,10 @@ class CustomErrorController implements ErrorController {
     		response.setContentType("text/html; charset=UTF-8");
     		
     		result = new ModelAndView("Common/Error");
-    		result.getModelMap().addAttribute("errorMessage", e.getMessage());
+    		ModelMap modelMap = result.getModelMap();
+    		modelMap.addAttribute("statusCode", info.status);
+    		modelMap.addAttribute("statusMessage", info.message);
+    		modelMap.addAttribute("requestUri", info.requestUri);
         }
         
         e.printStackTrace();
